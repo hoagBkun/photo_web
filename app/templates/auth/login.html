@@ -1,0 +1,50 @@
+{% extends "layouts/base.html" %} {% block title %}Đăng Nhập - HoagART{%
+endblock %} {% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Đăng Nhập</h2>
+        <p>Vui lòng nhập thông tin để đăng nhập.</p>
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="form-group">
+                <label for="username">Tên Người Dùng</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Nhập tên người dùng"
+                    required
+                />
+            </div>
+            <div class="form-group">
+                <label for="password">Mật Khẩu</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Nhập mật khẩu"
+                    required
+                />
+            </div>
+            <button type="submit" class="btn">Đăng Nhập</button>
+        </form>
+        <div class="auth-links">
+            <p>
+                Chưa có tài khoản?
+                <a href="{{ url_for('auth.register') }}">Đăng Ký</a>
+            </p>
+            <p>
+                Quên mật khẩu?
+                <a href="{{ url_for('auth.forgot_password') }}">Đặt lại ngay</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

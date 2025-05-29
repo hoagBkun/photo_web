@@ -1,0 +1,28 @@
+{% extends "layouts/base.html" %} {% block title %}Sửa Bài Viết - HoagART{%
+endblock %} {% block content %}
+<div class="container">
+    <h1>Sửa Bài Viết</h1>
+    <form method="POST">
+        <label for="title">Tiêu đề:</label>
+        <input
+            type="text"
+            id="title"
+            name="title"
+            value="{{ post.title }}"
+            required
+        />
+        <label for="content">Nội dung:</label>
+        <textarea id="content" name="content" required>
+{{ post.content }}</textarea
+        >
+        <label for="image_url">URL ảnh:</label>
+        <input
+            type="text"
+            id="image_url"
+            name="image_url"
+            value="{{ post.image_url }}"
+        />
+        <button type="submit">Cập nhật</button>
+    </form>
+</div>
+{% endblock %}

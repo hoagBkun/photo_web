@@ -1,0 +1,72 @@
+{% extends "admin/base.html" %} {% block title %}Quản lý Banner - HoagART{%
+endblock %} {% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Quản lý Banner</h1>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Thêm Banner Mới</h5>
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.image.label(class="form-label") }} {{
+                    form.image(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.title.label(class="form-label") }} {{
+                    form.title(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.description.label(class="form-label") }} {{
+                    form.description(class="form-control") }}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5>Danh sách Banner</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tiêu đề</th>
+                        <th>Hình ảnh</th>
+                        <th>Mô tả</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for banner in banners %}
+                    <tr>
+                        <td>{{ banner.id }}</td>
+                        <td>{{ banner.title }}</td>
+                        <td>
+                            <img
+                                src="{{ banner.image_url }}"
+                                alt="{{ banner.title }}"
+                                width="100"
+                            />
+                        </td>
+                        <td>{{ banner.description }}</td>
+                        <td>
+                            <a
+                                href="{{ url_for('admin.edit_banner', id=banner.id) }}"
+                                class="btn btn-sm btn-warning"
+                                >Sửa</a
+                            >
+                            <a
+                                href="{{ url_for('admin.delete_banner', id=banner.id) }}"
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Bạn có chắc muốn xóa?')"
+                                >Xóa</a
+                            >
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

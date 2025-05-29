@@ -1,0 +1,77 @@
+{% extends "layouts/base.html" %} {% block title %}Blog - HoagART{% endblock %}
+{% block content %}
+<!-- Nội dung chính -->
+<div class="container">
+    <div class="blog-section">
+        <h2>Blog Của HoagART</h2>
+        <p>
+            Khám phá các mẹo chụp ảnh, câu chuyện hậu trường và bí quyết sáng
+            tạo từ đội ngũ HoagART.
+        </p>
+
+        <div class="blog-grid">
+            <!-- Bài viết 1 -->
+            <div class="blog-card">
+                <img
+                    src="https://i.pinimg.com/736x/bc/be/2a/bcbe2af9f272a57e5de2d36160a7c757.jpg"
+                    alt="Mẹo chụp ảnh"
+                />
+                <h3>Mẹo Chụp Ảnh Đẹp Dành Cho Người Mới</h3>
+                <p>
+                    Học cách sử dụng ánh sáng tự nhiên và góc chụp để tạo ra
+                    những bức ảnh ấn tượng.
+                </p>
+                <a href="{{ url_for('main.blog') }}#article1" class="btn"
+                    >Đọc Thêm</a
+                >
+            </div>
+
+            <!-- Bài viết 2 -->
+            <div class="blog-card">
+                <img
+                    src="https://i.pinimg.com/736x/bc/be/2a/bcbe2af9f272a57e5de2d36160a7c757.jpg"
+                    alt="Hậu trường"
+                />
+                <h3>Hậu Trường Chụp Ảnh Sự Kiện</h3>
+                <p>
+                    Khám phá quá trình chuẩn bị và thực hiện một buổi chụp sự
+                    kiện lớn.
+                </p>
+                <a href="{{ url_for('main.blog') }}#article2" class="btn"
+                    >Đọc Thêm</a
+                >
+            </div>
+
+            <!-- Bài viết 3 -->
+            <div class="blog-card">
+                <img
+                    src="https://i.pinimg.com/736x/bc/be/2a/bcbe2af9f272a57e5de2d36160a7c757.jpg"
+                    alt="Chỉnh sửa ảnh"
+                />
+                <h3>Kỹ Thuật Chỉnh Sửa Ảnh Với Photoshop</h3>
+                <p>
+                    Cách sử dụng layers và masking để nâng tầm bức ảnh của bạn.
+                </p>
+                <a href="{{ url_for('main.blog') }}#article3" class="btn"
+                    >Đọc Thêm</a
+                >
+            </div>
+
+            <!-- Bài viết 4 -->
+            <div class="blog-card">
+                <img
+                    src="https://i.pinimg.com/736x/bc/be/2a/bcbe2af9f272a57e5de2d36160a7c757.jpg"
+                    alt="Chụp ảnh ngoài trời"
+                />
+                <h3>Hướng Dẫn Chụp Ảnh Ngoài Trời</h3>
+                <p>
+                    Tận dụng ánh sáng tự nhiên để có những shoot ảnh hoàn hảo.
+                </p>
+                <a href="{{ url_for('main.blog') }}#article4" class="btn"
+                    >Đọc Thêm</a
+                >
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

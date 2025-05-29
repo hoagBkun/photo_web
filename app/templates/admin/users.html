@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %} {% block title %}Quản lý Người dùng - HoagART{%
+endblock %} {% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Quản lý Người dùng</h1>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên người dùng</th>
+                        <th>Email</th>
+                        <th>Quyền quản trị</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ 'Có' if user.is_admin else 'Không' }}</td>
+                        <td>
+                            <a
+                                href="{{ url_for('admin.edit_user', id=user.id) }}"
+                                class="btn btn-sm btn-warning"
+                                >Sửa</a
+                            >
+                            <a
+                                href="{{ url_for('admin.delete_user', id=user.id) }}"
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Bạn có chắc muốn xóa?')"
+                                >Xóa</a
+                            >
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,268 @@
+{% extends "layouts/base.html" %} {% block title %}Trang Chủ - HoagART{%
+endblock %} {% block content %}
+<!-- Main Slider Banner -->
+{% if banners and banners|length > 0 %}
+<div class="slider-container mb-5">
+    <div class="main-slider">
+        {% for banner in banners %}
+        <div class="slider-slide {% if loop.first %}active{% endif %}">
+            <img
+                src="{{ banner.image_url }}"
+                alt="{{ banner.title }}"
+                class="slider-image"
+            />
+            <div class="slider-caption">
+                <h1 class="display-4">{{ banner.title }}</h1>
+                <p class="lead">{{ banner.description }}</p>
+                <div class="banner-buttons mt-3">
+                    <a
+                        href="{{ url_for('main.contact') }}"
+                        class="btn btn-primary btn-lg me-3"
+                        >Đặt Lịch Ngay</a
+                    >
+                    <a
+                        href="{{ url_for('main.pricing') }}"
+                        class="btn btn-outline-light btn-lg"
+                        >Xem Bảng Giá</a
+                    >
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="thumbnail-nav">
+        {% for banner in banners %}
+        <div
+            class="thumbnail-slide {% if loop.first %}active{% endif %}"
+            onclick="showSlide({{ loop.index0 }})"
+        >
+            <img
+                src="{{ banner.image_url }}"
+                alt="{{ banner.title }}"
+                class="thumbnail-image"
+            />
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll(".slider-slide");
+    const thumbnails = document.querySelectorAll(".thumbnail-slide");
+    const totalSlides = slides.length;
+
+    function showSlide(index) {
+        if (index >= totalSlides) currentSlide = 0;
+        else if (index < 0) currentSlide = totalSlides - 1;
+        else currentSlide = index;
+
+        // Ẩn tất cả slide và chỉ hiển thị slide hiện tại
+        slides.forEach((slide, i) => {
+            slide.classList.remove("active");
+            slide.style.display = "none"; // Ẩn slide
+            if (i === currentSlide) {
+                slide.classList.add("active");
+                slide.style.display = "block"; // Hiển thị slide hiện tại
+            }
+        });
+
+        // Cập nhật thumbnail
+        thumbnails.forEach((thumb, i) => {
+            thumb.classList.remove("active");
+            if (i === currentSlide) thumb.classList.add("active");
+        });
+
+        // Điều chỉnh vị trí slider
+        const mainSlider = document.querySelector(".main-slider");
+        mainSlider.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+
+    // Tự động trượt sau 3 giây
+    let autoSlide = setInterval(() => {
+        showSlide(currentSlide + 1);
+    }, 3000);
+
+    // Dừng tự động khi hover, tiếp tục khi out
+    const sliderContainer = document.querySelector(".slider-container");
+    sliderContainer.addEventListener("mouseenter", () =>
+        clearInterval(autoSlide)
+    );
+    sliderContainer.addEventListener("mouseleave", () => {
+        autoSlide = setInterval(() => {
+            showSlide(currentSlide + 1);
+        }, 3000);
+    });
+
+    // Khởi tạo slide đầu tiên
+    showSlide(currentSlide);
+</script>
+{% else %}
+<div class="banner">
+    <div class="banner-content">
+        <h1>HoagART</h1>
+        <p>Khoảnh khắc đẹp - Nghệ thuật sống</p>
+        <div class="banner-buttons">
+            <a href="{{ url_for('main.contact') }}" class="btn"
+                >Đặt Lịch Ngay</a
+            >
+            <a href="{{ url_for('main.pricing') }}" class="btn secondary-btn"
+                >Xem Bảng Giá</a
+            >
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Giới thiệu ngắn -->
+<div class="intro-section container">
+    <h2>Về HoagART</h2>
+    <div class="intro-grid">
+        <div class="intro-text">
+            <p>
+                HoagART là studio chụp ảnh chuyên nghiệp với hơn 10 năm kinh
+                nghiệm, mang đến những bức ảnh nghệ thuật, chân dung, và thương
+                mại đầy cảm hứng. Chúng tôi cam kết biến mỗi khoảnh khắc của bạn
+                thành kiệt tác.
+            </p>
+            <a href="{{ url_for('main.introduce') }}" class="btn"
+                >Tìm Hiểu Thêm</a
+            >
+        </div>
+        <div class="intro-image">
+            <img
+                src="https://images.unsplash.com/photo-1519741497674-411a16c18303"
+                alt="Giới thiệu HoagART"
+            />
+        </div>
+    </div>
+</div>
+
+<!-- Portfolio Slider -->
+<div class="portfolio-section">
+    <div class="container">
+        <h2>Portfolio Nổi Bật</h2>
+        <div class="portfolio-slider">
+            <div class="portfolio-item">
+                <img
+                    src="https://images.unsplash.com/photo-1519741497674-411a16c18303"
+                    alt="Chân dung"
+                />
+                <div class="portfolio-overlay">
+                    <h4>Chân Dung</h4>
+                </div>
+            </div>
+            <div class="portfolio-item">
+                <img
+                    src="https://images.unsplash.com/photo-1524504388940-b79287b459bf"
+                    alt="Sự kiện"
+                />
+                <div class="portfolio-overlay">
+                    <h4>Sự Kiện</h4>
+                </div>
+            </div>
+            <div class="portfolio-item">
+                <img
+                    src="https://images.unsplash.com/photo-1501748338-ffd92897e072"
+                    alt="Thương mại"
+                />
+                <div class="portfolio-overlay">
+                    <h4>Thương Mại</h4>
+                </div>
+            </div>
+        </div>
+        <a href="{{ url_for('main.pricing') }}" class="btn"
+            >Xem Thêm Portfolio</a
+        >
+    </div>
+</div>
+
+<!-- Dịch vụ -->
+<div class="services-section container">
+    <h2>Dịch Vụ Của Chúng Tôi</h2>
+    <div class="services-grid">
+        <div class="service-card">
+            <img
+                src="https://images.unsplash.com/photo-1516820829777-fb7e44b19f58"
+                alt="Chụp Ảnh Chân Dung"
+            />
+            <h3>Chụp Ảnh Chân Dung</h3>
+            <p>Gói chụp ảnh cá nhân hóa với phong cách nghệ thuật.</p>
+            <a href="{{ url_for('main.pricing') }}" class="btn">Khám Phá</a>
+        </div>
+        <div class="service-card">
+            <img
+                src="https://images.unsplash.com/photo-1530023367843-7b8b6ea6f9ea"
+                alt="Chụp Ảnh Sự Kiện"
+            />
+            <h3>Chụp Ảnh Sự Kiện</h3>
+            <p>Lưu giữ mọi khoảnh khắc quan trọng trong sự kiện.</p>
+            <a href="{{ url_for('main.pricing') }}" class="btn">Khám Phá</a>
+        </div>
+        <div class="service-card">
+            <img
+                src="https://images.unsplash.com/photo-1523278073651-d531b3be238b"
+                alt="Chụp Ảnh Thương Mại"
+            />
+            <h3>Chụp Ảnh Thương Mại</h3>
+            <p>Hình ảnh chất lượng cao cho thương hiệu và sản phẩm.</p>
+            <a href="{{ url_for('main.pricing') }}" class="btn">Khám Phá</a>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonial -->
+<div class="testimonial-section container">
+    <h2>Khách Hàng Nói Gì</h2>
+    <div class="testimonial-slider">
+        <div class="testimonial-item">
+            <p>
+                "HoagART đã tạo ra những bức ảnh tuyệt đẹp cho đám cưới của
+                chúng tôi. Rất chuyên nghiệp!"
+            </p>
+            <h4>Nguyễn Văn A</h4>
+        </div>
+        <div class="testimonial-item">
+            <p>
+                "Dịch vụ chụp ảnh thương mại rất ấn tượng, tôi sẽ tiếp tục hợp
+                tác!"
+            </p>
+            <h4>Trần Thị B</h4>
+        </div>
+    </div>
+</div>
+
+<!-- Blog nổi bật -->
+<div class="blog-section container">
+    <h2>Bài Viết Nổi Bật</h2>
+    <div class="blog-grid">
+        <div class="blog-card">
+            <img
+                src="https://images.unsplash.com/photo-1516321310765-79d3a23ff1a0"
+                alt="Mẹo chụp ảnh"
+            />
+            <h3>Mẹo Chụp Ảnh Đẹp</h3>
+            <p>Học cách chụp ảnh chuyên nghiệp từ cơ bản đến nâng cao.</p>
+            <a href="{{ url_for('main.blog') }}" class="btn">Đọc Thêm</a>
+        </div>
+        <div class="blog-card">
+            <img
+                src="https://images.unsplash.com/photo-1502989642968-94fbdc9eace4"
+                alt="Hậu trường"
+            />
+            <h3>Hậu Trường Chụp Ảnh</h3>
+            <p>Khám phá câu chuyện đằng sau từng shoot ảnh.</p>
+            <a href="{{ url_for('main.blog') }}" class="btn">Đọc Thêm</a>
+        </div>
+    </div>
+</div>
+
+<!-- Chat icon -->
+<div class="chat-icon">
+    <a href="{{ url_for('main.contact') }}">
+        <img
+            src="https://images.unsplash.com/photo-1524504388940-b79287b459bf"
+            alt="Chat"
+        />
+    </a>
+</div>
+{% endblock %}

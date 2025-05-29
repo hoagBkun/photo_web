@@ -1,0 +1,15 @@
+{% extends "layouts/base.html" %} {% block title %}Tạo Bài Viết Mới - HoagART{%
+endblock %} {% block content %}
+<div class="container">
+    <h1>Tạo Bài Viết Mới</h1>
+    <form method="POST">
+        <label for="title">Tiêu đề:</label>
+        <input type="text" id="title" name="title" required />
+        <label for="content">Nội dung:</label>
+        <textarea id="content" name="content" required></textarea>
+        <label for="image_url">URL ảnh:</label>
+        <input type="text" id="image_url" name="image_url" />
+        <button type="submit">Tạo</button>
+    </form>
+</div>
+{% endblock %}

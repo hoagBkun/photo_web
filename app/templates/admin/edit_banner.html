@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %} {% block title %}Chỉnh sửa Banner - HoagART{%
+endblock %} {% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Chỉnh sửa Banner</h1>
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.image.label(class="form-label") }} {{
+                    form.image(class="form-control") }}
+                    <small class="form-text text-muted"
+                        >Để trống nếu không muốn thay đổi hình ảnh.</small
+                    >
+                </div>
+                <div class="mb-3">
+                    {{ form.title.label(class="form-label") }} {{
+                    form.title(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.description.label(class="form-label") }} {{
+                    form.description(class="form-control") }}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
