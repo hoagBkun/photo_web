@@ -1,100 +1,32 @@
-{% extends "layouts/base.html" %} {% block content %}
-<div class="admin-container">
-    <h2>Quản Trị Nội Dung</h2>
-    <p>Quản lý ảnh và bài viết trên trang web.</p>
-
-    <!-- Nút tạo mới -->
-    <a href="{{ url_for('admin.create_item') }}" class="btn mb-3">Thêm Mới</a>
-
-    <!-- Tab điều hướng (nếu cần) -->
-    <div class="mb-3">
-        <button class="btn" onclick="showTab('images')">Hình Ảnh</button>
-        <button class="btn" onclick="showTab('posts')">Bài Viết</button>
-    </div>
-
-    <!-- Bảng Hình Ảnh -->
-    <div id="images" class="tab-content">
-        <h3>Danh Sách Hình Ảnh</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tiêu Đề</th>
-                    <th>URL</th>
-                    <th>Hành Động</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for image in images %}
-                <tr>
-                    <td>{{ image.id }}</td>
-                    <td>{{ image.title }}</td>
-                    <td>{{ image.image_url }}</td>
-                    <td>
-                        <a
-                            href="{{ url_for('admin.edit_item', item_id=image.id, item_type='image') }}"
-                            class="crud-btn edit"
-                            >✏️</a
-                        >
-                        <a
-                            href="{{ url_for('admin.delete_item', item_id=image.id, item_type='image') }}"
-                            class="crud-btn delete"
-                            onclick="return confirm('Bạn có chắc muốn xóa?')"
-                            >❌</a
-                        >
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Bảng Bài Viết -->
-    <div id="posts" class="tab-content" style="display: none">
-        <h3>Danh Sách Bài Viết</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tiêu Đề</th>
-                    <th>Nội Dung</th>
-                    <th>Hành Động</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for post in posts %}
-                <tr>
-                    <td>{{ post.id }}</td>
-                    <td>{{ post.title }}</td>
-                    <td>{{ post.content|truncate(50) }}</td>
-                    <td>
-                        <a
-                            href="{{ url_for('admin.edit_item', item_id=post.id, item_type='post') }}"
-                            class="crud-btn edit"
-                            >✏️</a
-                        >
-                        <a
-                            href="{{ url_for('admin.delete_item', item_id=post.id, item_type='post') }}"
-                            class="crud-btn delete"
-                            onclick="return confirm('Bạn có chắc muốn xóa?')"
-                            >❌</a
-                        >
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% extends "admin/base.html" %} {% block title %}Tổng quan - HoagART{% endblock
+%} {% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Tổng quan</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Số Banner</h5>
+                    <p class="card-text">{{ banner_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Số Bài viết</h5>
+                    <p class="card-text">{{ post_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Số Người dùng</h5>
+                    <p class="card-text">{{ user_count }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-<script>
-    function showTab(tabName) {
-        document.querySelectorAll(".tab-content").forEach((tab) => {
-            tab.style.display = "none";
-        });
-        document.getElementById(tabName).style.display = "block";
-    }
-    // Hiển thị tab mặc định là 'images'
-    document.addEventListener("DOMContentLoaded", () => showTab("images"));
-</script>
 {% endblock %}
