@@ -58,6 +58,257 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- Main Slider Banner -->
+        {% if banners and banners|length > 0 %}
+        <div class="slider-container">
+            <div class="main-slider">
+                {% for banner in banners %}
+                <div
+                    class="slider-slide {% if loop.index0 == 0 %}active{% endif %}"
+                >
+                    <img
+                        src="{{ banner.image_url }}"
+                        alt="{{ banner.title }}"
+                        class="slider-image"
+                    />
+                    <div class="slider-caption">
+                        <h1 class="display-4">{{ banner.title }}</h1>
+                        <p class="lead">{{ banner.description }}</p>
+                        <!-- Tùy chỉnh nút CTA theo trang -->
+                        {% if request.endpoint not in ['auth.login',
+                        'auth.register'] %}
+                        <div class="banner-buttons mt-3">
+                            {% if request.endpoint == 'main.home' %}
+                            <a
+                                href="{{ url_for('main.contact') }}"
+                                class="btn btn-primary btn-lg me-3"
+                                >Đặt Lịch Ngay</a
+                            >
+                            <a
+                                href="{{ url_for('main.pricing') }}"
+                                class="btn btn-outline-light btn-lg"
+                                >Xem Bảng Giá</a
+                            >
+                            {% elif request.endpoint == 'main.introduce' %}
+                            <a
+                                href="{{ url_for('main.contact') }}"
+                                class="btn btn-primary btn-lg me-3"
+                                >Liên Hệ Ngay</a
+                            >
+                            <a
+                                href="{{ url_for('main.pricing') }}"
+                                class="btn btn-outline-light btn-lg"
+                                >Khám Phá Dịch Vụ</a
+                            >
+                            {% elif request.endpoint == 'main.blog' %}
+                            <a
+                                href="{{ url_for('main.blog') }}"
+                                class="btn btn-primary btn-lg me-3"
+                                >Đọc Bài Viết Mới</a
+                            >
+                            <a
+                                href="{{ url_for('main.contact') }}"
+                                class="btn btn-outline-light btn-lg"
+                                >Liên Hệ</a
+                            >
+                            {% elif request.endpoint == 'main.pricing' %}
+                            <a
+                                href="{{ url_for('main.contact') }}"
+                                class="btn btn-primary btn-lg me-3"
+                                >Đặt Lịch Ngay</a
+                            >
+                            <a
+                                href="{{ url_for('main.introduce') }}"
+                                class="btn btn-outline-light btn-lg"
+                                >Tìm Hiểu Thêm</a
+                            >
+                            {% elif request.endpoint == 'main.contact' %}
+                            <a
+                                href="{{ url_for('main.contact') }}"
+                                class="btn btn-primary btn-lg me-3"
+                                >Gửi Yêu Cầu</a
+                            >
+                            <a
+                                href="{{ url_for('main.pricing') }}"
+                                class="btn btn-outline-light btn-lg"
+                                >Xem Bảng Giá</a
+                            >
+                            {% elif request.endpoint == 'main.profile' %}
+                            <a
+                                href="{{ url_for('main.profile') }}"
+                                class="btn btn-primary btn-lg me-3"
+                                >Cập Nhật Hồ Sơ</a
+                            >
+                            <a
+                                href="{{ url_for('main.contact') }}"
+                                class="btn btn-outline-light btn-lg"
+                                >Liên Hệ Hỗ Trợ</a
+                            >
+                            {% elif request.endpoint in ['auth.forgot_password',
+                            'auth.reset_password'] %}
+                            <a
+                                href="{{ url_for('auth.login') }}"
+                                class="btn btn-primary btn-lg me-3"
+                                >Đăng Nhập</a
+                            >
+                            <a
+                                href="{{ url_for('auth.register') }}"
+                                class="btn btn-outline-light btn-lg"
+                                >Đăng Ký</a
+                            >
+                            {% else %}
+                            <a
+                                href="{{ url_for('main.contact') }}"
+                                class="btn btn-primary btn-lg me-3"
+                                >Đặt Lịch Ngay</a
+                            >
+                            <a
+                                href="{{ url_for('main.pricing') }}"
+                                class="btn btn-outline-light btn-lg"
+                                >Xem Bảng Giá</a
+                            >
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="thumbnail-nav">
+                <button class="nav-arrow prev" onclick="moveThumbnails(-1)">
+                    ❮
+                </button>
+                <div class="thumbnail-nav-container">
+                    <div class="thumbnail-nav-inner">
+                        {% for banner in banners %}
+                        <div
+                            class="thumbnail-slide {% if loop.index0 == 0 %}active{% endif %}"
+                            data-index="{{ loop.index0 }}"
+                            onclick="showSlide({{ loop.index0 }})"
+                        >
+                            <img
+                                src="{{ banner.image_url }}"
+                                alt="{{ banner.title }}"
+                                class="thumbnail-image"
+                            />
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <button class="nav-arrow next" onclick="moveThumbnails(1)">
+                    ❯
+                </button>
+            </div>
+        </div>
+        <script>
+            let currentSlide = 0;
+            let currentThumbnailGroup = 0;
+            const slides = document.querySelectorAll(".slider-slide");
+            const thumbnails = document.querySelectorAll(".thumbnail-slide");
+            const thumbnailNavInner = document.querySelector(
+                ".thumbnail-nav-inner"
+            );
+            const totalSlides = slides.length;
+            const thumbnailsPerGroup = 6;
+            const totalThumbnailGroups = Math.ceil(
+                totalSlides / thumbnailsPerGroup
+            );
+            const thumbnailGroupWidth =
+                parseFloat(
+                    getComputedStyle(document.documentElement)
+                        .getPropertyValue("--thumbnail-group-width")
+                        .trim()
+                ) || 630;
+
+            function showSlide(index) {
+                if (index >= totalSlides) currentSlide = 0;
+                else if (index < 0) currentSlide = totalSlides - 1;
+                else currentSlide = index;
+
+                slides.forEach((slide, i) => {
+                    slide.classList.remove("active");
+                    slide.style.display = "none";
+                    if (i === currentSlide) {
+                        slide.classList.add("active");
+                        slide.style.display = "block";
+                    }
+                });
+
+                thumbnails.forEach((thumb, i) => {
+                    thumb.classList.remove("active");
+                    if (i === currentSlide) thumb.classList.add("active");
+                });
+
+                // Cập nhật nhóm thumbnail
+                const thumbnailIndex = Math.floor(
+                    currentSlide / thumbnailsPerGroup
+                );
+                if (thumbnailIndex !== currentThumbnailGroup) {
+                    moveThumbnails(thumbnailIndex - currentThumbnailGroup);
+                }
+            }
+
+            function moveThumbnails(direction) {
+                currentThumbnailGroup += direction;
+
+                if (currentThumbnailGroup < 0) currentThumbnailGroup = 0;
+                else if (currentThumbnailGroup >= totalThumbnailGroups)
+                    currentThumbnailGroup = totalThumbnailGroups - 1;
+
+                const translateX = -currentThumbnailGroup * thumbnailGroupWidth;
+                thumbnailNavInner.style.transform = `translateX(${translateX}px)`;
+
+                // Ẩn/hiện nút điều hướng
+                document.querySelector(".nav-arrow.prev").style.display =
+                    currentThumbnailGroup > 0 ? "block" : "none";
+                document.querySelector(".nav-arrow.next").style.display =
+                    currentThumbnailGroup < totalThumbnailGroups - 1
+                        ? "block"
+                        : "none";
+            }
+
+            let autoSlide = setInterval(() => {
+                showSlide(currentSlide + 1);
+            }, 3000);
+
+            const sliderContainer = document.querySelector(".slider-container");
+            if (sliderContainer) {
+                sliderContainer.addEventListener("mouseenter", () =>
+                    clearInterval(autoSlide)
+                );
+                sliderContainer.addEventListener("mouseleave", () => {
+                    autoSlide = setInterval(() => {
+                        showSlide(currentSlide + 1);
+                    }, 3000);
+                });
+            }
+
+            // Khởi tạo
+            showSlide(currentSlide);
+            moveThumbnails(0);
+        </script>
+        {% else %}
+        <div class="banner">
+            <div class="banner-content">
+                <h1>HoagART</h1>
+                <p>Khoảnh khắc đẹp - Nghệ thuật sống</p>
+                {% if request.endpoint not in ['auth.login', 'auth.register'] %}
+                <div class="banner-buttons">
+                    <a href="{{ url_for('main.contact') }}" class="btn"
+                        >Đặt Lịch Ngay</a
+                    >
+                    <a
+                        href="{{ url_for('main.pricing') }}"
+                        class="btn secondary-btn"
+                        >Xem Bảng Giá</a
+                    >
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="container">
             {% with messages = get_flashed_messages(with_categories=true) %} {%
             if messages %} {% for category, message in messages %}
@@ -123,13 +374,8 @@
             document.addEventListener("DOMContentLoaded", function () {
                 const toasts = document.querySelectorAll(".toast");
                 toasts.forEach((toast) => {
-                    // Hiển thị toast
                     setTimeout(() => toast.classList.add("show"), 100);
-
-                    // Tự động tắt sau 2.5s
                     setTimeout(() => toast.classList.remove("show"), 2600);
-
-                    // Nút đóng thủ công
                     const closeBtn = toast.querySelector(".close-btn");
                     if (closeBtn) {
                         closeBtn.addEventListener("click", () => {

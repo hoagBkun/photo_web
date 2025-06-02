@@ -1,3 +1,4 @@
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from app.models.contact import ContactMessage
 from app import db
