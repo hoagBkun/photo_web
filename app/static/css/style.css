@@ -1306,3 +1306,312 @@ h2 {
 .blog-detail .navigation .btn {
     margin: 0;
 }
+
+/* Blog Detail Page */
+.blog-detail {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+    margin-top: 20px;
+}
+
+.post-cover {
+    margin-bottom: 20px;
+}
+
+.cover-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+}
+
+.blog-detail h1 {
+    font-size: 2.5em;
+    color: var(--dark-bg);
+    margin-bottom: 20px;
+}
+
+.blog-detail .meta {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.blog-detail .meta span {
+    margin-right: 15px;
+}
+
+.blog-detail .content.blog-content {
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: var(--text-color);
+}
+
+.blog-detail .content.blog-content p {
+    margin-bottom: 20px;
+}
+
+.blog-detail .content.blog-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.blog-detail .content.blog-content h2 {
+    font-size: 1.8em;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: var(--dark-bg);
+}
+
+.blog-detail .content.blog-content h3 {
+    font-size: 1.5em;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    color: var(--dark-bg);
+}
+
+.blog-detail .content.blog-content ul, 
+.blog-detail .content.blog-content ol {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.blog-detail .content.blog-content li {
+    margin-bottom: 10px;
+}
+
+.blog-detail .content.blog-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.blog-detail .content.blog-content table, 
+.blog-detail .content.blog-content th, 
+.blog-detail .content.blog-content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.blog-detail .content.blog-content th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+.blog-detail .navigation {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.blog-detail .navigation .btn {
+    margin: 0;
+}
+
+/* Admin Table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f2f2f2;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Blog Detail Page */
+.blog-detail {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+    margin-top: 20px;
+}
+
+.post-cover {
+    margin-bottom: 20px;
+}
+
+.cover-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+}
+
+.blog-detail h1 {
+    font-size: 2.5em;
+    color: var(--dark-bg);
+    margin-bottom: 20px;
+}
+
+.blog-detail .meta {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.blog-detail .meta span {
+    margin-right: 15px;
+}
+
+.blog-detail .content.blog-content {
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: var(--text-color);
+}
+
+.blog-detail .content.blog-content p {
+    margin-bottom: 20px;
+}
+
+.blog-detail .content.blog-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.blog-detail .content.blog-content h2 {
+    font-size: 1.8em;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: var(--dark-bg);
+}
+
+.blog-detail .content.blog-content h3 {
+    font-size: 1.5em;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    color: var(--dark-bg);
+}
+
+.blog-detail .content.blog-content ul, 
+.blog-detail .content.blog-content ol {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.blog-detail .content.blog-content li {
+    margin-bottom: 10px;
+}
+
+.blog-detail .content.blog-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.blog-detail .content.blog-content table, 
+.blog-detail .content.blog-content th, 
+.blog-detail .content.blog-content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.blog-detail .content.blog-content th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+.blog-detail .navigation {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.blog-detail .navigation .btn {
+    margin: 0;
+}
+
+/* Admin Table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f2f2f2;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-control-file {
+    padding: 8px 0;
+}
+
+.text-danger {
+    color: #dc3545;
+    font-size: 0.9em;
+}

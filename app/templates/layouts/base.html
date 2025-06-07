@@ -60,7 +60,8 @@
         </div>
 
         <!-- Main Slider Banner -->
-        {% if banners and banners|length > 0 %}
+        {% if not request.path.startswith('/blog') %} {% if banners and
+        banners|length > 0 %}
         <div class="slider-container">
             <div class="main-slider">
                 {% for banner in banners %}
@@ -100,17 +101,6 @@
                                 href="{{ url_for('main.pricing') }}"
                                 class="btn btn-outline-light btn-lg"
                                 >Khám Phá Dịch Vụ</a
-                            >
-                            {% elif request.endpoint == 'blog.index' %}
-                            <a
-                                href="{{ url_for('blog.index') }}"
-                                class="btn btn-primary btn-lg me-3"
-                                >Đọc Bài Viết Mới</a
-                            >
-                            <a
-                                href="{{ url_for('main.contact') }}"
-                                class="btn btn-outline-light btn-lg"
-                                >Liên Hệ</a
                             >
                             {% elif request.endpoint == 'main.pricing' %}
                             <a
@@ -307,7 +297,7 @@
                 {% endif %}
             </div>
         </div>
-        {% endif %}
+        {% endif %} {% endif %}
 
         <div class="container">
             {% with messages = get_flashed_messages(with_categories=true) %} {%

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from app import db
 from app.models.user import User
@@ -20,6 +20,10 @@ def admin_required(f):
             return redirect(url_for('main.home'))
         return f(*args, **kwargs)
     return decorated_function
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @admin.route('/dashboard')
 @login_required
@@ -45,11 +49,11 @@ def manage_banners():
                 flash('Vui lòng chọn hình ảnh banner.', 'error')
                 return redirect(url_for('admin.manage_banners'))
             filename = secure_filename(file.filename)
-            file_path = os.path.join('app/static/uploads', filename)
-            os.makedirs('app/static/uploads', exist_ok=True)
+            file_path = os.path.join('app/static/uploads/banners', filename)
+            os.makedirs('app/static/uploads/banners', exist_ok=True)
             file.save(file_path)
             banner = Banner(
-                image_url=f'/static/uploads/{filename}', 
+                image_url=f'/static/uploads/banners/{filename}', 
                 title=form.title.data, 
                 description=form.description.data
             )
@@ -73,14 +77,14 @@ def edit_banner(id):
             if form.image.data:
                 file = form.image.data
                 filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads', filename)
-                os.makedirs('app/static/uploads', exist_ok=True)
+                file_path = os.path.join('app/static/uploads/banners', filename)
+                os.makedirs('app/static/uploads/banners', exist_ok=True)
                 file.save(file_path)
                 if banner.image_url and banner.image_url != '/static/uploads/default.jpg':
-                    old_file = os.path.join('app/static/uploads', banner.image_url.lstrip('/static/uploads/'))
+                    old_file = os.path.join('app', banner.image_url.lstrip('/'))
                     if os.path.exists(old_file):
                         os.remove(old_file)
-                banner.image_url = f'/static/uploads/{filename}'
+                banner.image_url = f'/static/uploads/banners/{filename}'
             banner.title = form.title.data
             banner.description = form.description.data
             db.session.commit()
@@ -97,7 +101,7 @@ def delete_banner(id):
     banner = Banner.query.get_or_404(id)
     try:
         if banner.image_url and banner.image_url != '/static/uploads/default.jpg':
-            file_path = os.path.join('app/static/uploads', banner.image_url.lstrip('/static/uploads/'))
+            file_path = os.path.join('app', banner.image_url.lstrip('/'))
             if os.path.exists(file_path):
                 os.remove(file_path)
         db.session.delete(banner)
@@ -107,10 +111,17 @@ def delete_banner(id):
         flash(f'Có lỗi khi xóa banner: {str(e)}', 'error')
     return redirect(url_for('admin.manage_banners'))
 
-@admin.route('/posts', methods=['GET', 'POST'])
+@admin.route('/posts', methods=['GET'])
 @login_required
 @admin_required
 def manage_posts():
+    posts = Post.query.order_by(Post.created_at.desc()).all()
+    return render_template('admin/posts.html', posts=posts)
+
+@admin.route('/posts/add', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_post():
     form = PostForm()
     if form.validate_on_submit():
         try:
@@ -122,18 +133,17 @@ def manage_posts():
             if form.image.data:
                 file = form.image.data
                 filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads', filename)
-                os.makedirs('app/static/uploads', exist_ok=True)
+                file_path = os.path.join('app/static/uploads/posts', filename)
+                os.makedirs('app/static/uploads/posts', exist_ok=True)
                 file.save(file_path)
-                post.image_url = f'/static/uploads/{filename}'
+                post.image_url = f'/static/uploads/posts/{filename}'
             db.session.add(post)
             db.session.commit()
             flash('Bài viết đã được thêm thành công!', 'success')
             return redirect(url_for('admin.manage_posts'))
         except Exception as e:
             flash(f'Có lỗi khi thêm bài viết: {str(e)}', 'error')
-    posts = Post.query.all()
-    return render_template('admin/posts.html', form=form, posts=posts)
+    return render_template('admin/post_form.html', form=form, title='Thêm Bài Viết')
 
 @admin.route('/posts/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -148,29 +158,29 @@ def edit_post(id):
             if form.image.data:
                 file = form.image.data
                 filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads', filename)
-                os.makedirs('app/static/uploads', exist_ok=True)
+                file_path = os.path.join('app/static/uploads/posts', filename)
+                os.makedirs('app/static/uploads/posts', exist_ok=True)
                 file.save(file_path)
                 if post.image_url and post.image_url != '/static/uploads/default.jpg':
-                    old_file = os.path.join('app/static/uploads', post.image_url.lstrip('/static/uploads/'))
+                    old_file = os.path.join('app', post.image_url.lstrip('/'))
                     if os.path.exists(old_file):
                         os.remove(old_file)
-                post.image_url = f'/static/uploads/{filename}'
+                post.image_url = f'/static/uploads/posts/{filename}'
             db.session.commit()
             flash('Bài viết đã được cập nhật!', 'success')
             return redirect(url_for('admin.manage_posts'))
         except Exception as e:
             flash(f'Có lỗi khi cập nhật bài viết: {str(e)}', 'error')
-    return render_template('admin/edit_post.html', form=form, post=post)
+    return render_template('admin/post_form.html', form=form, title='Sửa Bài Viết', post=post)
 
-@admin.route('/posts/delete/<int:id>')
+@admin.route('/posts/delete/<int:id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_post(id):
     post = Post.query.get_or_404(id)
     try:
         if post.image_url and post.image_url != '/static/uploads/default.jpg':
-            file_path = os.path.join('app/static/uploads', post.image_url.lstrip('/static/uploads/'))
+            file_path = os.path.join('app', post.image_url.lstrip('/'))
             if os.path.exists(file_path):
                 os.remove(file_path)
         db.session.delete(post)
@@ -179,6 +189,22 @@ def delete_post(id):
     except Exception as e:
         flash(f'Có lỗi khi xóa bài viết: {str(e)}', 'error')
     return redirect(url_for('admin.manage_posts'))
+
+@admin.route('/upload_image', methods=['POST'])
+@login_required
+@admin_required
+def upload_image():
+    if 'upload' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    file = request.files['upload']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join('app/static/uploads/posts', filename)
+        os.makedirs('app/static/uploads/posts', exist_ok=True)
+        file.save(file_path)
+        url = f'/static/uploads/posts/{filename}'
+        return jsonify({'url': url})
+    return jsonify({'error': 'Invalid file type'}), 400
 
 @admin.route('/contact', methods=['GET', 'POST'])
 @login_required

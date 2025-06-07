@@ -1,42 +1,29 @@
 {% extends "layouts/base.html" %} {% block title %}Bảng Giá - HoagART{% endblock
 %} {% block content %}
-<!-- Nội dung chính -->
 <div class="container">
     <div class="pricing-section">
         <h2>Bảng Giá Dịch Vụ</h2>
         <p>Khám phá các gói dịch vụ phù hợp với nhu cầu của bạn tại HoagART.</p>
+        {% if pricings %}
         <div class="pricing-grid">
-            <div class="pricing-card">
-                <h3>Gói Chân Dung</h3>
+            {% for prc in pricings %}
+            <div class="pricing-card {% if prc.featured %}featured{% endif %}">
+                <h3>{{ prc.name }}</h3>
+                {% if prc.features %}
                 <ul>
-                    <li>2 giờ chụp ảnh</li>
-                    <li>20 ảnh chỉnh sửa</li>
-                    <li>Địa điểm tùy chọn</li>
+                    {% for feature in prc.features.split('\n') %}
+                    <li>{{ feature }}</li>
+                    {% endfor %}
                 </ul>
-                <p class="price">2.500.000 VNĐ</p>
+                {% endif %}
+                <p class="price">{{ prc.price }} VNĐ</p>
                 <a href="{{ url_for('main.contact') }}" class="btn">Đặt Ngay</a>
             </div>
-            <div class="pricing-card featured">
-                <h3>Gói Sự Kiện</h3>
-                <ul>
-                    <li>4 giờ chụp ảnh</li>
-                    <li>50 ảnh chỉnh sửa</li>
-                    <li>Báo cáo sự kiện</li>
-                </ul>
-                <p class="price">5.000.000 VNĐ</p>
-                <a href="{{ url_for('main.contact') }}" class="btn">Đặt Ngay</a>
-            </div>
-            <div class="pricing-card">
-                <h3>Gói Thương Mại</h3>
-                <ul>
-                    <li>6 giờ chụp ảnh</li>
-                    <li>100 ảnh chỉnh sửa</li>
-                    <li>Hỗ trợ sáng tạo</li>
-                </ul>
-                <p class="price">8.000.000 VNĐ</p>
-                <a href="{{ url_for('main.contact') }}" class="btn">Đặt Ngay</a>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <p>Chưa có gói dịch vụ nào. Vui lòng liên hệ để biết thêm chi tiết!</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

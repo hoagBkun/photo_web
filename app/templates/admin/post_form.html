@@ -1,0 +1,50 @@
+{% extends "layouts/base.html" %} {% block title %}{{ title }} - HoagART{%
+endblock %} {% block content %}
+<div class="container">
+    <h2>{{ title }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <label for="title">{{ form.title.label }}</label>
+            {{ form.title(class="form-control") }} {% for error in
+            form.title.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="content">{{ form.content.label }}</label>
+            {{ form.content(class="form-control", id="editor") }} {% for error
+            in form.content.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="image">{{ form.image.label }}</label>
+            {{ form.image(class="form-control-file") }} {% for error in
+            form.image.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %} {% if post and post.image_url %}
+            <p>
+                Ảnh bìa hiện tại:
+                <img
+                    src="{{ post.image_url }}"
+                    alt="Cover"
+                    style="max-width: 200px; margin-top: 10px"
+                />
+            </p>
+            {% endif %}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
+
+<!-- CKEditor -->
+<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace("editor", {
+        height: 400,
+        filebrowserUploadUrl: '{{ url_for("admin.upload_image") }}',
+        filebrowserUploadMethod: "form",
+    });
+</script>
+{% endblock %}
