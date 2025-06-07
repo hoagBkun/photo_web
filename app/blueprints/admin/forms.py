@@ -12,6 +12,7 @@ class BannerForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Tiêu đề', validators=[DataRequired()])
     content = TextAreaField('Nội dung', validators=[DataRequired()])
+    image = FileField('Hình ảnh bài viết', validators=[Optional()])
     submit = SubmitField('Lưu')
 
 class ContactInfoForm(FlaskForm):

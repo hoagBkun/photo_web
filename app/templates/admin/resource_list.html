@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %} {% block content %}
+<div class="container mt-5">
+    <h2>{{ title }}</h2>
+    <a
+        href="{{ url_for('admin.create_resource', resource_name=resource_name) }}"
+        class="btn btn-primary mb-3"
+        >Create New</a
+    >
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                {% for field in display_fields %}
+                <th>{{ field.capitalize() }}</th>
+                {% endfor %}
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                {% for field in display_fields %}
+                <td>{{ item[field] if item[field] is not none else 'N/A' }}</td>
+                {% endfor %}
+                <td>
+                    <a
+                        href="{{ url_for('admin.edit_resource', resource_name=resource_name, id=item.id) }}"
+                        class="btn btn-sm btn-warning"
+                        >Edit</a
+                    >
+                    <form
+                        action="{{ url_for('admin.delete_resource', resource_name=resource_name, id=item.id) }}"
+                        method="POST"
+                        style="display: inline"
+                    >
+                        <button
+                            type="submit"
+                            class="btn btn-sm btn-danger"
+                            onclick="return confirm('Are you sure?')"
+                        >
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

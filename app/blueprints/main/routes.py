@@ -10,19 +10,13 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def home():
-    banners = Banner.query.order_by(Banner.created_at.desc()).all()  # Lấy danh sách banner
+    banners = Banner.query.order_by(Banner.created_at.desc()).all()
     return render_template('main/home.html', banners=banners)
 
 @main.route('/introduce')
 def introduce():
     banners = Banner.query.order_by(Banner.created_at.desc()).all()
     return render_template('main/introduce.html', banners=banners)
-
-@main.route('/blog')
-@main.route('/blog/')
-def blog():
-    banners = Banner.query.order_by(Banner.created_at.desc()).all()
-    return render_template('main/blog.html', banners=banners)
 
 @main.route('/pricing')
 def pricing():
@@ -52,7 +46,7 @@ def update_profile():
     new_address = request.form['address']
 
     # Kiểm tra trùng username (trừ chính người dùng hiện tại)
-    if new_username != user.username:  # Chỉ kiểm tra nếu username thay đổi
+    if new_username != user.username:
         existing_user = User.query.filter_by(username=new_username).first()
         if existing_user and existing_user.id != user.id:
             flash('Tên người dùng đã tồn tại. Vui lòng chọn tên khác.', 'error')
@@ -69,10 +63,8 @@ def update_profile():
         file = request.files['avatar']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            # Đảm bảo thư mục avatars tồn tại
             os.makedirs('app/static/avatars', exist_ok=True)
             file.save(os.path.join('app/static/avatars', filename))
-            # Xóa avatar cũ nếu không phải default
             if user.avatar != 'default_avatar.png':
                 old_avatar_path = os.path.join('app/static/avatars', user.avatar)
                 if os.path.exists(old_avatar_path):
@@ -81,7 +73,6 @@ def update_profile():
 
     db.session.commit()
     flash('Thông tin cá nhân đã được cập nhật thành công!', 'success')
-    # Thêm timestamp để tránh cache ảnh trên navbar
     return redirect(url_for('main.profile', _=int(os.path.getmtime(os.path.join('app/static/avatars', user.avatar))) if user.avatar != 'default_avatar.png' else 0))
 
 def allowed_file(filename):

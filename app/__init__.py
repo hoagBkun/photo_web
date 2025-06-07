@@ -26,10 +26,12 @@ def create_app():
     from app.blueprints.main.routes import main
     from app.blueprints.auth.routes import auth
     from app.blueprints.admin.routes import admin
+    from app.blueprints.blog.routes import blog_bp
 
     app.register_blueprint(main)
     app.register_blueprint(auth, url_prefix='/auth')
     app.register_blueprint(admin, url_prefix='/admin')
+    app.register_blueprint(blog_bp, url_prefix='/blog')
 
     # In danh sách route để debug
     print(app.url_map)
