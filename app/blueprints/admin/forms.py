@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, TextAreaField, BooleanField, SubmitField, FloatField
-from wtforms.validators import DataRequired, Email, Optional, Length
+from wtforms.validators import DataRequired, Email, Optional, Length, URL
 
 class BannerForm(FlaskForm):
     image = FileField('Hình ảnh Banner', validators=[DataRequired()])
@@ -40,4 +40,37 @@ class PricingPageForm(FlaskForm):
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=200)])
     description = TextAreaField('Mô tả', validators=[DataRequired()])
     show_banner = BooleanField('Hiển thị Banner', default=True)
+    submit = SubmitField('Lưu')
+
+class IntroSectionForm(FlaskForm):
+    text = TextAreaField('Văn bản', validators=[DataRequired(), Length(max=500)])
+    cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
+    cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
+    image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    submit = SubmitField('Lưu')
+
+class PortfolioItemForm(FlaskForm):
+    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
+    image = FileField('Hình ảnh', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    submit = SubmitField('Lưu')
+
+class ServiceCardForm(FlaskForm):
+    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Mô tả', validators=[DataRequired(), Length(max=500)])
+    image = FileField('Hình ảnh', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
+    cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
+    submit = SubmitField('Lưu')
+
+class TestimonialForm(FlaskForm):
+    content = TextAreaField('Nội dung', validators=[DataRequired(), Length(max=500)])
+    author = StringField('Tác giả', validators=[DataRequired(), Length(max=100)])
+    submit = SubmitField('Lưu')
+
+class BlogCardForm(FlaskForm):
+    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Mô tả', validators=[DataRequired(), Length(max=500)])
+    image = FileField('Hình ảnh', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
+    cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
     submit = SubmitField('Lưu')

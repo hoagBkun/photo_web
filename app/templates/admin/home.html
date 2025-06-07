@@ -1,0 +1,352 @@
+{% extends "admin/base.html" %} {% block title %}Quản lý Trang Chủ - HoagART{%
+endblock %} {% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Quản lý Trang Chủ</h1>
+
+    <!-- Intro Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Phần Giới Thiệu</h5>
+            <form method="POST" enctype="multipart/form-data">
+                {{ intro_form.hidden_tag() }}
+                <div class="mb-3">
+                    <label for="{{ intro_form.text.id }}" class="form-label"
+                        >{{ intro_form.text.label }}</label
+                    >
+                    {{ intro_form.text(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ intro_form.image.id }}" class="form-label"
+                        >{{ intro_form.image.label }}</label
+                    >
+                    {{ intro_form.image(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ intro_form.cta_text.id }}" class="form-label"
+                        >{{ intro_form.cta_text.label }}</label
+                    >
+                    {{ intro_form.cta_text(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ intro_form.cta_url.id }}" class="form-label"
+                        >{{ intro_form.cta_url.label }}</label
+                    >
+                    {{ intro_form.cta_url(class="form-control") }}
+                </div>
+                {{ intro_form.submit(class="btn btn-primary") }}
+            </form>
+            {% if intro %}
+            <div class="mt-3">
+                <p><strong>Nội dung hiện tại:</strong> {{ intro.text }}</p>
+                <p>
+                    <strong>Hình ảnh:</strong>
+                    <img
+                        src="{{ intro.image_url }}"
+                        alt="Intro Image"
+                        style="max-width: 100px"
+                    />
+                </p>
+                <p>
+                    <strong>CTA:</strong> {{ intro.cta_text }} ({{ intro.cta_url
+                    }})
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Portfolio Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Portfolio Nổi Bật</h5>
+            <form method="POST" enctype="multipart/form-data">
+                {{ portfolio_form.hidden_tag() }}
+                <div class="mb-3">
+                    <label
+                        for="{{ portfolio_form.title.id }}"
+                        class="form-label"
+                        >{{ portfolio_form.title.label }}</label
+                    >
+                    {{ portfolio_form.title(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label
+                        for="{{ portfolio_form.image.id }}"
+                        class="form-label"
+                        >{{ portfolio_form.image.label }}</label
+                    >
+                    {{ portfolio_form.image(class="form-control") }}
+                </div>
+                {{ portfolio_form.submit(class="btn btn-primary") }}
+            </form>
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Hình ảnh</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for portfolio in portfolios %}
+                    <tr>
+                        <td>{{ portfolio.title }}</td>
+                        <td>
+                            <img
+                                src="{{ portfolio.image_url }}"
+                                alt="{{ portfolio.title }}"
+                                style="max-width: 100px"
+                            />
+                        </td>
+                        <td>
+                            <form
+                                action="{{ url_for('admin.delete_home_item', model='portfolio', id=portfolio.id) }}"
+                                method="POST"
+                                style="display: inline"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Dịch Vụ</h5>
+            <form method="POST" enctype="multipart/form-data">
+                {{ service_form.hidden_tag() }}
+                <div class="mb-3">
+                    <label for="{{ service_form.title.id }}" class="form-label"
+                        >{{ service_form.title.label }}</label
+                    >
+                    {{ service_form.title(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label
+                        for="{{ service_form.description.id }}"
+                        class="form-label"
+                        >{{ service_form.description.label }}</label
+                    >
+                    {{ service_form.description(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ service_form.image.id }}" class="form-label"
+                        >{{ service_form.image.label }}</label
+                    >
+                    {{ service_form.image(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label
+                        for="{{ service_form.cta_text.id }}"
+                        class="form-label"
+                        >{{ service_form.cta_text.label }}</label
+                    >
+                    {{ service_form.cta_text(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label
+                        for="{{ service_form.cta_url.id }}"
+                        class="form-label"
+                        >{{ service_form.cta_url.label }}</label
+                    >
+                    {{ service_form.cta_url(class="form-control") }}
+                </div>
+                {{ service_form.submit(class="btn btn-primary") }}
+            </form>
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Mô tả</th>
+                        <th>Hình ảnh</th>
+                        <th>CTA</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                    <tr>
+                        <td>{{ service.title }}</td>
+                        <td>{{ service.description }}</td>
+                        <td>
+                            <img
+                                src="{{ service.image_url }}"
+                                alt="{{ service.title }}"
+                                style="max-width: 100px"
+                            />
+                        </td>
+                        <td>{{ service.cta_text }} ({{ service.cta_url }})</td>
+                        <td>
+                            <form
+                                action="{{ url_for('admin.delete_home_item', model='service', id=service.id) }}"
+                                method="POST"
+                                style="display: inline"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Testimonial Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Đánh Giá Khách Hàng</h5>
+            <form method="POST">
+                {{ testimonial_form.hidden_tag() }}
+                <div class="mb-3">
+                    <label
+                        for="{{ testimonial_form.content.id }}"
+                        class="form-label"
+                        >{{ testimonial_form.content.label }}</label
+                    >
+                    {{ testimonial_form.content(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label
+                        for="{{ testimonial_form.author.id }}"
+                        class="form-label"
+                        >{{ testimonial_form.author.label }}</label
+                    >
+                    {{ testimonial_form.author(class="form-control") }}
+                </div>
+                {{ testimonial_form.submit(class="btn btn-primary") }}
+            </form>
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Nội dung</th>
+                        <th>Tác giả</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for testimonial in testimonials %}
+                    <tr>
+                        <td>{{ testimonial.content }}</td>
+                        <td>{{ testimonial.author }}</td>
+                        <td>
+                            <form
+                                action="{{ url_for('admin.delete_home_item', model='testimonial', id=testimonial.id) }}"
+                                method="POST"
+                                style="display: inline"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Blog Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Bài Viết Nổi Bật</h5>
+            <form method="POST" enctype="multipart/form-data">
+                {{ blog_form.hidden_tag() }}
+                <div class="mb-3">
+                    <label for="{{ blog_form.title.id }}" class="form-label"
+                        >{{ blog_form.title.label }}</label
+                    >
+                    {{ blog_form.title(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label
+                        for="{{ blog_form.description.id }}"
+                        class="form-label"
+                        >{{ blog_form.description.label }}</label
+                    >
+                    {{ blog_form.description(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ blog_form.image.id }}" class="form-label"
+                        >{{ blog_form.image.label }}</label
+                    >
+                    {{ blog_form.image(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ blog_form.cta_text.id }}" class="form-label"
+                        >{{ blog_form.cta_text.label }}</label
+                    >
+                    {{ blog_form.cta_text(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ blog_form.cta_url.id }}" class="form-label"
+                        >{{ blog_form.cta_url.label }}</label
+                    >
+                    {{ blog_form.cta_url(class="form-control") }}
+                </div>
+                {{ blog_form.submit(class="btn btn-primary") }}
+            </form>
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Mô tả</th>
+                        <th>Hình ảnh</th>
+                        <th>CTA</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for blog in blogs %}
+                    <tr>
+                        <td>{{ blog.title }}</td>
+                        <td>{{ blog.description }}</td>
+                        <td>
+                            <img
+                                src="{{ blog.image_url }}"
+                                alt="{{ blog.title }}"
+                                style="max-width: 100px"
+                            />
+                        </td>
+                        <td>{{ blog.cta_text }} ({{ blog.cta_url }})</td>
+                        <td>
+                            <form
+                                action="{{ url_for('admin.delete_home_item', model='blog', id=blog.id) }}"
+                                method="POST"
+                                style="display: inline"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                >
+                                    Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

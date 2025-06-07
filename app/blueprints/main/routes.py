@@ -5,15 +5,31 @@ from app.models.user import User
 from app.models.banner import Banner
 from app.models.pricing import Pricing
 from app.models.pricing_page import PricingPage
+from app.models.home import IntroSection, PortfolioItem, ServiceCard, Testimonial, BlogCard
 import os
 from werkzeug.utils import secure_filename
 
 main = Blueprint('main', __name__)
 
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @main.route('/')
 def home():
-    banners = Banner.query.order_by(Banner.created_at.desc()).limit(3).all()
-    return render_template('main/home.html', banners=banners)
+    intro = IntroSection.query.first()
+    portfolios = PortfolioItem.query.order_by(PortfolioItem.created_at.desc()).limit(10).all()
+    services = ServiceCard.query.all()
+    testimonials = Testimonial.query.all()
+    blogs = BlogCard.query.limit(2).all()
+    banners = Banner.query.order_by(Banner.created_at.desc()).all()
+    return render_template('main/home.html',
+                         intro=intro,
+                         portfolios=portfolios,
+                         services=services,
+                         testimonials=testimonials,
+                         blogs=blogs,
+                         banners=banners)
 
 @main.route('/introduce')
 def introduce():
@@ -29,7 +45,7 @@ def pricing():
 
 @main.route('/contact')
 def contact():
-    banners = Banner.query.order_by(Banner.created_at.desc()).limit(3).all()
+    banners = Banner.query.order_by(Banner.created_at.desc()).all()
     return render_template('main/contact.html', banners=banners)
 
 @main.route('/profile')
@@ -41,35 +57,29 @@ def profile():
 @login_required
 def update_profile():
     user = User.query.get(current_user.id)
-    
     try:
-        # Lấy dữ liệu từ form
         new_username = request.form['username']
         new_email = request.form['email']
         new_phone = request.form['phone']
-        new_address = request.form['address']
+        new_address = request.form.get('address')
 
-        # Kiểm tra trùng username
         if new_username != user.username:
             existing_user = User.query.filter_by(username=new_username).first()
             if existing_user and existing_user.id != user.id:
                 flash('Tên người dùng đã tồn tại. Vui lòng chọn tên khác.', 'error')
                 return redirect(url_for('main.profile'))
 
-        # Kiểm tra trùng email
         if new_email != user.email:
             existing_user = User.query.filter_by(email=new_email).first()
             if existing_user and existing_user.id != user.id:
                 flash('Email đã tồn tại. Vui lòng chọn email khác.', 'error')
                 return redirect(url_for('main.profile'))
 
-        # Cập nhật thông tin
         user.username = new_username
         user.email = new_email
         user.phone = new_phone
         user.address = new_address
 
-        # Xử lý upload avatar
         if 'avatar' in request.files:
             file = request.files['avatar']
             if file and allowed_file(file.filename):
@@ -78,9 +88,9 @@ def update_profile():
                 file_path = os.path.join('app/static/avatars', filename)
                 file.save(file_path)
                 if user.avatar and user.avatar != 'default_avatar.png':
-                    old_avatar_path = os.path.join('app/static/avatars', user.avatar)
-                    if os.path.exists(old_avatar_path):
-                        os.remove(old_avatar_path)
+                    old_file = os.path.join('app/static/avatars', user.avatar)
+                    if os.path.exists(old_file):
+                        os.remove(old_file)
                 user.avatar = filename
 
         db.session.commit()
@@ -88,9 +98,4 @@ def update_profile():
     except Exception as e:
         db.session.rollback()
         flash(f'Lỗi khi cập nhật hồ sơ: {str(e)}', 'error')
-    
     return redirect(url_for('main.profile'))
-
-def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

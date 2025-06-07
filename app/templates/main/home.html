@@ -3,25 +3,17 @@ endblock %} {% block content %}
 <!-- Giới thiệu ngắn -->
 <div class="intro-section container">
     <h2>Về HoagART</h2>
+    {% if intro %}
     <div class="intro-grid">
         <div class="intro-text">
-            <p>
-                HoagART là studio chụp ảnh chuyên nghiệp với hơn 10 năm kinh
-                nghiệm, mang đến những bức ảnh nghệ thuật, chân dung, và thương
-                mại đầy cảm hứng. Chúng tôi cam kết biến mỗi khoảnh khắc của bạn
-                thành kiệt tác.
-            </p>
-            <a href="{{ url_for('main.introduce') }}" class="btn"
-                >Tìm Hiểu Thêm</a
-            >
+            <p>{{ intro.text }}</p>
+            <a href="{{ intro.cta_url }}" class="btn">{{ intro.cta_text }}</a>
         </div>
         <div class="intro-image">
-            <img
-                src="https://images.unsplash.com/photo-1519741497674-411a16c18303"
-                alt="Giới thiệu HoagART"
-            />
+            <img src="{{ intro.image_url }}" alt="Giới thiệu HoagART" />
         </div>
     </div>
+    {% endif %}
 </div>
 
 <!-- Portfolio Slider -->
@@ -29,33 +21,14 @@ endblock %} {% block content %}
     <div class="container">
         <h2>Portfolio Nổi Bật</h2>
         <div class="portfolio-slider">
+            {% for item in portfolios %}
             <div class="portfolio-item">
-                <img
-                    src="https://images.unsplash.com/photo-1519741497674-411a16c18303"
-                    alt="Chân dung"
-                />
+                <img src="{{ item.image_url }}" alt="{{ item.title }}" />
                 <div class="portfolio-overlay">
-                    <h4>Chân Dung</h4>
+                    <h4>{{ item.title }}</h4>
                 </div>
             </div>
-            <div class="portfolio-item">
-                <img
-                    src="https://images.unsplash.com/photo-1524504388940-b79287b459bf"
-                    alt="Sự kiện"
-                />
-                <div class="portfolio-overlay">
-                    <h4>Sự Kiện</h4>
-                </div>
-            </div>
-            <div class="portfolio-item">
-                <img
-                    src="https://images.unsplash.com/photo-1501748338-ffd92897e072"
-                    alt="Thương mại"
-                />
-                <div class="portfolio-overlay">
-                    <h4>Thương Mại</h4>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <a href="{{ url_for('main.pricing') }}" class="btn"
             >Xem Thêm Portfolio</a
@@ -66,55 +39,34 @@ endblock %} {% block content %}
 <!-- Dịch vụ -->
 <div class="services-section container">
     <h2>Dịch Vụ Của Chúng Tôi</h2>
+    {% if services %}
     <div class="services-grid">
+        {% for service in services %}
         <div class="service-card">
-            <img
-                src="https://images.unsplash.com/photo-1516820829777-fb7e44b19f58"
-                alt="Chụp Ảnh Chân Dung"
-            />
-            <h3>Chụp Ảnh Chân Dung</h3>
-            <p>Gói chụp ảnh cá nhân hóa với phong cách nghệ thuật.</p>
-            <a href="{{ url_for('main.pricing') }}" class="btn">Khám Phá</a>
+            <img src="{{ service.image_url }}" alt="{{ service.title }}" />
+            <h3>{{ service.title }}</h3>
+            <p>{{ service.description }}</p>
+            <a href="{{ service.cta_url }}" class="btn"
+                >{{ service.cta_text }}</a
+            >
         </div>
-        <div class="service-card">
-            <img
-                src="https://images.unsplash.com/photo-1530023367843-7b8b6ea6f9ea"
-                alt="Chụp Ảnh Sự Kiện"
-            />
-            <h3>Chụp Ảnh Sự Kiện</h3>
-            <p>Lưu giữ mọi khoảnh khắc quan trọng trong sự kiện.</p>
-            <a href="{{ url_for('main.pricing') }}" class="btn">Khám Phá</a>
-        </div>
-        <div class="service-card">
-            <img
-                src="https://images.unsplash.com/photo-1523278073651-d531b3be238b"
-                alt="Chụp Ảnh Thương Mại"
-            />
-            <h3>Chụp Ảnh Thương Mại</h3>
-            <p>Hình ảnh chất lượng cao cho thương hiệu và sản phẩm.</p>
-            <a href="{{ url_for('main.pricing') }}" class="btn">Khám Phá</a>
-        </div>
+        {% endfor %}
     </div>
+    {% else %}
+    <p>Chưa có dịch vụ nào.</p>
+    {% endif %}
 </div>
 
 <!-- Testimonial -->
 <div class="testimonial-section container">
     <h2>Khách Hàng Nói Gì</h2>
     <div class="testimonial-slider">
+        {% for testimonial in testimonials %}
         <div class="testimonial-item">
-            <p>
-                "HoagART đã tạo ra những bức ảnh tuyệt đẹp cho đám cưới của
-                chúng tôi. Rất chuyên nghiệp!"
-            </p>
-            <h4>Nguyễn Văn A</h4>
+            <p>{{ testimonial.content }}</p>
+            <h4>{{ testimonial.author }}</h4>
         </div>
-        <div class="testimonial-item">
-            <p>
-                "Dịch vụ chụp ảnh thương mại rất ấn tượng, tôi sẽ tiếp tục hợp
-                tác!"
-            </p>
-            <h4>Trần Thị B</h4>
-        </div>
+        {% endfor %}
     </div>
 </div>
 
@@ -122,24 +74,14 @@ endblock %} {% block content %}
 <div class="blog-section container">
     <h2>Bài Viết Nổi Bật</h2>
     <div class="blog-grid">
+        {% for blog in blogs %}
         <div class="blog-card">
-            <img
-                src="https://images.unsplash.com/photo-1516321310765-79d3a23ff1a0"
-                alt="Mẹo chụp ảnh"
-            />
-            <h3>Mẹo Chụp Ảnh Đẹp</h3>
-            <p>Học cách chụp ảnh chuyên nghiệp từ cơ bản đến nâng cao.</p>
-            <a href="{{ url_for('blog.index') }}" class="btn">Đọc Thêm</a>
+            <img src="{{ blog.image_url }}" alt="{{ blog.title }}" />
+            <h3>{{ blog.title }}</h3>
+            <p>{{ blog.description }}</p>
+            <a href="{{ blog.cta_url }}" class="btn">{{ blog.cta_text }}</a>
         </div>
-        <div class="blog-card">
-            <img
-                src="https://images.unsplash.com/photo-1502989642968-94fbdc9eace4"
-                alt="Hậu trường"
-            />
-            <h3>Hậu Trường Chụp Ảnh</h3>
-            <p>Khám phá câu chuyện đằng sau từng shoot ảnh.</p>
-            <a href="{{ url_for('blog.index') }}" class="btn">Đọc Thêm</a>
-        </div>
+        {% endfor %}
     </div>
 </div>
 
@@ -147,7 +89,7 @@ endblock %} {% block content %}
 <div class="chat-icon">
     <a href="{{ url_for('main.contact') }}">
         <img
-            src="https://images.unsplash.com/photo-1524504388940-b79287b459bf"
+            src="{{ url_for('static', filename='images/icon_chat.png') }}"
             alt="Chat"
         />
     </a>
