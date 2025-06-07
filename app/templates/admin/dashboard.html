@@ -1,31 +1,70 @@
-{% extends "admin/base.html" %} {% block title %}Tổng quan - HoagART{% endblock
-%} {% block content %}
+{% extends "admin/base.html" %} {% block title %}Bảng Điều Khiển - HoagART{%
+endblock %} {% block content %}
 <div class="container-fluid">
-    <h1 class="mb-4">Tổng quan</h1>
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Số Banner</h5>
-                    <p class="card-text">{{ banner_count }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Số Bài viết</h5>
-                    <p class="card-text">{{ post_count }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Số Người dùng</h5>
-                    <p class="card-text">{{ user_count }}</p>
-                </div>
-            </div>
+    <h1 class="mb-4">Bảng Điều Khiển Quản Trị</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5>Danh sách Thống kê</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Mục</th>
+                        <th>Số lượng</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Banner</td>
+                        <td>{{ banner_count }}</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Bài viết</td>
+                        <td>{{ post_count }}</td>
+                        <td>
+                            <a
+                                href="{{ url_for('admin.manage_posts') }}"
+                                class="btn btn-sm btn-primary"
+                                >Quản lý</a
+                            >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Người dùng</td>
+                        <td>{{ user_count }}</td>
+                        <td>
+                            <a
+                                href="{{ url_for('admin.manage_users') }}"
+                                class="btn btn-sm btn-primary"
+                                >Quản lý</a
+                            >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Gói dịch vụ</td>
+                        <td>{{ pricing_count }}</td>
+                        <td>
+                            <a
+                                href="{{ url_for('admin.manage_pricing') }}"
+                                class="btn btn-sm btn-primary"
+                                >Quản lý</a
+                            >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Trang Bảng Giá</td>
+                        <td>-</td>
+                        <td>
+                            <a
+                                href="{{ url_for('admin.manage_pricing_page') }}"
+                                class="btn btn-sm btn-primary"
+                                >Quản lý</a
+                            >
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

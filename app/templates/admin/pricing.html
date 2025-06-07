@@ -1,45 +1,35 @@
-{% extends "admin/base.html" %} {% block title %}Quản lý Bài viết - HoagART{%
+{% extends "admin/base.html" %} {% block title %}Quản lý Gói dịch vụ - HoagART{%
 endblock %} {% block content %}
 <div class="container-fluid">
-    <h1 class="mb-4">Quản lý Bài viết</h1>
+    <h1 class="mb-4">Quản lý Gói dịch vụ</h1>
     <div class="card">
         <div class="card-body">
-            <h5>Danh sách Bài viết</h5>
+            <h5>Danh sách Gói dịch vụ</h5>
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Tiêu đề</th>
-                        <th>Ảnh bìa</th>
-                        <th>Ngày tạo</th>
+                        <th>Tên</th>
+                        <th>Giá</th>
+                        <th>Nổi bật</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for post in posts %}
+                    {% for pricing in pricings %}
                     <tr>
-                        <td>{{ post.id }}</td>
-                        <td>{{ post.title }}</td>
-                        <td>
-                            {% if post.image_url %}
-                            <img
-                                src="{{ post.image_url }}"
-                                alt="{{ post.title }}"
-                                width="100"
-                            />
-                            {% else %} - {% endif %}
-                        </td>
-                        <td>
-                            {{ post.created_at.strftime('%d/%m/%Y %H:%M') }}
-                        </td>
+                        <td>{{ pricing.id }}</td>
+                        <td>{{ pricing.name }}</td>
+                        <td>{{ "{:,.0f}".format(pricing.price) }} VNĐ</td>
+                        <td>{{ 'Có' if pricing.featured else 'Không' }}</td>
                         <td>
                             <a
-                                href="{{ url_for('admin.edit_post', id=post.id) }}"
+                                href="{{ url_for('admin.edit_pricing', id=pricing.id) }}"
                                 class="btn btn-sm btn-warning"
                                 >Sửa</a
                             >
                             <form
-                                action="{{ url_for('admin.delete_post', id=post.id) }}"
+                                action="{{ url_for('admin.delete_pricing', id=pricing.id) }}"
                                 method="POST"
                                 style="display: inline"
                             >

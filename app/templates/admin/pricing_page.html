@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %} {% block title %}Quản lý Trang Bảng Giá -
+HoagART{% endblock %} {% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Quản lý Trang Bảng Giá</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5>Thông tin Trang Bảng Giá</h5>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label for="{{ form.title.id }}" class="form-label"
+                        >{{ form.title.label }}</label
+                    >
+                    {{ form.title(class="form-control") }} {% for error in
+                    form.title.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.description.id }}" class="form-label"
+                        >{{ form.description.label }}</label
+                    >
+                    {{ form.description(class="form-control", rows=5) }} {% for
+                    error in form.description.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="mb-3 form-check">
+                    <label
+                        for="{{ form.show_banner.id }}"
+                        class="form-check-label"
+                        >{{ form.show_banner.label }}</label
+                    >
+                    {{ form.show_banner(class="form-check-input") }} {% for
+                    error in form.show_banner.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

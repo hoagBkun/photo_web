@@ -35,3 +35,9 @@ class PricingForm(FlaskForm):
     features = TextAreaField('Tính năng (mỗi dòng 1 tính năng)', validators=[Optional()])
     featured = BooleanField('Gói nổi bật', default=False)
     submit = SubmitField('Lưu')
+
+class PricingPageForm(FlaskForm):
+    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=200)])
+    description = TextAreaField('Mô tả', validators=[DataRequired()])
+    show_banner = BooleanField('Hiển thị Banner', default=True)
+    submit = SubmitField('Lưu')

@@ -1,0 +1,38 @@
+{% extends "layouts/base.html" %} {% block title %}{{ pricing_page.title if
+pricing_page else 'Bảng Giá' }} - HoagART{% endblock %} {% block content %}
+<!-- Nội dung chính -->
+<div class="container">
+    <div class="pricing-section">
+        <h2>
+            {{ pricing_page.title if pricing_page else 'Bảng Giá Dịch Vụ' }}
+        </h2>
+        <p>
+            {{ pricing_page.description if pricing_page else 'Khám phá các gói
+            dịch vụ phù hợp với nhu cầu của bạn tại HoagART.' }}
+        </p>
+        {% if pricings %}
+        <div class="pricing-grid">
+            {% for pricing in pricings %}
+            <div
+                class="pricing-card{% if pricing.featured %} featured{% endif %}"
+            >
+                <h3>{{ pricing.name }}</h3>
+                {% if pricing.features %}
+                <ul>
+                    {% for feature in pricing.features.split('\n') %} {% if
+                    feature.strip() %}
+                    <li>{{ feature.strip() }}</li>
+                    {% endif %} {% endfor %}
+                </ul>
+                {% endif %}
+                <p class="price">{{ "{:,.0f}".format(pricing.price) }} VNĐ</p>
+                <a href="{{ url_for('main.contact') }}" class="btn">Đặt Ngay</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Chưa có gói dịch vụ nào. Vui lòng quay lại sau!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

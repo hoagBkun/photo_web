@@ -26,7 +26,6 @@
                 current_user.is_admin %}
                 <a href="{{ url_for('admin.dashboard') }}">Quản Trị</a>
                 {% endif %}
-                <!-- Icon thông báo -->
                 <div class="notification-icon">
                     <img
                         src="https://cdn-icons-png.flaticon.com/512/1828/1828765.png"
@@ -34,7 +33,6 @@
                     />
                     <span class="badge">3</span>
                 </div>
-                <!-- User Avatar và Dropdown -->
                 <div class="user-menu">
                     <div class="user-dropdown">
                         <img
@@ -59,9 +57,9 @@
             </div>
         </div>
 
-        <!-- Main Slider Banner -->
-        {% if not request.path.startswith('/blog') %} {% if banners and
-        banners|length > 0 %}
+        {% if request.endpoint != 'main.profile' and not
+        request.path.startswith('/blog') %} {% if banners and banners|length > 0
+        %}
         <div class="slider-container">
             <div class="main-slider">
                 {% for banner in banners %}
@@ -76,9 +74,8 @@
                     <div class="slider-caption">
                         <h1 class="display-4">{{ banner.title }}</h1>
                         <p class="lead">{{ banner.description }}</p>
-                        <!-- Tùy chỉnh nút CTA theo trang -->
                         {% if request.endpoint not in ['auth.login',
-                        'auth.register'] %}
+                        'auth.register', 'main.profile'] %}
                         <div class="banner-buttons mt-3">
                             {% if request.endpoint == 'main.home' %}
                             <a
@@ -123,29 +120,6 @@
                                 href="{{ url_for('main.pricing') }}"
                                 class="btn btn-outline-light btn-lg"
                                 >Xem Bảng Giá</a
-                            >
-                            {% elif request.endpoint == 'main.profile' %}
-                            <a
-                                href="{{ url_for('main.profile') }}"
-                                class="btn btn-primary btn-lg me-3"
-                                >Cập Nhật Hồ Sơ</a
-                            >
-                            <a
-                                href="{{ url_for('main.contact') }}"
-                                class="btn btn-outline-light btn-lg"
-                                >Liên Hệ Hỗ Trợ</a
-                            >
-                            {% elif request.endpoint in ['auth.forgot_password',
-                            'auth.reset_password'] %}
-                            <a
-                                href="{{ url_for('auth.login') }}"
-                                class="btn btn-primary btn-lg me-3"
-                                >Đăng Nhập</a
-                            >
-                            <a
-                                href="{{ url_for('auth.register') }}"
-                                class="btn btn-outline-light btn-lg"
-                                >Đăng Ký</a
                             >
                             {% else %}
                             <a
@@ -230,7 +204,6 @@
                     if (i === currentSlide) thumb.classList.add("active");
                 });
 
-                // Cập nhật nhóm thumbnail
                 const thumbnailIndex = Math.floor(
                     currentSlide / thumbnailsPerGroup
                 );
@@ -249,7 +222,6 @@
                 const translateX = -currentThumbnailGroup * thumbnailGroupWidth;
                 thumbnailNavInner.style.transform = `translateX(${translateX}px)`;
 
-                // Ẩn/hiện nút điều hướng
                 document.querySelector(".nav-arrow.prev").style.display =
                     currentThumbnailGroup > 0 ? "block" : "none";
                 document.querySelector(".nav-arrow.next").style.display =
@@ -274,7 +246,6 @@
                 });
             }
 
-            // Khởi tạo
             showSlide(currentSlide);
             moveThumbnails(0);
         </script>
@@ -283,7 +254,8 @@
             <div class="banner-content">
                 <h1>HoagART</h1>
                 <p>Khoảnh khắc đẹp - Nghệ thuật sống</p>
-                {% if request.endpoint not in ['auth.login', 'auth.register'] %}
+                {% if request.endpoint not in ['auth.login', 'auth.register',
+                'main.profile'] %}
                 <div class="banner-buttons">
                     <a href="{{ url_for('main.contact') }}" class="btn"
                         >Đặt Lịch Ngay</a
@@ -350,7 +322,6 @@
             </div>
         </div>
 
-        <!-- Chat Icon -->
         <div class="chat-icon">
             <a href="{{ url_for('main.contact') }}"
                 ><img
@@ -359,7 +330,6 @@
             /></a>
         </div>
 
-        <!-- JavaScript cho Toast Notification -->
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const toasts = document.querySelectorAll(".toast");

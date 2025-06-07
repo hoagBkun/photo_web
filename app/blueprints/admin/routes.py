@@ -5,12 +5,14 @@ from app.models.user import User
 from app.models.post import Post
 from app.models.banner import Banner
 from app.models.contact_info import ContactInfo
-from app.blueprints.admin.forms import BannerForm, PostForm, ContactInfoForm, UserForm
+from app.models.pricing import Pricing
+from app.models.pricing_page import PricingPage
+from app.blueprints.admin.forms import BannerForm, PostForm, ContactInfoForm, UserForm, PricingForm, PricingPageForm
 from functools import wraps
 from werkzeug.utils import secure_filename
 import os
 
-admin = Blueprint('admin', __name__)
+admin_bp = Blueprint('admin', __name__)
 
 def admin_required(f):
     @wraps(f)
@@ -25,19 +27,21 @@ def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@admin.route('/dashboard')
+@admin_bp.route('/dashboard')
 @login_required
 @admin_required
 def dashboard():
     banner_count = Banner.query.count()
     post_count = Post.query.count()
     user_count = User.query.count()
+    pricing_count = Pricing.query.count()
     return render_template('admin/dashboard.html', 
                           banner_count=banner_count, 
                           post_count=post_count, 
-                          user_count=user_count)
+                          user_count=user_count,
+                          pricing_count=pricing_count)
 
-@admin.route('/banners', methods=['GET', 'POST'])
+@admin_bp.route('/banners', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def manage_banners():
@@ -45,8 +49,8 @@ def manage_banners():
     if form.validate_on_submit():
         try:
             file = form.image.data
-            if not file:
-                flash('Vui lòng chọn hình ảnh banner.', 'error')
+            if not file or not allowed_file(file.filename):
+                flash('Vui lòng chọn hình ảnh hợp lệ (jpg, jpeg, png, gif).', 'error')
                 return redirect(url_for('admin.manage_banners'))
             filename = secure_filename(file.filename)
             file_path = os.path.join('app/static/uploads/banners', filename)
@@ -59,14 +63,14 @@ def manage_banners():
             )
             db.session.add(banner)
             db.session.commit()
-            flash('Banner đã được thêm thành công!', 'success')
+            flash('Thêm banner thành công!', 'success')
             return redirect(url_for('admin.manage_banners'))
         except Exception as e:
-            flash(f'Có lỗi khi thêm banner: {str(e)}', 'error')
+            flash(f'Lỗi khi thêm banner: {str(e)}', 'error')
     banners = Banner.query.all()
     return render_template('admin/banners.html', form=form, banners=banners)
 
-@admin.route('/banners/edit/<int:id>', methods=['GET', 'POST'])
+@admin_bp.route('/banners/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_banner(id):
@@ -76,6 +80,9 @@ def edit_banner(id):
         try:
             if form.image.data:
                 file = form.image.data
+                if not allowed_file(file.filename):
+                    flash('Hình ảnh không hợp lệ (jpg, jpeg, png, gif).', 'error')
+                    return redirect(url_for('admin.edit_banner', id=id))
                 filename = secure_filename(file.filename)
                 file_path = os.path.join('app/static/uploads/banners', filename)
                 os.makedirs('app/static/uploads/banners', exist_ok=True)
@@ -88,13 +95,13 @@ def edit_banner(id):
             banner.title = form.title.data
             banner.description = form.description.data
             db.session.commit()
-            flash('Banner đã được cập nhật!', 'success')
+            flash('Cập nhật banner thành công!', 'success')
             return redirect(url_for('admin.manage_banners'))
         except Exception as e:
-            flash(f'Có lỗi khi cập nhật banner: {str(e)}', 'error')
-    return render_template('admin/edit_banner.html', form=form, banner=banner)
+            flash(f'Lỗi khi cập nhật banner: {str(e)}', 'error')
+    return render_template('admin/banners.html', form=form, banner=banner)
 
-@admin.route('/banners/delete/<int:id>')
+@admin_bp.route('/banners/delete/<int:id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_banner(id):
@@ -106,19 +113,19 @@ def delete_banner(id):
                 os.remove(file_path)
         db.session.delete(banner)
         db.session.commit()
-        flash('Banner đã được xóa!', 'success')
+        flash('Xóa banner thành công!', 'success')
     except Exception as e:
-        flash(f'Có lỗi khi xóa banner: {str(e)}', 'error')
+        flash(f'Lỗi khi xóa banner: {str(e)}', 'error')
     return redirect(url_for('admin.manage_banners'))
 
-@admin.route('/posts', methods=['GET'])
+@admin_bp.route('/posts', methods=['GET'])
 @login_required
 @admin_required
 def manage_posts():
     posts = Post.query.order_by(Post.created_at.desc()).all()
     return render_template('admin/posts.html', posts=posts)
 
-@admin.route('/posts/add', methods=['GET', 'POST'])
+@admin_bp.route('/posts/add', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def add_post():
@@ -132,6 +139,9 @@ def add_post():
             )
             if form.image.data:
                 file = form.image.data
+                if not allowed_file(file.filename):
+                    flash('Ảnh bìa không hợp lệ (jpg, jpeg, png, gif).', 'error')
+                    return redirect(url_for('admin.add_post'))
                 filename = secure_filename(file.filename)
                 file_path = os.path.join('app/static/uploads/posts', filename)
                 os.makedirs('app/static/uploads/posts', exist_ok=True)
@@ -139,13 +149,13 @@ def add_post():
                 post.image_url = f'/static/uploads/posts/{filename}'
             db.session.add(post)
             db.session.commit()
-            flash('Bài viết đã được thêm thành công!', 'success')
+            flash('Thêm bài viết thành công!', 'success')
             return redirect(url_for('admin.manage_posts'))
         except Exception as e:
-            flash(f'Có lỗi khi thêm bài viết: {str(e)}', 'error')
-    return render_template('admin/post_form.html', form=form, title='Thêm Bài Viết')
+            flash(f'Lỗi khi thêm bài viết: {str(e)}', 'error')
+    return render_template('admin/post_form.html', form=form, title='Thêm bài viết')
 
-@admin.route('/posts/edit/<int:id>', methods=['GET', 'POST'])
+@admin_bp.route('/posts/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_post(id):
@@ -157,6 +167,9 @@ def edit_post(id):
             post.content = form.content.data
             if form.image.data:
                 file = form.image.data
+                if not allowed_file(file.filename):
+                    flash('Ảnh bìa không hợp lệ (jpg, jpeg, png, gif).', 'error')
+                    return redirect(url_for('admin.edit_post', id=id))
                 filename = secure_filename(file.filename)
                 file_path = os.path.join('app/static/uploads/posts', filename)
                 os.makedirs('app/static/uploads/posts', exist_ok=True)
@@ -167,13 +180,13 @@ def edit_post(id):
                         os.remove(old_file)
                 post.image_url = f'/static/uploads/posts/{filename}'
             db.session.commit()
-            flash('Bài viết đã được cập nhật!', 'success')
+            flash('Cập nhật bài viết thành công!', 'success')
             return redirect(url_for('admin.manage_posts'))
         except Exception as e:
-            flash(f'Có lỗi khi cập nhật bài viết: {str(e)}', 'error')
-    return render_template('admin/post_form.html', form=form, title='Sửa Bài Viết', post=post)
+            flash(f'Lỗi khi cập nhật bài viết: {str(e)}', 'error')
+    return render_template('admin/post_form.html', form=form, title='Sửa bài viết', post=post)
 
-@admin.route('/posts/delete/<int:id>', methods=['POST'])
+@admin_bp.route('/posts/delete/<int:id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_post(id):
@@ -185,28 +198,118 @@ def delete_post(id):
                 os.remove(file_path)
         db.session.delete(post)
         db.session.commit()
-        flash('Bài viết đã được xóa!', 'success')
+        flash('Xóa bài viết thành công!', 'success')
     except Exception as e:
-        flash(f'Có lỗi khi xóa bài viết: {str(e)}', 'error')
-    return redirect(url_for('admin.manage_posts'))
+        flash(f'Lỗi khi xóa bài viết: {str(e)}', 'error')
+    return redirect(url_for('admin.posts'))
 
-@admin.route('/upload_image', methods=['POST'])
+@admin_bp.route('/upload_image', methods=['POST'])
 @login_required
 @admin_required
 def upload_image():
-    if 'upload' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
-    file = request.files['upload']
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded.'}), 400
+    file = request.files['file']
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join('app/static/uploads/posts', filename)
-        os.makedirs('app/static/uploads/posts', exist_ok=True)
-        file.save(file_path)
-        url = f'/static/uploads/posts/{filename}'
-        return jsonify({'url': url})
-    return jsonify({'error': 'Invalid file type'}), 400
+        try:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join('app/static/uploads/posts', filename)
+            os.makedirs('app/static/uploads/posts', exist_ok=True)
+            file.save(file_path)
+            url = f'/static/uploads/posts/{filename}'
+            return jsonify({'image': url})
+        except Exception as e:
+            return jsonify({'error': f'Upload failed: {str(e)}'}), 500
+    return jsonify({'error': 'Invalid file type.'}), 400
 
-@admin.route('/contact', methods=['GET', 'POST'])
+@admin_bp.route('/pricing', methods=['GET'])
+@login_required
+@admin_required
+def manage_pricing():
+    pricings = Pricing.query.all()
+    return render_template('admin/pricing.html', pricings=pricings)
+
+@admin_bp.route('/pricing/add', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_pricing():
+    form = PricingForm()
+    if form.validate_on_submit():
+        try:
+            pricing = Pricing(
+                name=form.name.data,
+                price=form.price.data,
+                description=form.description.data,
+                features=form.features.data,
+                featured=form.featured.data
+            )
+            db.session.add(pricing)
+            db.session.commit()
+            flash('Thêm gói dịch vụ thành công!', 'success')
+            return redirect(url_for('admin.manage_pricing'))
+        except Exception as e:
+            flash(f'Lỗi khi thêm gói dịch vụ: {str(e)}', 'error')
+    return render_template('admin/pricing_form.html', form=form, title='Thêm gói dịch vụ')
+
+@admin_bp.route('/pricing/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_pricing(id):
+    pricing = Pricing.query.get_or_404(id)
+    form = PricingForm(obj=pricing)
+    if form.validate_on_submit():
+        try:
+            pricing.name = form.name.data
+            pricing.price = form.price.data
+            pricing.description = form.description.data
+            pricing.features = form.features.data
+            pricing.featured = form.featured.data
+            db.session.commit()
+            flash('Cập nhật gói dịch vụ thành công!', 'success')
+            return redirect(url_for('admin.manage_pricing'))
+        except Exception as e:
+            flash(f'Lỗi khi cập nhật gói dịch vụ: {str(e)}', 'error')
+    return render_template('admin/pricing_form.html', form=form, title='Sửa gói dịch vụ', pricing=pricing)
+
+@admin_bp.route('/pricing/delete/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_pricing(id):
+    pricing = Pricing.query.get_or_404(id)
+    try:
+        db.session.delete(pricing)
+        db.session.commit()
+        flash('Xóa gói dịch vụ thành công!', 'success')
+    except Exception as e:
+        flash(f'Lỗi khi xóa gói dịch vụ: {str(e)}', 'error')
+    return redirect(url_for('admin.manage_pricing'))
+
+@admin_bp.route('/pricing_page', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def manage_pricing_page():
+    form = PricingPageForm()
+    pricing_page = PricingPage.query.first()
+    if form.validate_on_submit():
+        try:
+            if not pricing_page:
+                pricing_page = PricingPage()
+                db.session.add(pricing_page)
+            pricing_page.title = form.title.data
+            pricing_page.description = form.description.data
+            pricing_page.show_banner = form.show_banner.data
+            db.session.commit()
+            flash('Cập nhật nội dung trang bảng giá thành công!', 'success')
+            return redirect(url_for('admin.manage_pricing_page'))
+        except Exception as e:
+            flash(f'Lỗi khi cập nhật nội dung: {str(e)}', 'error')
+    if pricing_page:
+        form.title.data = pricing_page.title
+        form.description.data = pricing_page.description
+        form.show_banner.data = pricing_page.show_banner
+    return render_template('admin/pricing_page.html', form=form, title='Quản lý Trang Bảng Giá')
+
+@admin_bp.route('/contact', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def manage_contact():
@@ -220,25 +323,27 @@ def manage_contact():
             contact_info.address = form.address.data
             contact_info.phone = form.phone.data
             contact_info.email = form.email.data
+            contact_info.social_links = form.social_links.data
             db.session.commit()
-            flash('Thông tin liên hệ đã được cập nhật!', 'success')
+            flash('Cập nhật thông tin liên hệ thành công!', 'success')
             return redirect(url_for('admin.manage_contact'))
         except Exception as e:
-            flash(f'Có lỗi khi cập nhật thông tin liên hệ: {str(e)}', 'error')
+            flash(f'Lỗi khi cập nhật thông tin liên hệ: {str(e)}', 'error')
     if contact_info:
         form.address.data = contact_info.address
         form.phone.data = contact_info.phone
         form.email.data = contact_info.email
+        form.social_links.data = contact_info.social_links
     return render_template('admin/contact.html', form=form)
 
-@admin.route('/users', methods=['GET'])
+@admin_bp.route('/users', methods=['GET'])
 @login_required
 @admin_required
 def manage_users():
     users = User.query.all()
     return render_template('admin/users.html', users=users)
 
-@admin.route('/users/edit/<int:id>', methods=['GET', 'POST'])
+@admin_bp.route('/users/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_user(id):
@@ -246,25 +351,23 @@ def edit_user(id):
     form = UserForm(obj=user)
     if form.validate_on_submit():
         try:
-            existing_user = User.query.filter_by(username=form.username.data).first()
-            if existing_user and existing_user.id != user.id:
+            if User.query.filter_by(username=form.username.data).first() and User.query.filter_by(username=form.username.data).first().id != user.id:
                 flash('Tên người dùng đã tồn tại.', 'error')
                 return redirect(url_for('admin.edit_user', id=user.id))
-            existing_email = User.query.filter_by(email=form.email.data).first()
-            if existing_email and existing_email.id != user.id:
+            if User.query.filter_by(email=form.email.data).first() and User.query.filter_by(email=form.email.data).first().id != user.id:
                 flash('Email đã tồn tại.', 'error')
                 return redirect(url_for('admin.edit_user', id=user.id))
             user.username = form.username.data
             user.email = form.email.data
             user.is_admin = form.is_admin.data
             db.session.commit()
-            flash('Người dùng đã được cập nhật!', 'success')
+            flash('Cập nhật người dùng thành công!', 'success')
             return redirect(url_for('admin.manage_users'))
         except Exception as e:
-            flash(f'Có lỗi khi cập nhật người dùng: {str(e)}', 'error')
+            flash(f'Lỗi khi cập nhật người dùng: {str(e)}', 'error')
     return render_template('admin/edit_user.html', form=form, user=user)
 
-@admin.route('/users/delete/<int:id>')
+@admin_bp.route('/users/delete/<int:id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_user(id):
@@ -275,7 +378,7 @@ def delete_user(id):
             return redirect(url_for('admin.manage_users'))
         db.session.delete(user)
         db.session.commit()
-        flash('Người dùng đã được xóa!', 'success')
+        flash('Xóa người dùng thành công!', 'success')
     except Exception as e:
-        flash(f'Có lỗi khi xóa người dùng: {str(e)}', 'error')
+        flash(f'Lỗi khi xóa người dùng: {str(e)}', 'error')
     return redirect(url_for('admin.manage_users'))
