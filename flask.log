@@ -347,3 +347,361 @@ INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:19:19] "[35m[1mGET /admin/banners 
 INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:19:19] "[36mGET /admin/banners?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:19:19] "[36mGET /admin/banners?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:19:19] "[36mGET /admin/banners?__debugger__=yes&cmd=resource&f=console.png&s=W8jyeuKPEBZbwIjNWATn HTTP/1.1[0m" 304 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/uploads/home/IMG_2470.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:23:37] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[32mPOST /admin/home/portfolio/delete/2 HTTP/1.1[0m" 302 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:24:00] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug: * Detected change in '/Users/nguyenhoang/Workspaces/photo_web/app/models/post.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 806-783-075
+INFO:werkzeug: * Detected change in '/Users/nguyenhoang/Workspaces/photo_web/app/models/post.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 806-783-075
+INFO:werkzeug: * Detected change in '/Users/nguyenhoang/Workspaces/photo_web/app/blueprints/admin/forms.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 806-783-075
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:02] "[35m[1mGET /admin/home HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:02] "[36mGET /admin/home?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:02] "[36mGET /admin/home?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:02] "GET /admin/home?__debugger__=yes&cmd=resource&f=console.png&s=e5lUIGbP4WOB3LCQ5PaE HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:02] "[36mGET /admin/home?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[33mGET /static/images/icon_chat.png HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:05] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:10] "GET /introduce HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:10] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:10] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:10] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:10] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:10] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:11] "[35m[1mGET /blog/ HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:11] "[36mGET /blog/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:11] "[36mGET /blog/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:11] "GET /blog/?__debugger__=yes&cmd=resource&f=console.png&s=e5lUIGbP4WOB3LCQ5PaE HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:11] "[36mGET /blog/?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:13] "GET /pricing HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:13] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:13] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:13] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:13] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:13] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:14] "[35m[1mGET /blog/ HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:14] "[36mGET /blog/?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:14] "[36mGET /blog/?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:47:14] "[36mGET /blog/?__debugger__=yes&cmd=resource&f=console.png&s=e5lUIGbP4WOB3LCQ5PaE HTTP/1.1[0m" 304 -
+ERROR:flask_migrate:Error: Path doesn't exist: '/Users/nguyenhoang/Workspaces/photo_web/migrations'.  Please use the 'init' command to create a new scripts folder.
+ERROR:flask_migrate:Error: Path doesn't exist: '/Users/nguyenhoang/Workspaces/photo_web/migrations'.  Please use the 'init' command to create a new scripts folder.
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 806-783-075
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:05] "[35m[1mGET /admin/home HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:05] "[36mGET /admin/home?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:05] "[36mGET /admin/home?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:05] "GET /admin/home?__debugger__=yes&cmd=resource&f=console.png&s=JF4F9690uXzC2Vs1jMrg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:05] "[36mGET /admin/home?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "GET /static/uploads/home/IMG_2330.jpg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[33mGET /static/images/icon_chat.png HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "GET /static/uploads/home/IMG_2397.jpg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:09] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:11] "[35m[1mGET /admin/dashboard HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:11] "[36mGET /admin/dashboard?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:11] "[36mGET /admin/dashboard?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:11] "GET /admin/dashboard?__debugger__=yes&cmd=resource&f=console.png&s=JF4F9690uXzC2Vs1jMrg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:11] "[36mGET /admin/dashboard?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:14] "[35m[1mGET /admin/dashboard HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:14] "[36mGET /admin/dashboard?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:14] "[36mGET /admin/dashboard?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:48:14] "[36mGET /admin/dashboard?__debugger__=yes&cmd=resource&f=console.png&s=JF4F9690uXzC2Vs1jMrg HTTP/1.1[0m" 304 -
+ERROR:flask_migrate:Error: Path doesn't exist: '/Users/nguyenhoang/Workspaces/photo_web/migrations'.  Please use the 'init' command to create a new scripts folder.
+ERROR:flask_migrate:Error: Path doesn't exist: '/Users/nguyenhoang/Workspaces/photo_web/migrations'.  Please use the 'init' command to create a new scripts folder.
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 806-783-075
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:32] "GET /admin/dashboard HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:37] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:45] "GET /blog/2 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:45] "GET /static/uploads/posts/IMG_2397.jpg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:47] "GET /blog/1 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:47] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+DEBUG:root:Form submitted: featured_post
+DEBUG:root:Processing featured post form
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[32mPOST /admin/home HTTP/1.1[0m" 302 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:53:49] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+DEBUG:root:Form submitted: featured_post
+DEBUG:root:Processing featured post form
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[32mPOST /admin/home HTTP/1.1[0m" 302 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:01] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:18] "GET /blog/1 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:18] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:18] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:19] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[33mGET /static/images/icon_chat.png HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:23] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:27] "[33mGET /static/images/icon_chat.png HTTP/1.1[0m" 404 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:32] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 00:54:39] "[33mGET /static/images/icon_chat.png HTTP/1.1[0m" 404 -
+INFO:werkzeug: * Detected change in '/Users/nguyenhoang/Workspaces/photo_web/app/blueprints/main/routes.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 806-783-075
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:30] "[33mGET /static/images/icon_chat.png HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:35] "GET /blog/3 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:35] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:35] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:41] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+DEBUG:root:Form submitted: featured_post
+DEBUG:root:Processing featured post form
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[32mPOST /admin/home HTTP/1.1[0m" 302 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:45] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:51] "GET /blog/2 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:51] "[36mGET /static/uploads/posts/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:56] "GET /blog/1 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:56] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[32mPOST /admin/home/featured_post/delete/1 HTTP/1.1[0m" 302 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:01:59] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[32mPOST /admin/home/featured_post/delete/3 HTTP/1.1[0m" 302 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:02] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+DEBUG:root:Form submitted: featured_post
+DEBUG:root:Processing featured post form
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[32mPOST /admin/home HTTP/1.1[0m" 302 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:05] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "GET /blog/2 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/posts/IMG_2397.jpg HTTP/1.1[0m" 304 -
+DEBUG:root:Form submitted: featured_post
+DEBUG:root:Processing featured post form
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[32mPOST /admin/home HTTP/1.1[0m" 302 -
+DEBUG:root:Form submitted: None
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "GET /admin/home HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/posts/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:13] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/home/IMG_2330.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/home/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/home/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/home/IMG_2465.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/home/IMG_2455.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/home/ads1.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/home/ChatGPT_Image_18_46_55_12_thg_4_2025.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[36mGET /static/uploads/posts/IMG_2397.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[33mGET /static/images/icon_chat.png HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:02:21] "[33mGET /static/images/default.jpg HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:03] "GET /introduce HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:03] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:03] "[36mGET /static/uploads/4a0c6b3ea20ad077e2e9b56a0c3e2f24.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:03] "[36mGET /static/uploads/IMG_5138-Enhanced-NR.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:03] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:03] "[36mGET /static/uploads/ad489a559bf68a7210f192ab68280850.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:08] "GET /blog/ HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:08] "[36mGET /static/avatars/IMG_2246.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Jun/2025 01:03:08] "[36mGET /static/uploads/posts/IMG_2397.jpg HTTP/1.1[0m" 304 -

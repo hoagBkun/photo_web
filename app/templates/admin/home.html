@@ -312,74 +312,50 @@
             </table>
 
             <hr />
-            <!-- Blog Form -->
-            <h4>Bài viết</h4>
-            <form method="POST" enctype="multipart/form-data" id="blogForm">
-                <input type="hidden" name="form_name" value="blog" />
-                {{ blog_form.hidden_tag() }}
+            <!-- Featured Post Form -->
+            <h4>Bài viết nổi bật</h4>
+            <form method="POST" id="featuredPostForm">
+                <input type="hidden" name="form_name" value="featured_post" />
+                {{ featured_post_form.hidden_tag() }}
                 <div class="mb-3">
-                    {{ blog_form.title.label(class="form-label") }} {{
-                    blog_form.title(class="form-control", id="blogTitle") }}
-                </div>
-                <div class="mb-3">
-                    {{ blog_form.description.label(class="form-label") }} {{
-                    blog_form.description(class="form-control",
-                    id="blogDescription") }}
-                </div>
-                <div class="mb-3">
-                    {{ blog_form.cta_text.label(class="form-label") }} {{
-                    blog_form.cta_text(class="form-control", id="blogCtaText")
-                    }}
-                </div>
-                <div class="mb-3">
-                    {{ blog_form.cta_url.label(class="form-label") }} {{
-                    blog_form.cta_url(class="form-control", id="blogCtaUrl") }}
-                </div>
-                <div class="mb-3">
-                    {{ blog_form.image_label }} {{
-                    blog_form.image(class="form-control", id="blogImage") }}
+                    {{ featured_post_form.post_id.label(class="form-label") }}
+                    {{ featured_post_form.post_id(class="form-control",
+                    id="featuredPostId",
+                    onchange="previewFeaturedPost(this.value)") }}
                 </div>
                 <button type="submit" name="submit" class="btn btn-primary">
-                    Thêm Blog
+                    Thêm Bài viết nổi bật
                 </button>
             </form>
             <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
                         <th>Tiêu đề</th>
-                        <th>Mô tả</th>
                         <th>Hình ảnh</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for blog in blogs %}
+                    {% for post in featured_posts %}
                     <tr>
-                        <td>{{ blog.title }}</td>
-                        <td>{{ blog.description|truncate(100) }}</td>
+                        <td>{{ post.title }}</td>
                         <td>
                             <img
-                                src="{{ blog.image_url or '/static/images/default.jpg' }}"
-                                alt="{{ blog.title }}"
+                                src="{{ post.image_url or '/static/images/default.jpg' }}"
+                                alt="{{ post.title }}"
                                 width="50"
                             />
                         </td>
                         <td>
-                            <button
-                                class="btn btn-sm btn-warning"
-                                onclick="loadBlogEdit({{ blog.id }})"
-                            >
-                                Sửa
-                            </button>
                             <form
-                                action="{{ url_for('admin.delete_home_item', model='blog', id=blog.id) }}"
+                                action="{{ url_for('admin.delete_home_item', model='featured_post', id=post.id) }}"
                                 method="POST"
                                 style="display: inline"
                             >
                                 <button
                                     type="submit"
                                     class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Bạn có chắc xóa?')"
+                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
                                 >
                                     Xóa
                                 </button>
@@ -413,21 +389,20 @@
                             HoagART' }}
                         </h2>
                         <p>
-                            Chúng tôi cung cấp dịch vụ nhiếp ảnh chuyên nghiệp.
+                            Chúng tôi cung cấp dịch vụ nhiếp ảnh chuyên nghiệp。
                         </p>
                         <a
                             id="previewIntroCta"
                             href="{{ intro.cta_url if intro else '#' }}"
                             class="btn btn-primary"
-                            >{{ intro.cta_text if intro else 'Tìm hiểu thêm'
-                            }}</a
+                            >{{ intro.cta_text if intro else 'Browse More' }}</a
                         >
                     </div>
                     <div class="col-md-6">
                         <img
                             id="previewIntroImage"
                             src="{{ intro.image_url if intro else '/static/images/default.jpg' }}"
-                            alt="Ảnh Giới thiệu"
+                            alt="Intro Image"
                             class="preview-img"
                         />
                     </div>
@@ -459,7 +434,7 @@
 
             <!-- Services Section -->
             <section class="preview-section" id="previewServices">
-                <h2>Dịch vụ</h2>
+                <h2>Services</h2>
                 <div class="row">
                     {% for service in services %}
                     <div class="col-md-4 mb-4">
@@ -488,7 +463,7 @@
 
             <!-- Testimonials Section -->
             <section class="preview-section" id="previewTestimonials">
-                <h2>Đánh giá</h2>
+                <h2>Testimonials</h2>
                 <div class="row">
                     {% for testimonial in testimonials %}
                     <div class="col-md-6 mb-4">
@@ -507,30 +482,62 @@
                 </div>
             </section>
 
-            <!-- Blog Section -->
-            <section class="preview-section" id="previewBlog">
-                <h2>Bài viết nổi bật</h2>
+            <!-- Featured Posts Section -->
+            <section class="preview-section" id="previewFeaturedPosts">
+                <h2>Featured Posts</h2>
                 <div class="row">
-                    {% for blog in blogs %}
+                    {% for post in featured_posts %}
                     <div class="col-md-4 mb-4">
                         <div class="card">
                             <img
-                                src="{{ blog.image_url or '/static/images/default.jpg' }}"
-                                alt="{{ blog.title }}"
+                                src="{{ post.image_url or '/static/images/default.jpg' }}"
+                                alt="{{ post.title }}"
                                 class="card-img-top preview-img"
                             />
                             <div class="card-body">
-                                <h5 class="card-title">{{ blog.title }}</h5>
-                                <p class="card-text">{{ blog.description }}</p>
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">
+                                    {{ post.content|truncate(100)|safe }}
+                                </p>
                                 <a
-                                    href="{{ blog.cta_url }}"
+                                    href="{{ url_for('blog.blog_detail', id=post.id) }}"
                                     class="btn btn-primary"
-                                    >{{ blog.cta_text }}</a
+                                    >Read More</a
                                 >
                             </div>
                         </div>
                     </div>
                     {% endfor %}
+                    <div
+                        id="newFeaturedPostPreview"
+                        class="col-md-4 mb-4"
+                        style="display: none"
+                    >
+                        <div class="card">
+                            <img
+                                id="previewFeaturedPostImage"
+                                src="/static/images/default.jpg"
+                                alt="New Post"
+                                class="card-img-top preview-img"
+                            />
+                            <div class="card-body">
+                                <h5
+                                    id="previewFeaturedPostTitle"
+                                    class="card-title"
+                                ></h5>
+                                <p
+                                    id="previewFeaturedPostContent"
+                                    class="card-text"
+                                ></p>
+                                <a
+                                    id="previewFeaturedPostCta"
+                                    href="#"
+                                    class="btn btn-primary"
+                                    >Read More</a
+                                >
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -546,7 +553,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Sửa Portfolio</h5>
+                    <h5 class="modal-title">Edit Portfolio</h5>
                     <button
                         type="button"
                         class="btn-close"
@@ -559,7 +566,7 @@
                         id="editPortfolioForm"
                         method="POST"
                         enctype="multipart/form-data"
-                        action=""
+                        action="{{ url_for('admin.edit_home_item', model='portfolio', id=0) }}"
                     >
                         <input
                             type="hidden"
@@ -568,7 +575,7 @@
                         />
                         <div class="mb-3">
                             <label for="editPortfolioTitle" class="form-label"
-                                >Tiêu đề</label
+                                >Title</label
                             >
                             <input
                                 type="text"
@@ -580,7 +587,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editPortfolioImage" class="form-label"
-                                >Hình ảnh</label
+                                >Image</label
                             >
                             <input
                                 type="file"
@@ -595,7 +602,7 @@
                             name="submit"
                             class="btn btn-primary"
                         >
-                            Lưu thay đổi
+                            Save Changes
                         </button>
                     </form>
                 </div>
@@ -608,7 +615,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Sửa Dịch vụ</h5>
+                    <h5 class="modal-title">Edit Service</h5>
                     <button
                         type="button"
                         class="btn-close"
@@ -621,7 +628,7 @@
                         id="editServiceForm"
                         method="POST"
                         enctype="multipart/form-data"
-                        action=""
+                        action="{{ url_for('admin.edit_home_item', model='service', id=0) }}"
                     >
                         <input
                             type="hidden"
@@ -630,7 +637,7 @@
                         />
                         <div class="mb-3">
                             <label for="editServiceTitle" class="form-label"
-                                >Tiêu đề</label
+                                >Title</label
                             >
                             <input
                                 type="text"
@@ -644,7 +651,7 @@
                             <label
                                 for="editServiceDescription"
                                 class="form-label"
-                                >Mô tả</label
+                                >Description</label
                             >
                             <textarea
                                 class="form-control"
@@ -655,7 +662,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editServiceCtaText" class="form-label"
-                                >Nút CTA</label
+                                >CTA Button</label
                             >
                             <input
                                 type="text"
@@ -667,7 +674,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editServiceCtaUrl" class="form-label"
-                                >Link CTA</label
+                                >CTA Link</label
                             >
                             <input
                                 type="text"
@@ -679,7 +686,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editServiceImage" class="form-label"
-                                >Hình ảnh</label
+                                >Image</label
                             >
                             <input
                                 type="file"
@@ -694,7 +701,7 @@
                             name="submit"
                             class="btn btn-primary"
                         >
-                            Lưu thay đổi
+                            Save Changes
                         </button>
                     </form>
                 </div>
@@ -707,7 +714,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Sửa Đánh giá</h5>
+                    <h5 class="modal-title">Edit Testimonial</h5>
                     <button
                         type="button"
                         class="btn-close"
@@ -716,7 +723,11 @@
                     ></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editTestimonialForm" method="POST" action="">
+                    <form
+                        id="editTestimonialForm"
+                        method="POST"
+                        action="{{ url_for('admin.edit_home_item', model='testimonial', id=0) }}"
+                    >
                         <input
                             type="hidden"
                             name="testimonial_id"
@@ -726,7 +737,7 @@
                             <label
                                 for="editTestimonialContent"
                                 class="form-label"
-                                >Nội dung</label
+                                >Content</label
                             >
                             <textarea
                                 class="form-control"
@@ -739,7 +750,7 @@
                             <label
                                 for="editTestimonialAuthor"
                                 class="form-label"
-                                >Tác giả</label
+                                >Author</label
                             >
                             <input
                                 type="text"
@@ -754,100 +765,7 @@
                             name="submit"
                             class="btn btn-primary"
                         >
-                            Lưu thay đổi
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Editing Blog -->
-    <div class="modal fade" id="editBlogModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Sửa Bài viết</h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body">
-                    <form
-                        id="editBlogForm"
-                        method="POST"
-                        enctype="multipart/form-data"
-                        action=""
-                    >
-                        <input type="hidden" name="blog_id" id="editBlogId" />
-                        <div class="mb-3">
-                            <label for="editBlogTitle" class="form-label"
-                                >Tiêu đề</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="editBlogTitle"
-                                name="title"
-                                required
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editBlogDescription" class="form-label"
-                                >Mô tả</label
-                            >
-                            <textarea
-                                class="form-control"
-                                id="editBlogDescription"
-                                name="description"
-                                required
-                            ></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editBlogCtaText" class="form-label"
-                                >Nút CTA</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="editBlogCtaText"
-                                name="cta_text"
-                                required
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editBlogCtaUrl" class="form-label"
-                                >Link CTA</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="editBlogCtaUrl"
-                                name="cta_url"
-                                required
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editBlogImage" class="form-label"
-                                >Hình ảnh</label
-                            >
-                            <input
-                                type="file"
-                                class="form-control"
-                                id="editBlogImage"
-                                name="image"
-                                accept="image/*"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            name="submit"
-                            class="btn btn-primary"
-                        >
-                            Lưu thay đổi
+                            Save Changes
                         </button>
                     </form>
                 </div>
@@ -856,7 +774,7 @@
     </div>
 
     <script>
-        // JavaScript for real-time preview and modal handling
+        // JavaScript for initialization and modal handling
         document.addEventListener("DOMContentLoaded", function () {
             // Intro Section Preview
             const introText = document.getElementById("introText");
@@ -878,7 +796,7 @@
             if (introCtaText) {
                 introCtaText.addEventListener("input", () => {
                     previewIntroCta.textContent =
-                        introCtaText.value || "Tìm hiểu thêm";
+                        introCtaText.value || "Browse More";
                 });
             }
             if (introCtaUrl) {
@@ -957,8 +875,7 @@
                                         serviceTitle.value || "New Service"
                                     }</h5>
                                     <p class="card-text">${
-                                        serviceDescription.value ||
-                                        "Description"
+                                        serviceDescription.value || ""
                                     }</p>
                                     <a href="${
                                         serviceCtaUrl.value || "#"
@@ -984,7 +901,7 @@
             const testimonialAuthor =
                 document.getElementById("testimonialAuthor");
             if (testimonialContent && testimonialAuthor) {
-                testimonialContent.addEventListener("input", () => {
+                const updateTestimonialPreview = () => {
                     const newTestimonial = document.createElement("div");
                     newTestimonial.className = "col-md-6 mb-4";
                     newTestimonial.innerHTML = `
@@ -994,188 +911,132 @@
                                 testimonialContent.value || "New Testimonial"
                             }"</p>
                             <h6 class="card-title">${
-                                testimonialAuthor.value || "Author"
+                                testimonialAuthor.value || "Anonymous"
                             }</h6>
                         </div>
                     </div>
                 `;
-                    const testimonialsRow = document
+                    const previewTestimonials = document
                         .getElementById("previewTestimonials")
                         .querySelector(".row");
-                    testimonialsRow.innerHTML = ""; // Clear previous preview
-                    testimonialsRow.appendChild(newTestimonial);
-                });
-                testimonialAuthor.addEventListener("input", () => {
-                    const newTestimonial = document.createElement("div");
-                    newTestimonial.className = "col-md-6 mb-4";
-                    newTestimonial.innerHTML = `
-                    <div class="card">
-                        <div class="card-body">
-                            <p class="card-text">"${
-                                testimonialContent.value || "New Testimonial"
-                            }"</p>
-                            <h6 class="card-title">${
-                                testimonialAuthor.value || "Author"
-                            }</h6>
-                        </div>
-                    </div>
-                `;
-                    const testimonialsRow = document
-                        .getElementById("previewTestimonials")
-                        .querySelector(".row");
-                    testimonialsRow.innerHTML = ""; // Clear previous preview
-                    testimonialsRow.appendChild(newTestimonial);
-                });
-            }
-
-            // Blog Preview
-            const blogTitle = document.getElementById("blogTitle");
-            const blogDescription = document.getElementById("blogDescription");
-            const blogCtaText = document.getElementById("blogCtaText");
-            const blogCtaUrl = document.getElementById("blogCtaUrl");
-            const blogImage = document.getElementById("blogImage");
-            if (blogImage) {
-                blogImage.addEventListener("change", (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const newBlog = document.createElement("div");
-                            newBlog.className = "col-md-4 mb-4";
-                            newBlog.innerHTML = `
-                            <div class="card">
-                                <img src="${e.target.result}" alt="${
-                                blogTitle.value || "New Blog"
-                            }" class="card-img-top preview-img">
-                                <div class="card-body">
-                                    <h5 class="card-title">${
-                                        blogTitle.value || "New Blog"
-                                    }</h5>
-                                    <p class="card-text">${
-                                        blogDescription.value || "Description"
-                                    }</p>
-                                    <a href="${
-                                        blogCtaUrl.value || "#"
-                                    }" class="btn btn-primary">${
-                                blogCtaText.value || "Read More"
-                            }</a>
-                                </div>
-                            </div>
-                        `;
-                            document
-                                .getElementById("previewBlog")
-                                .querySelector(".row")
-                                .appendChild(newBlog);
-                        };
-                        reader.readAsDataURL(file);
+                    const existingPreview =
+                        previewTestimonials.querySelector(".preview-temp");
+                    if (existingPreview) {
+                        previewTestimonials.removeChild(existingPreview);
                     }
-                });
+                    if (testimonialContent.value || testimonialAuthor.value) {
+                        newTestimonial.classList.add("preview-temp");
+                        previewTestimonials.appendChild(newTestimonial);
+                    }
+                };
+                testimonialContent.addEventListener(
+                    "input",
+                    updateTestimonialPreview
+                );
+                testimonialAuthor.addEventListener(
+                    "input",
+                    updateTestimonialPreview
+                );
             }
-
-            // Load Edit Modals
-            window.loadPortfolioEdit = function (id) {
-                fetch(`/admin/home/portfolio/edit/${id}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        document.getElementById("editPortfolioId").value =
-                            data.id;
-                        document.getElementById("editPortfolioTitle").value =
-                            data.title;
-                        document.getElementById(
-                            "editPortfolioForm"
-                        ).action = `/admin/home/portfolio/edit/${id}`;
-                        const modal = new bootstrap.Modal(
-                            document.getElementById("editPortfolioModal")
-                        );
-                        modal.show();
-                        console.log("Portfolio modal loaded:", data);
-                    })
-                    .catch((error) =>
-                        console.error("Error loading portfolio:", error)
-                    );
-            };
-
-            window.loadServiceEdit = function (id) {
-                fetch(`/admin/home/service/edit/${id}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        document.getElementById("editServiceId").value =
-                            data.id;
-                        document.getElementById("editServiceTitle").value =
-                            data.title;
-                        document.getElementById(
-                            "editServiceDescription"
-                        ).value = data.description;
-                        document.getElementById("editServiceCtaText").value =
-                            data.cta_text;
-                        document.getElementById("editServiceCtaUrl").value =
-                            data.cta_url;
-                        document.getElementById(
-                            "editServiceForm"
-                        ).action = `/admin/home/service/edit/${id}`;
-                        const modal = new bootstrap.Modal(
-                            document.getElementById("editServiceModal")
-                        );
-                        modal.show();
-                        console.log("Service modal loaded:", data);
-                    })
-                    .catch((error) =>
-                        console.error("Error loading service:", error)
-                    );
-            };
-
-            window.loadTestimonialEdit = function (id) {
-                fetch(`/admin/home/testimonial/edit/${id}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        document.getElementById("editTestimonialId").value =
-                            data.id;
-                        document.getElementById(
-                            "editTestimonialContent"
-                        ).value = data.content;
-                        document.getElementById("editTestimonialAuthor").value =
-                            data.author;
-                        document.getElementById(
-                            "editTestimonialForm"
-                        ).action = `/admin/home/testimonial/edit/${id}`;
-                        const modal = new bootstrap.Modal(
-                            document.getElementById("editTestimonialModal")
-                        );
-                        modal.show();
-                        console.log("Testimonial modal loaded:", data);
-                    })
-                    .catch((error) =>
-                        console.error("Error loading testimonial:", error)
-                    );
-            };
-
-            window.loadBlogEdit = function (id) {
-                fetch(`/admin/home/blog/edit/${id}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        document.getElementById("editBlogId").value = data.id;
-                        document.getElementById("editBlogTitle").value =
-                            data.title;
-                        document.getElementById("editBlogDescription").value =
-                            data.description;
-                        document.getElementById("editBlogCtaText").value =
-                            data.cta_text;
-                        document.getElementById("editBlogCtaUrl").value =
-                            data.cta_url;
-                        document.getElementById(
-                            "editBlogForm"
-                        ).action = `/admin/home/blog/edit/${id}`;
-                        const modal = new bootstrap.Modal(
-                            document.getElementById("editBlogModal")
-                        );
-                        modal.show();
-                        console.log("Blog modal loaded:", data);
-                    })
-                    .catch((error) =>
-                        console.error("Error loading blog:", error)
-                    );
-            };
         });
+
+        // Load Portfolio Edit Data
+        function loadPortfolioEdit(id) {
+            fetch(`/admin/home/portfolio/edit/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    document.getElementById("editPortfolioId").value = data.id;
+                    document.getElementById("editPortfolioTitle").value =
+                        data.title;
+                    document.getElementById(
+                        "editPortfolioForm"
+                    ).action = `/admin/home/portfolio/edit/${data.id}`;
+                    new bootstrap.Modal(
+                        document.getElementById("editPortfolioModal")
+                    ).show();
+                });
+        }
+
+        // Load Service Edit Data
+        function loadServiceEdit(id) {
+            fetch(`/admin/home/service/edit/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    document.getElementById("editServiceId").value = data.id;
+                    document.getElementById("editServiceTitle").value =
+                        data.title;
+                    document.getElementById("editServiceDescription").value =
+                        data.description;
+                    document.getElementById("editServiceCtaText").value =
+                        data.cta_text;
+                    document.getElementById("editServiceCtaUrl").value =
+                        data.cta_url;
+                    document.getElementById(
+                        "editServiceForm"
+                    ).action = `/admin/home/service/edit/${data.id}`;
+                    new bootstrap.Modal(
+                        document.getElementById("editServiceModal")
+                    ).show();
+                });
+        }
+
+        // Load Testimonial Edit Data
+        function loadTestimonialEdit(id) {
+            fetch(`/admin/home/testimonial/edit/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    document.getElementById("editTestimonialId").value =
+                        data.id;
+                    document.getElementById("editTestimonialContent").value =
+                        data.content;
+                    document.getElementById("editTestimonialAuthor").value =
+                        data.author;
+                    document.getElementById(
+                        "editTestimonialForm"
+                    ).action = `/admin/home/testimonial/edit/${data.id}`;
+                    new bootstrap.Modal(
+                        document.getElementById("editTestimonialModal")
+                    ).show();
+                });
+        }
+
+        // Preview Featured Post
+        function previewFeaturedPost(postId) {
+            if (!postId) {
+                document.getElementById(
+                    "newFeaturedPostPreview"
+                ).style.display = "none";
+                return;
+            }
+            fetch(`/blog/${postId}`, {
+                headers: {
+                    Accept: "application/json",
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    document.getElementById(
+                        "previewFeaturedPostTitle"
+                    ).textContent = data.title;
+                    document.getElementById(
+                        "previewFeaturedPostContent"
+                    ).innerHTML = data.content.substring(0, 100) + "...";
+                    document.getElementById("previewFeaturedPostImage").src =
+                        data.image_url;
+                    document.getElementById(
+                        "previewFeaturedPostCta"
+                    ).href = `/blog/${data.id}`;
+                    document.getElementById(
+                        "newFeaturedPostPreview"
+                    ).style.display = "block";
+                })
+                .catch((error) => {
+                    console.error("Error fetching post:", error);
+                    document.getElementById(
+                        "newFeaturedPostPreview"
+                    ).style.display = "none";
+                });
+        }
     </script>
     {% endblock %}
 </div>

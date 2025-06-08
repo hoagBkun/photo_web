@@ -74,12 +74,17 @@ endblock %} {% block content %}
 <div class="blog-section container">
     <h2>Bài Viết Nổi Bật</h2>
     <div class="blog-grid">
-        {% for blog in blogs %}
+        {% for post in featured_posts %}
         <div class="blog-card">
-            <img src="{{ blog.image_url }}" alt="{{ blog.title }}" />
-            <h3>{{ blog.title }}</h3>
-            <p>{{ blog.description }}</p>
-            <a href="{{ blog.cta_url }}" class="btn">{{ blog.cta_text }}</a>
+            <img
+                src="{{ post.image_url or url_for('static', filename='images/default.jpg') }}"
+                alt="{{ post.title }}"
+            />
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.content|striptags|truncate(100) }}</p>
+            <a href="{{ url_for('blog.blog_detail', id=post.id) }}" class="btn"
+                >Đọc Thêm</a
+            >
         </div>
         {% endfor %}
     </div>

@@ -1,7 +1,9 @@
+
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, TextAreaField, BooleanField, SubmitField, FloatField
+from wtforms import StringField, TextAreaField, BooleanField, SubmitField, FloatField, SelectField
 from wtforms.validators import DataRequired, Email, Optional, Length, URL
+from app.models.post import Post
 
 class BannerForm(FlaskForm):
     image = FileField('Hình ảnh Banner', validators=[DataRequired()])
@@ -67,10 +69,10 @@ class TestimonialForm(FlaskForm):
     author = StringField('Tác giả', validators=[DataRequired(), Length(max=100)])
     submit = SubmitField('Lưu')
 
-class BlogCardForm(FlaskForm):
-    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
-    description = TextAreaField('Mô tả', validators=[DataRequired(), Length(max=500)])
-    image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
-    cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
-    cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
-    submit = SubmitField('Lưu')
+class FeaturedPostForm(FlaskForm):
+    post_id = SelectField('Chọn bài viết', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Thêm vào Bài viết nổi bật')
+
+    def __init__(self, *args, **kwargs):
+        super(FeaturedPostForm, self).__init__(*args, **kwargs)
+        self.post_id.choices = [(post.id, post.title) for post in Post.query.order_by(Post.created_at.desc()).all()]

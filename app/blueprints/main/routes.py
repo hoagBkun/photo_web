@@ -5,7 +5,8 @@ from app.models.user import User
 from app.models.banner import Banner
 from app.models.pricing import Pricing
 from app.models.pricing_page import PricingPage
-from app.models.home import IntroSection, PortfolioItem, ServiceCard, Testimonial, BlogCard
+from app.models.home import IntroSection, PortfolioItem, ServiceCard, Testimonial
+from app.models.post import Post  # Thêm import Post
 import os
 from werkzeug.utils import secure_filename
 
@@ -21,15 +22,15 @@ def home():
     portfolios = PortfolioItem.query.order_by(PortfolioItem.created_at.desc()).limit(10).all()
     services = ServiceCard.query.all()
     testimonials = Testimonial.query.all()
-    blogs = BlogCard.query.limit(2).all()
+    featured_posts = Post.query.filter_by(is_featured=True).limit(2).all()  # Thay BlogCard bằng Post
     banners = Banner.query.order_by(Banner.created_at.desc()).all()
     return render_template('main/home.html',
-                         intro=intro,
-                         portfolios=portfolios,
-                         services=services,
-                         testimonials=testimonials,
-                         blogs=blogs,
-                         banners=banners)
+                           intro=intro,
+                           portfolios=portfolios,
+                           services=services,
+                           testimonials=testimonials,
+                           featured_posts=featured_posts,  # Thay blogs bằng featured_posts
+                           banners=banners)
 
 @main.route('/introduce')
 def introduce():

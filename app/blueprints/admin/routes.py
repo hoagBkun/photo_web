@@ -1,3 +1,4 @@
+# app/blueprints/admin/routes.py
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from app import db
@@ -7,8 +8,8 @@ from app.models.banner import Banner
 from app.models.contact_info import ContactInfo
 from app.models.pricing import Pricing
 from app.models.pricing_page import PricingPage
-from app.models.home import IntroSection, PortfolioItem, ServiceCard, Testimonial, BlogCard
-from app.blueprints.admin.forms import BannerForm, PostForm, ContactInfoForm, UserForm, PricingForm, PricingPageForm, IntroSectionForm, PortfolioItemForm, ServiceCardForm, TestimonialForm, BlogCardForm
+from app.models.home import IntroSection, PortfolioItem, ServiceCard, Testimonial
+from app.blueprints.admin.forms import BannerForm, PostForm, ContactInfoForm, UserForm, PricingForm, PricingPageForm, IntroSectionForm, PortfolioItemForm, ServiceCardForm, TestimonialForm, FeaturedPostForm
 from functools import wraps
 from werkzeug.utils import secure_filename
 import os
@@ -396,7 +397,7 @@ def manage_home():
     portfolio_form = PortfolioItemForm()
     service_form = ServiceCardForm()
     testimonial_form = TestimonialForm()
-    blog_form = BlogCardForm()
+    featured_post_form = FeaturedPostForm()
 
     form_name = request.form.get('form_name')
     logging.debug(f"Form submitted: {form_name}")
@@ -505,41 +506,30 @@ def manage_home():
             flash(f'Lỗi khi thêm đánh giá: {str(e)}', 'error')
             logging.error(f"Testimonial form error: {str(e)}")
 
-    if form_name == 'blog' and blog_form.validate_on_submit() and not request.form.get('blog_id'):
-        logging.debug("Processing blog form")
+    if form_name == 'featured_post' and featured_post_form.validate_on_submit():
+        logging.debug("Processing featured post form")
         try:
-            image_url = '/static/images/default.jpg'
-            if blog_form.image.data:
-                file = blog_form.image.data
-                if allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-                    file_path = os.path.join('app/static/uploads/home', filename)
-                    os.makedirs('app/static/uploads/home', exist_ok=True)
-                    file.save(file_path)
-                    image_url = f'/static/uploads/home/{filename}'
-                else:
-                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
+            post_id = featured_post_form.post_id.data
+            post = Post.query.get_or_404(post_id)
+            if not post.is_featured:
+                if Post.query.filter_by(is_featured=True).count() >= 3:  # Giới hạn 3 bài
+                    flash('Đã đủ 3 bài viết nổi bật!', 'warning')
                     return redirect(url_for('admin.manage_home'))
-            blog = BlogCard(
-                title=blog_form.title.data,
-                description=blog_form.description.data,
-                image_url=image_url,
-                cta_text=blog_form.cta_text.data,
-                cta_url=blog_form.cta_url.data
-            )
-            db.session.add(blog)
-            db.session.commit()
-            flash('Thêm bài viết nổi bật thành công!', 'success')
+                post.is_featured = True
+                db.session.commit()
+                flash('Thêm bài viết nổi bật thành công!', 'success')
+            else:
+                flash('Bài viết này đã được chọn!', 'warning')
             return redirect(url_for('admin.manage_home'))
         except Exception as e:
-            flash(f'Lỗi khi thêm bài viết: {str(e)}', 'error')
-            logging.error(f"Blog form error: {str(e)}")
+            flash(f'Lỗi khi thêm bài viết nổi bật: {str(e)}', 'error')
+            logging.error(f"Featured post form error: {str(e)}")
 
     intro = IntroSection.query.first()
     portfolios = PortfolioItem.query.all()
     services = ServiceCard.query.all()
     testimonials = Testimonial.query.all()
-    blogs = BlogCard.query.all()
+    featured_posts = Post.query.filter_by(is_featured=True).all()
 
     if intro:
         intro_form.text.data = intro.text
@@ -551,12 +541,12 @@ def manage_home():
                           portfolio_form=portfolio_form,
                           service_form=service_form,
                           testimonial_form=testimonial_form,
-                          blog_form=blog_form,
+                          featured_post_form=featured_post_form,
                           intro=intro,
                           portfolios=portfolios,
                           services=services,
                           testimonials=testimonials,
-                          blogs=blogs)
+                          featured_posts=featured_posts)
 
 @admin_bp.route('/home/portfolio/edit/<int:id>', methods=['GET'])
 @login_required
@@ -592,20 +582,6 @@ def get_testimonial(id):
         'id': testimonial.id,
         'content': testimonial.content,
         'author': testimonial.author
-    })
-
-@admin_bp.route('/home/blog/edit/<int:id>', methods=['GET'])
-@login_required
-@admin_required
-def get_blog(id):
-    blog = BlogCard.query.get_or_404(id)
-    return jsonify({
-        'id': blog.id,
-        'title': blog.title,
-        'description': blog.description,
-        'cta_text': blog.cta_text,
-        'cta_url': blog.cta_url,
-        'image_url': blog.image_url
     })
 
 @admin_bp.route('/home/<string:model>/edit/<int:id>', methods=['POST'])
@@ -677,33 +653,6 @@ def edit_home_item(model, id):
                 for field, errors in form.errors.items():
                     for error in errors:
                         flash(f'Lỗi {field}: {error}', 'error')
-        elif model == 'blog':
-            item = BlogCard.query.get_or_404(id)
-            form = BlogCardForm()
-            if form.validate_on_submit():
-                item.title = form.title.data
-                item.description = form.description.data
-                item.cta_text = form.cta_text.data
-                item.cta_url = form.cta_url.data
-                if form.image.data:
-                    file = form.image.data
-                    if allowed_file(file.filename):
-                        filename = secure_filename(file.filename)
-                        file_path = os.path.join('app/static/uploads/home', filename)
-                        os.makedirs('app/static/uploads/home', exist_ok=True)
-                        file.save(file_path)
-                        if item.image_url and item.image_url != '/static/images/default.jpg':
-                            old_file = os.path.join('app', item.image_url.lstrip('/'))
-                            if os.path.exists(old_file):
-                                os.remove(old_file)
-                        item.image_url = f'/static/uploads/home/{filename}'
-                db.session.commit()
-                flash('Cập nhật bài viết thành công!', 'success')
-                return redirect(url_for('admin.manage_home'))
-            else:
-                for field, errors in form.errors.items():
-                    for error in errors:
-                        flash(f'Lỗi {field}: {error}', 'error')
         else:
             flash('Mục không hợp lệ.', 'error')
             return redirect(url_for('admin.manage_home'))
@@ -723,24 +672,28 @@ def delete_home_item(model, id):
                 file_path = os.path.join('app', item.image_url.lstrip('/'))
                 if os.path.exists(file_path):
                     os.remove(file_path)
+            db.session.delete(item)
+            flash('Xóa portfolio thành công!', 'success')
         elif model == 'service':
             item = ServiceCard.query.get_or_404(id)
             if item.image_url and item.image_url != '/static/images/default.jpg':
                 file_path = os.path.join('app', item.image_url.lstrip('/'))
                 if os.path.exists(file_path):
                     os.remove(file_path)
+            db.session.delete(item)
+            flash('Xóa dịch vụ thành công!', 'success')
         elif model == 'testimonial':
             item = Testimonial.query.get_or_404(id)
-        elif model == 'blog':
-            item = BlogCard.query.get_or_404(id)
-            if item.image_url and item.image_url != '/static/images/default.jpg':
-                file_path = os.path.join('app', item.image_url.lstrip('/'))
-                if os.path.exists(file_path):
-                    os.remove(file_path)
+            db.session.delete(item)
+            flash('Xóa đánh giá thành công!', 'success')
+        elif model == 'featured_post':
+            item = Post.query.get_or_404(id)
+            item.is_featured = False
+            db.session.commit()
+            flash('Xóa bài viết nổi bật thành công!', 'success')
         else:
             flash('Mục không hợp lệ.', 'error')
             return redirect(url_for('admin.manage_home'))
-        db.session.delete(item)
         db.session.commit()
         flash('Xóa mục thành công!', 'success')
     except Exception as e:
