@@ -1,85 +1,131 @@
-{% extends "admin/base.html" %} {% block title %}Quản lý Trang Chủ - HoagART{%
-endblock %} {% block content %}
-<div class="container-fluid">
-    <h1 class="mb-4">Quản lý Trang Chủ</h1>
+{% extends "admin/base.html" %} {% block title %}Quản lý Trang Chủ{% endblock %}
+{% block content %}
+<style>
+    body {
+        margin: 0;
+        overflow-x: hidden;
+    }
+    .container-fluid {
+        padding: 0;
+    }
+    .row {
+        margin: 0;
+    }
+    .sidebar {
+        display: none !important;
+    }
+    .content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    .navbar-admin {
+        margin-left: 0 !important;
+        padding: 10px 20px;
+    }
+    .preview-container {
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        height: calc(100vh - 150px);
+        overflow-y: auto;
+    }
+    .form-container {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        height: calc(100vh - 150px);
+        overflow-y: auto;
+    }
+    .preview-header {
+        background-color: #2c3e50;
+        color: white;
+        padding: 15px;
+        text-align: center;
+    }
+    .preview-section {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    .preview-footer {
+        background-color: #2c3e50;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    .preview-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+    .modal-content {
+        border-radius: 8px;
+    }
+    .modal-header {
+        background-color: #2c3e50;
+        color: white;
+    }
+</style>
 
-    <!-- Intro Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>Phần Giới Thiệu</h5>
-            <form method="POST" enctype="multipart/form-data">
+<div class="container-fluid">
+    <h2 class="my-4">Quản lý Trang Chủ</h2>
+    <div class="row">
+        <!-- Form Container -->
+        <div class="col-md-6 form-container">
+            <!-- Intro Section Form -->
+            <h4>Phần Giới thiệu</h4>
+            <form method="POST" enctype="multipart/form-data" id="introForm">
+                <input type="hidden" name="form_name" value="intro" />
                 {{ intro_form.hidden_tag() }}
                 <div class="mb-3">
-                    <label for="{{ intro_form.text.id }}" class="form-label"
-                        >{{ intro_form.text.label }}</label
-                    >
-                    {{ intro_form.text(class="form-control") }}
+                    {{ intro_form.text.label(class="form-label") }} {{
+                    intro_form.text(class="form-control", id="introText") }}
                 </div>
                 <div class="mb-3">
-                    <label for="{{ intro_form.image.id }}" class="form-label"
-                        >{{ intro_form.image.label }}</label
-                    >
-                    {{ intro_form.image(class="form-control") }}
+                    {{ intro_form.cta_text.label(class="form-label") }} {{
+                    intro_form.cta_text(class="form-control", id="introCtaText")
+                    }}
                 </div>
                 <div class="mb-3">
-                    <label for="{{ intro_form.cta_text.id }}" class="form-label"
-                        >{{ intro_form.cta_text.label }}</label
-                    >
-                    {{ intro_form.cta_text(class="form-control") }}
+                    {{ intro_form.cta_url.label(class="form-label") }} {{
+                    intro_form.cta_url(class="form-control", id="introCtaUrl")
+                    }}
                 </div>
                 <div class="mb-3">
-                    <label for="{{ intro_form.cta_url.id }}" class="form-label"
-                        >{{ intro_form.cta_url.label }}</label
-                    >
-                    {{ intro_form.cta_url(class="form-control") }}
+                    {{ intro_form.image.label(class="form-label") }} {{
+                    intro_form.image(class="form-control", id="introImage") }}
                 </div>
-                {{ intro_form.submit(class="btn btn-primary") }}
+                <button type="submit" name="submit" class="btn btn-primary">
+                    Cập nhật Giới thiệu
+                </button>
             </form>
-            {% if intro %}
-            <div class="mt-3">
-                <p><strong>Nội dung hiện tại:</strong> {{ intro.text }}</p>
-                <p>
-                    <strong>Hình ảnh:</strong>
-                    <img
-                        src="{{ intro.image_url }}"
-                        alt="Intro Image"
-                        style="max-width: 100px"
-                    />
-                </p>
-                <p>
-                    <strong>CTA:</strong> {{ intro.cta_text }} ({{ intro.cta_url
-                    }})
-                </p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
 
-    <!-- Portfolio Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>Portfolio Nổi Bật</h5>
-            <form method="POST" enctype="multipart/form-data">
+            <hr />
+            <!-- Portfolio Form -->
+            <h4>Portfolio</h4>
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+                id="portfolioForm"
+            >
+                <input type="hidden" name="form_name" value="portfolio" />
                 {{ portfolio_form.hidden_tag() }}
                 <div class="mb-3">
-                    <label
-                        for="{{ portfolio_form.title.id }}"
-                        class="form-label"
-                        >{{ portfolio_form.title.label }}</label
-                    >
-                    {{ portfolio_form.title(class="form-control") }}
+                    {{ portfolio_form.title.label(class="form-label") }} {{
+                    portfolio_form.title(class="form-control",
+                    id="portfolioTitle") }}
                 </div>
                 <div class="mb-3">
-                    <label
-                        for="{{ portfolio_form.image.id }}"
-                        class="form-label"
-                        >{{ portfolio_form.image.label }}</label
-                    >
-                    {{ portfolio_form.image(class="form-control") }}
+                    {{ portfolio_form.image.label(class="form-label") }} {{
+                    portfolio_form.image(class="form-control",
+                    id="portfolioImage") }}
                 </div>
-                {{ portfolio_form.submit(class="btn btn-primary") }}
+                <button type="submit" name="submit" class="btn btn-primary">
+                    Thêm Portfolio
+                </button>
             </form>
-            <table class="table table-striped mt-3">
+            <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
                         <th>Tiêu đề</th>
@@ -93,12 +139,18 @@ endblock %} {% block content %}
                         <td>{{ portfolio.title }}</td>
                         <td>
                             <img
-                                src="{{ portfolio.image_url }}"
+                                src="{{ portfolio.image_url or '/static/images/default.jpg' }}"
                                 alt="{{ portfolio.title }}"
-                                style="max-width: 100px"
+                                width="50"
                             />
                         </td>
                         <td>
+                            <button
+                                class="btn btn-sm btn-warning"
+                                onclick="loadPortfolioEdit({{ portfolio.id }})"
+                            >
+                                Sửa
+                            </button>
                             <form
                                 action="{{ url_for('admin.delete_home_item', model='portfolio', id=portfolio.id) }}"
                                 method="POST"
@@ -106,7 +158,8 @@ endblock %} {% block content %}
                             >
                                 <button
                                     type="submit"
-                                    class="btn btn-danger btn-sm"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
                                 >
                                     Xóa
                                 </button>
@@ -116,60 +169,48 @@ endblock %} {% block content %}
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
 
-    <!-- Services Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>Dịch Vụ</h5>
-            <form method="POST" enctype="multipart/form-data">
+            <hr />
+            <!-- Service Form -->
+            <h4>Dịch vụ</h4>
+            <form method="POST" enctype="multipart/form-data" id="serviceForm">
+                <input type="hidden" name="form_name" value="service" />
                 {{ service_form.hidden_tag() }}
                 <div class="mb-3">
-                    <label for="{{ service_form.title.id }}" class="form-label"
-                        >{{ service_form.title.label }}</label
-                    >
-                    {{ service_form.title(class="form-control") }}
+                    {{ service_form.title.label(class="form-label") }} {{
+                    service_form.title(class="form-control", id="serviceTitle")
+                    }}
                 </div>
                 <div class="mb-3">
-                    <label
-                        for="{{ service_form.description.id }}"
-                        class="form-label"
-                        >{{ service_form.description.label }}</label
-                    >
-                    {{ service_form.description(class="form-control") }}
+                    {{ service_form.description.label(class="form-label") }} {{
+                    service_form.description(class="form-control",
+                    id="serviceDescription") }}
                 </div>
                 <div class="mb-3">
-                    <label for="{{ service_form.image.id }}" class="form-label"
-                        >{{ service_form.image.label }}</label
-                    >
-                    {{ service_form.image(class="form-control") }}
+                    {{ service_form.cta_text.label(class="form-label") }} {{
+                    service_form.cta_text(class="form-control",
+                    id="serviceCtaText") }}
                 </div>
                 <div class="mb-3">
-                    <label
-                        for="{{ service_form.cta_text.id }}"
-                        class="form-label"
-                        >{{ service_form.cta_text.label }}</label
-                    >
-                    {{ service_form.cta_text(class="form-control") }}
+                    {{ service_form.cta_url.label(class="form-label") }} {{
+                    service_form.cta_url(class="form-control",
+                    id="serviceCtaUrl") }}
                 </div>
                 <div class="mb-3">
-                    <label
-                        for="{{ service_form.cta_url.id }}"
-                        class="form-label"
-                        >{{ service_form.cta_url.label }}</label
-                    >
-                    {{ service_form.cta_url(class="form-control") }}
+                    {{ service_form.image.label(class="form-label") }} {{
+                    service_form.image(class="form-control", id="serviceImage")
+                    }}
                 </div>
-                {{ service_form.submit(class="btn btn-primary") }}
+                <button type="submit" name="submit" class="btn btn-primary">
+                    Thêm Dịch vụ
+                </button>
             </form>
-            <table class="table table-striped mt-3">
+            <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
                         <th>Tiêu đề</th>
                         <th>Mô tả</th>
                         <th>Hình ảnh</th>
-                        <th>CTA</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -177,16 +218,21 @@ endblock %} {% block content %}
                     {% for service in services %}
                     <tr>
                         <td>{{ service.title }}</td>
-                        <td>{{ service.description }}</td>
+                        <td>{{ service.description|truncate(100) }}</td>
                         <td>
                             <img
-                                src="{{ service.image_url }}"
+                                src="{{ service.image_url or '/static/images/default.jpg' }}"
                                 alt="{{ service.title }}"
-                                style="max-width: 100px"
+                                width="50"
                             />
                         </td>
-                        <td>{{ service.cta_text }} ({{ service.cta_url }})</td>
                         <td>
+                            <button
+                                class="btn btn-sm btn-warning"
+                                onclick="loadServiceEdit({{ service.id }})"
+                            >
+                                Sửa
+                            </button>
                             <form
                                 action="{{ url_for('admin.delete_home_item', model='service', id=service.id) }}"
                                 method="POST"
@@ -194,7 +240,8 @@ endblock %} {% block content %}
                             >
                                 <button
                                     type="submit"
-                                    class="btn btn-danger btn-sm"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
                                 >
                                     Xóa
                                 </button>
@@ -204,34 +251,28 @@ endblock %} {% block content %}
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
 
-    <!-- Testimonial Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>Đánh Giá Khách Hàng</h5>
-            <form method="POST">
+            <hr />
+            <!-- Testimonial Form -->
+            <h4>Đánh giá</h4>
+            <form method="POST" id="testimonialForm">
+                <input type="hidden" name="form_name" value="testimonial" />
                 {{ testimonial_form.hidden_tag() }}
                 <div class="mb-3">
-                    <label
-                        for="{{ testimonial_form.content.id }}"
-                        class="form-label"
-                        >{{ testimonial_form.content.label }}</label
-                    >
-                    {{ testimonial_form.content(class="form-control") }}
+                    {{ testimonial_form.content.label(class="form-label") }} {{
+                    testimonial_form.content(class="form-control",
+                    id="testimonialContent") }}
                 </div>
                 <div class="mb-3">
-                    <label
-                        for="{{ testimonial_form.author.id }}"
-                        class="form-label"
-                        >{{ testimonial_form.author.label }}</label
-                    >
-                    {{ testimonial_form.author(class="form-control") }}
+                    {{ testimonial_form.author.label(class="form-label") }} {{
+                    testimonial_form.author(class="form-control",
+                    id="testimonialAuthor") }}
                 </div>
-                {{ testimonial_form.submit(class="btn btn-primary") }}
+                <button type="submit" name="submit" class="btn btn-primary">
+                    Thêm Đánh giá
+                </button>
             </form>
-            <table class="table table-striped mt-3">
+            <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
                         <th>Nội dung</th>
@@ -242,9 +283,15 @@ endblock %} {% block content %}
                 <tbody>
                     {% for testimonial in testimonials %}
                     <tr>
-                        <td>{{ testimonial.content }}</td>
+                        <td>{{ testimonial.content|truncate(100) }}</td>
                         <td>{{ testimonial.author }}</td>
                         <td>
+                            <button
+                                class="btn btn-sm btn-warning"
+                                onclick="loadTestimonialEdit({{ testimonial.id }})"
+                            >
+                                Sửa
+                            </button>
                             <form
                                 action="{{ url_for('admin.delete_home_item', model='testimonial', id=testimonial.id) }}"
                                 method="POST"
@@ -252,7 +299,8 @@ endblock %} {% block content %}
                             >
                                 <button
                                     type="submit"
-                                    class="btn btn-danger btn-sm"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
                                 >
                                     Xóa
                                 </button>
@@ -262,56 +310,45 @@ endblock %} {% block content %}
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
 
-    <!-- Blog Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>Bài Viết Nổi Bật</h5>
-            <form method="POST" enctype="multipart/form-data">
+            <hr />
+            <!-- Blog Form -->
+            <h4>Bài viết</h4>
+            <form method="POST" enctype="multipart/form-data" id="blogForm">
+                <input type="hidden" name="form_name" value="blog" />
                 {{ blog_form.hidden_tag() }}
                 <div class="mb-3">
-                    <label for="{{ blog_form.title.id }}" class="form-label"
-                        >{{ blog_form.title.label }}</label
-                    >
-                    {{ blog_form.title(class="form-control") }}
+                    {{ blog_form.title.label(class="form-label") }} {{
+                    blog_form.title(class="form-control", id="blogTitle") }}
                 </div>
                 <div class="mb-3">
-                    <label
-                        for="{{ blog_form.description.id }}"
-                        class="form-label"
-                        >{{ blog_form.description.label }}</label
-                    >
-                    {{ blog_form.description(class="form-control") }}
+                    {{ blog_form.description.label(class="form-label") }} {{
+                    blog_form.description(class="form-control",
+                    id="blogDescription") }}
                 </div>
                 <div class="mb-3">
-                    <label for="{{ blog_form.image.id }}" class="form-label"
-                        >{{ blog_form.image.label }}</label
-                    >
-                    {{ blog_form.image(class="form-control") }}
+                    {{ blog_form.cta_text.label(class="form-label") }} {{
+                    blog_form.cta_text(class="form-control", id="blogCtaText")
+                    }}
                 </div>
                 <div class="mb-3">
-                    <label for="{{ blog_form.cta_text.id }}" class="form-label"
-                        >{{ blog_form.cta_text.label }}</label
-                    >
-                    {{ blog_form.cta_text(class="form-control") }}
+                    {{ blog_form.cta_url.label(class="form-label") }} {{
+                    blog_form.cta_url(class="form-control", id="blogCtaUrl") }}
                 </div>
                 <div class="mb-3">
-                    <label for="{{ blog_form.cta_url.id }}" class="form-label"
-                        >{{ blog_form.cta_url.label }}</label
-                    >
-                    {{ blog_form.cta_url(class="form-control") }}
+                    {{ blog_form.image_label }} {{
+                    blog_form.image(class="form-control", id="blogImage") }}
                 </div>
-                {{ blog_form.submit(class="btn btn-primary") }}
+                <button type="submit" name="submit" class="btn btn-primary">
+                    Thêm Blog
+                </button>
             </form>
-            <table class="table table-striped mt-3">
+            <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
                         <th>Tiêu đề</th>
                         <th>Mô tả</th>
                         <th>Hình ảnh</th>
-                        <th>CTA</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -319,16 +356,21 @@ endblock %} {% block content %}
                     {% for blog in blogs %}
                     <tr>
                         <td>{{ blog.title }}</td>
-                        <td>{{ blog.description }}</td>
+                        <td>{{ blog.description|truncate(100) }}</td>
                         <td>
                             <img
-                                src="{{ blog.image_url }}"
+                                src="{{ blog.image_url or '/static/images/default.jpg' }}"
                                 alt="{{ blog.title }}"
-                                style="max-width: 100px"
+                                width="50"
                             />
                         </td>
-                        <td>{{ blog.cta_text }} ({{ blog.cta_url }})</td>
                         <td>
+                            <button
+                                class="btn btn-sm btn-warning"
+                                onclick="loadBlogEdit({{ blog.id }})"
+                            >
+                                Sửa
+                            </button>
                             <form
                                 action="{{ url_for('admin.delete_home_item', model='blog', id=blog.id) }}"
                                 method="POST"
@@ -336,7 +378,8 @@ endblock %} {% block content %}
                             >
                                 <button
                                     type="submit"
-                                    class="btn btn-danger btn-sm"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Bạn có chắc xóa?')"
                                 >
                                     Xóa
                                 </button>
@@ -347,6 +390,792 @@ endblock %} {% block content %}
                 </tbody>
             </table>
         </div>
+
+        <!-- Preview Container -->
+        <div class="col-md-6 preview-container">
+            <!-- Header -->
+            <header class="preview-header">
+                <h1>HoagART</h1>
+                <nav>
+                    <a href="#" class="text-white mx-2">Trang chủ</a>
+                    <a href="#" class="text-white mx-2">Dịch vụ</a>
+                    <a href="#" class="text-white mx-2">Portfolio</a>
+                    <a href="#" class="text-white mx-2">Liên hệ</a>
+                </nav>
+            </header>
+
+            <!-- Intro Section -->
+            <section class="preview-section" id="previewIntro">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h2 id="previewIntroText">
+                            {{ intro.text if intro else 'Chào mừng đến với
+                            HoagART' }}
+                        </h2>
+                        <p>
+                            Chúng tôi cung cấp dịch vụ nhiếp ảnh chuyên nghiệp.
+                        </p>
+                        <a
+                            id="previewIntroCta"
+                            href="{{ intro.cta_url if intro else '#' }}"
+                            class="btn btn-primary"
+                            >{{ intro.cta_text if intro else 'Tìm hiểu thêm'
+                            }}</a
+                        >
+                    </div>
+                    <div class="col-md-6">
+                        <img
+                            id="previewIntroImage"
+                            src="{{ intro.image_url if intro else '/static/images/default.jpg' }}"
+                            alt="Ảnh Giới thiệu"
+                            class="preview-img"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            <!-- Portfolio Section -->
+            <section class="preview-section" id="previewPortfolio">
+                <h2>Portfolio</h2>
+                <div class="row">
+                    {% for portfolio in portfolios %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img
+                                src="{{ portfolio.image_url or '/static/images/default.jpg' }}"
+                                alt="{{ portfolio.title }}"
+                                class="card-img-top preview-img"
+                            />
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    {{ portfolio.title }}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section class="preview-section" id="previewServices">
+                <h2>Dịch vụ</h2>
+                <div class="row">
+                    {% for service in services %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img
+                                src="{{ service.image_url or '/static/images/default.jpg' }}"
+                                alt="{{ service.title }}"
+                                class="card-img-top preview-img"
+                            />
+                            <div class="card-body">
+                                <h5 class="card-title">{{ service.title }}</h5>
+                                <p class="card-text">
+                                    {{ service.description }}
+                                </p>
+                                <a
+                                    href="{{ service.cta_url }}"
+                                    class="btn btn-primary"
+                                    >{{ service.cta_text }}</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Testimonials Section -->
+            <section class="preview-section" id="previewTestimonials">
+                <h2>Đánh giá</h2>
+                <div class="row">
+                    {% for testimonial in testimonials %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    "{{ testimonial.content }}"
+                                </p>
+                                <h6 class="card-title">
+                                    {{ testimonial.author }}
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Blog Section -->
+            <section class="preview-section" id="previewBlog">
+                <h2>Bài viết nổi bật</h2>
+                <div class="row">
+                    {% for blog in blogs %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img
+                                src="{{ blog.image_url or '/static/images/default.jpg' }}"
+                                alt="{{ blog.title }}"
+                                class="card-img-top preview-img"
+                            />
+                            <div class="card-body">
+                                <h5 class="card-title">{{ blog.title }}</h5>
+                                <p class="card-text">{{ blog.description }}</p>
+                                <a
+                                    href="{{ blog.cta_url }}"
+                                    class="btn btn-primary"
+                                    >{{ blog.cta_text }}</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="preview-footer">
+                <p>© 2025 HoagART. All rights reserved.</p>
+            </footer>
+        </div>
     </div>
+
+    <!-- Modal for Editing Portfolio -->
+    <div class="modal fade" id="editPortfolioModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sửa Portfolio</h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form
+                        id="editPortfolioForm"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        action=""
+                    >
+                        <input
+                            type="hidden"
+                            name="portfolio_id"
+                            id="editPortfolioId"
+                        />
+                        <div class="mb-3">
+                            <label for="editPortfolioTitle" class="form-label"
+                                >Tiêu đề</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="editPortfolioTitle"
+                                name="title"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPortfolioImage" class="form-label"
+                                >Hình ảnh</label
+                            >
+                            <input
+                                type="file"
+                                class="form-control"
+                                id="editPortfolioImage"
+                                name="image"
+                                accept="image/*"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            name="submit"
+                            class="btn btn-primary"
+                        >
+                            Lưu thay đổi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Service -->
+    <div class="modal fade" id="editServiceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sửa Dịch vụ</h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form
+                        id="editServiceForm"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        action=""
+                    >
+                        <input
+                            type="hidden"
+                            name="service_id"
+                            id="editServiceId"
+                        />
+                        <div class="mb-3">
+                            <label for="editServiceTitle" class="form-label"
+                                >Tiêu đề</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="editServiceTitle"
+                                name="title"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label
+                                for="editServiceDescription"
+                                class="form-label"
+                                >Mô tả</label
+                            >
+                            <textarea
+                                class="form-control"
+                                id="editServiceDescription"
+                                name="description"
+                                required
+                            ></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editServiceCtaText" class="form-label"
+                                >Nút CTA</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="editServiceCtaText"
+                                name="cta_text"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editServiceCtaUrl" class="form-label"
+                                >Link CTA</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="editServiceCtaUrl"
+                                name="cta_url"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editServiceImage" class="form-label"
+                                >Hình ảnh</label
+                            >
+                            <input
+                                type="file"
+                                class="form-control"
+                                id="editServiceImage"
+                                name="image"
+                                accept="image/*"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            name="submit"
+                            class="btn btn-primary"
+                        >
+                            Lưu thay đổi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Testimonial -->
+    <div class="modal fade" id="editTestimonialModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sửa Đánh giá</h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTestimonialForm" method="POST" action="">
+                        <input
+                            type="hidden"
+                            name="testimonial_id"
+                            id="editTestimonialId"
+                        />
+                        <div class="mb-3">
+                            <label
+                                for="editTestimonialContent"
+                                class="form-label"
+                                >Nội dung</label
+                            >
+                            <textarea
+                                class="form-control"
+                                id="editTestimonialContent"
+                                name="content"
+                                required
+                            ></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label
+                                for="editTestimonialAuthor"
+                                class="form-label"
+                                >Tác giả</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="editTestimonialAuthor"
+                                name="author"
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            name="submit"
+                            class="btn btn-primary"
+                        >
+                            Lưu thay đổi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Blog -->
+    <div class="modal fade" id="editBlogModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sửa Bài viết</h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form
+                        id="editBlogForm"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        action=""
+                    >
+                        <input type="hidden" name="blog_id" id="editBlogId" />
+                        <div class="mb-3">
+                            <label for="editBlogTitle" class="form-label"
+                                >Tiêu đề</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="editBlogTitle"
+                                name="title"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editBlogDescription" class="form-label"
+                                >Mô tả</label
+                            >
+                            <textarea
+                                class="form-control"
+                                id="editBlogDescription"
+                                name="description"
+                                required
+                            ></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editBlogCtaText" class="form-label"
+                                >Nút CTA</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="editBlogCtaText"
+                                name="cta_text"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editBlogCtaUrl" class="form-label"
+                                >Link CTA</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="editBlogCtaUrl"
+                                name="cta_url"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editBlogImage" class="form-label"
+                                >Hình ảnh</label
+                            >
+                            <input
+                                type="file"
+                                class="form-control"
+                                id="editBlogImage"
+                                name="image"
+                                accept="image/*"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            name="submit"
+                            class="btn btn-primary"
+                        >
+                            Lưu thay đổi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for real-time preview and modal handling
+        document.addEventListener("DOMContentLoaded", function () {
+            // Intro Section Preview
+            const introText = document.getElementById("introText");
+            const introCtaText = document.getElementById("introCtaText");
+            const introCtaUrl = document.getElementById("introCtaUrl");
+            const introImage = document.getElementById("introImage");
+            const previewIntroText =
+                document.getElementById("previewIntroText");
+            const previewIntroCta = document.getElementById("previewIntroCta");
+            const previewIntroImage =
+                document.getElementById("previewIntroImage");
+
+            if (introText) {
+                introText.addEventListener("input", () => {
+                    previewIntroText.textContent =
+                        introText.value || "Chào mừng đến với HoagART";
+                });
+            }
+            if (introCtaText) {
+                introCtaText.addEventListener("input", () => {
+                    previewIntroCta.textContent =
+                        introCtaText.value || "Tìm hiểu thêm";
+                });
+            }
+            if (introCtaUrl) {
+                introCtaUrl.addEventListener("input", () => {
+                    previewIntroCta.href = introCtaUrl.value || "#";
+                });
+            }
+            if (introImage) {
+                introImage.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            previewIntroImage.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Portfolio Preview
+            const portfolioTitle = document.getElementById("portfolioTitle");
+            const portfolioImage = document.getElementById("portfolioImage");
+            if (portfolioImage) {
+                portfolioImage.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const newPortfolio = document.createElement("div");
+                            newPortfolio.className = "col-md-4 mb-4";
+                            newPortfolio.innerHTML = `
+                            <div class="card">
+                                <img src="${e.target.result}" alt="${
+                                portfolioTitle.value || "New Portfolio"
+                            }" class="card-img-top preview-img">
+                                <div class="card-body">
+                                    <h5 class="card-title">${
+                                        portfolioTitle.value || "New Portfolio"
+                                    }</h5>
+                                </div>
+                            </div>
+                        `;
+                            document
+                                .getElementById("previewPortfolio")
+                                .querySelector(".row")
+                                .appendChild(newPortfolio);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Service Preview
+            const serviceTitle = document.getElementById("serviceTitle");
+            const serviceDescription =
+                document.getElementById("serviceDescription");
+            const serviceCtaText = document.getElementById("serviceCtaText");
+            const serviceCtaUrl = document.getElementById("serviceCtaUrl");
+            const serviceImage = document.getElementById("serviceImage");
+            if (serviceImage) {
+                serviceImage.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const newService = document.createElement("div");
+                            newService.className = "col-md-4 mb-4";
+                            newService.innerHTML = `
+                            <div class="card">
+                                <img src="${e.target.result}" alt="${
+                                serviceTitle.value || "New Service"
+                            }" class="card-img-top preview-img">
+                                <div class="card-body">
+                                    <h5 class="card-title">${
+                                        serviceTitle.value || "New Service"
+                                    }</h5>
+                                    <p class="card-text">${
+                                        serviceDescription.value ||
+                                        "Description"
+                                    }</p>
+                                    <a href="${
+                                        serviceCtaUrl.value || "#"
+                                    }" class="btn btn-primary">${
+                                serviceCtaText.value || "Learn More"
+                            }</a>
+                                </div>
+                            </div>
+                        `;
+                            document
+                                .getElementById("previewServices")
+                                .querySelector(".row")
+                                .appendChild(newService);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Testimonial Preview
+            const testimonialContent =
+                document.getElementById("testimonialContent");
+            const testimonialAuthor =
+                document.getElementById("testimonialAuthor");
+            if (testimonialContent && testimonialAuthor) {
+                testimonialContent.addEventListener("input", () => {
+                    const newTestimonial = document.createElement("div");
+                    newTestimonial.className = "col-md-6 mb-4";
+                    newTestimonial.innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">"${
+                                testimonialContent.value || "New Testimonial"
+                            }"</p>
+                            <h6 class="card-title">${
+                                testimonialAuthor.value || "Author"
+                            }</h6>
+                        </div>
+                    </div>
+                `;
+                    const testimonialsRow = document
+                        .getElementById("previewTestimonials")
+                        .querySelector(".row");
+                    testimonialsRow.innerHTML = ""; // Clear previous preview
+                    testimonialsRow.appendChild(newTestimonial);
+                });
+                testimonialAuthor.addEventListener("input", () => {
+                    const newTestimonial = document.createElement("div");
+                    newTestimonial.className = "col-md-6 mb-4";
+                    newTestimonial.innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">"${
+                                testimonialContent.value || "New Testimonial"
+                            }"</p>
+                            <h6 class="card-title">${
+                                testimonialAuthor.value || "Author"
+                            }</h6>
+                        </div>
+                    </div>
+                `;
+                    const testimonialsRow = document
+                        .getElementById("previewTestimonials")
+                        .querySelector(".row");
+                    testimonialsRow.innerHTML = ""; // Clear previous preview
+                    testimonialsRow.appendChild(newTestimonial);
+                });
+            }
+
+            // Blog Preview
+            const blogTitle = document.getElementById("blogTitle");
+            const blogDescription = document.getElementById("blogDescription");
+            const blogCtaText = document.getElementById("blogCtaText");
+            const blogCtaUrl = document.getElementById("blogCtaUrl");
+            const blogImage = document.getElementById("blogImage");
+            if (blogImage) {
+                blogImage.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const newBlog = document.createElement("div");
+                            newBlog.className = "col-md-4 mb-4";
+                            newBlog.innerHTML = `
+                            <div class="card">
+                                <img src="${e.target.result}" alt="${
+                                blogTitle.value || "New Blog"
+                            }" class="card-img-top preview-img">
+                                <div class="card-body">
+                                    <h5 class="card-title">${
+                                        blogTitle.value || "New Blog"
+                                    }</h5>
+                                    <p class="card-text">${
+                                        blogDescription.value || "Description"
+                                    }</p>
+                                    <a href="${
+                                        blogCtaUrl.value || "#"
+                                    }" class="btn btn-primary">${
+                                blogCtaText.value || "Read More"
+                            }</a>
+                                </div>
+                            </div>
+                        `;
+                            document
+                                .getElementById("previewBlog")
+                                .querySelector(".row")
+                                .appendChild(newBlog);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Load Edit Modals
+            window.loadPortfolioEdit = function (id) {
+                fetch(`/admin/home/portfolio/edit/${id}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        document.getElementById("editPortfolioId").value =
+                            data.id;
+                        document.getElementById("editPortfolioTitle").value =
+                            data.title;
+                        document.getElementById(
+                            "editPortfolioForm"
+                        ).action = `/admin/home/portfolio/edit/${id}`;
+                        const modal = new bootstrap.Modal(
+                            document.getElementById("editPortfolioModal")
+                        );
+                        modal.show();
+                        console.log("Portfolio modal loaded:", data);
+                    })
+                    .catch((error) =>
+                        console.error("Error loading portfolio:", error)
+                    );
+            };
+
+            window.loadServiceEdit = function (id) {
+                fetch(`/admin/home/service/edit/${id}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        document.getElementById("editServiceId").value =
+                            data.id;
+                        document.getElementById("editServiceTitle").value =
+                            data.title;
+                        document.getElementById(
+                            "editServiceDescription"
+                        ).value = data.description;
+                        document.getElementById("editServiceCtaText").value =
+                            data.cta_text;
+                        document.getElementById("editServiceCtaUrl").value =
+                            data.cta_url;
+                        document.getElementById(
+                            "editServiceForm"
+                        ).action = `/admin/home/service/edit/${id}`;
+                        const modal = new bootstrap.Modal(
+                            document.getElementById("editServiceModal")
+                        );
+                        modal.show();
+                        console.log("Service modal loaded:", data);
+                    })
+                    .catch((error) =>
+                        console.error("Error loading service:", error)
+                    );
+            };
+
+            window.loadTestimonialEdit = function (id) {
+                fetch(`/admin/home/testimonial/edit/${id}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        document.getElementById("editTestimonialId").value =
+                            data.id;
+                        document.getElementById(
+                            "editTestimonialContent"
+                        ).value = data.content;
+                        document.getElementById("editTestimonialAuthor").value =
+                            data.author;
+                        document.getElementById(
+                            "editTestimonialForm"
+                        ).action = `/admin/home/testimonial/edit/${id}`;
+                        const modal = new bootstrap.Modal(
+                            document.getElementById("editTestimonialModal")
+                        );
+                        modal.show();
+                        console.log("Testimonial modal loaded:", data);
+                    })
+                    .catch((error) =>
+                        console.error("Error loading testimonial:", error)
+                    );
+            };
+
+            window.loadBlogEdit = function (id) {
+                fetch(`/admin/home/blog/edit/${id}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        document.getElementById("editBlogId").value = data.id;
+                        document.getElementById("editBlogTitle").value =
+                            data.title;
+                        document.getElementById("editBlogDescription").value =
+                            data.description;
+                        document.getElementById("editBlogCtaText").value =
+                            data.cta_text;
+                        document.getElementById("editBlogCtaUrl").value =
+                            data.cta_url;
+                        document.getElementById(
+                            "editBlogForm"
+                        ).action = `/admin/home/blog/edit/${id}`;
+                        const modal = new bootstrap.Modal(
+                            document.getElementById("editBlogModal")
+                        );
+                        modal.show();
+                        console.log("Blog modal loaded:", data);
+                    })
+                    .catch((error) =>
+                        console.error("Error loading blog:", error)
+                    );
+            };
+        });
+    </script>
+    {% endblock %}
 </div>
-{% endblock %}

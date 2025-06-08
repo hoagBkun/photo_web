@@ -17,7 +17,13 @@ endblock %} {% block content %}
                     <tr>
                         <td>Banner</td>
                         <td>{{ banner_count }}</td>
-                        <td>-</td>
+                        <td>
+                            <a
+                                href="{{ url_for('admin.manage_banners') }}"
+                                class="btn btn-sm btn-primary"
+                                >Quản lý</a
+                            >
+                        </td>
                     </tr>
                     <tr>
                         <td>Bài viết</td>
@@ -58,6 +64,17 @@ endblock %} {% block content %}
                         <td>
                             <a
                                 href="{{ url_for('admin.manage_pricing_page') }}"
+                                class="btn btn-sm btn-primary"
+                                >Quản lý</a
+                            >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Trang Chủ</td>
+                        <td>-</td>
+                        <td>
+                            <a
+                                href="{{ url_for('admin.manage_home') }}"
                                 class="btn btn-sm btn-primary"
                                 >Quản lý</a
                             >

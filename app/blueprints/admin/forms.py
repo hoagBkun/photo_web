@@ -51,13 +51,13 @@ class IntroSectionForm(FlaskForm):
 
 class PortfolioItemForm(FlaskForm):
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
-    image = FileField('Hình ảnh', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     submit = SubmitField('Lưu')
 
 class ServiceCardForm(FlaskForm):
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('Mô tả', validators=[DataRequired(), Length(max=500)])
-    image = FileField('Hình ảnh', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
     cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
     submit = SubmitField('Lưu')
@@ -70,7 +70,7 @@ class TestimonialForm(FlaskForm):
 class BlogCardForm(FlaskForm):
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('Mô tả', validators=[DataRequired(), Length(max=500)])
-    image = FileField('Hình ảnh', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
     cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
     submit = SubmitField('Lưu')

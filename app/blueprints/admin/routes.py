@@ -12,8 +12,12 @@ from app.blueprints.admin.forms import BannerForm, PostForm, ContactInfoForm, Us
 from functools import wraps
 from werkzeug.utils import secure_filename
 import os
+import logging
 
 admin_bp = Blueprint('admin', __name__)
+
+# Setup logging
+logging.basicConfig(filename='flask.log', level=logging.DEBUG)
 
 def admin_required(f):
     @wraps(f)
@@ -52,7 +56,7 @@ def manage_banners():
             file = form.image.data
             if not file or not allowed_file(file.filename):
                 flash('Vui lòng chọn hình ảnh hợp lệ (jpg, jpeg, png, gif).', 'error')
-                return redirect(url_for('admin.redirect_banners'))
+                return redirect(url_for('admin.manage_banners'))
             filename = secure_filename(file.filename)
             file_path = os.path.join('app/static/uploads/banners', filename)
             os.makedirs('app/static/uploads/banners', exist_ok=True)
@@ -65,13 +69,13 @@ def manage_banners():
             db.session.add(banner)
             db.session.commit()
             flash('Thêm banner thành công!', 'success')
-            return redirect(url_for('admin.redirect_banners'))
+            return redirect(url_for('admin.manage_banners'))
         except Exception as e:
-            flash(f'LFLỗi khi thêm banner: {str(e)}', 'error')
+            flash(f'Lỗi khi thêm banner: {str(e)}', 'error')
     banners = Banner.query.all()
     return render_template('admin/banners/home.html', form=form, banners=banners)
 
-@admin_bp.route('/banners/edit/<int:id>/edit', methods=['GET', 'POST'])
+@admin_bp.route('/banners/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_banner(id):
@@ -88,7 +92,7 @@ def edit_banner(id):
                 file_path = os.path.join('app/static/uploads/banners', filename)
                 os.makedirs('app/static/uploads/banners', exist_ok=True)
                 file.save(file_path)
-                if banner.image_url and banner.image_url != '/static/uploads/default.jpg':
+                if banner.image_url and banner.image_url != '/static/images/default.jpg':
                     old_file = os.path.join('app', banner.image_url.lstrip('/'))
                     if os.path.exists(old_file):
                         os.remove(old_file)
@@ -97,9 +101,9 @@ def edit_banner(id):
             banner.description = form.description.data
             db.session.commit()
             flash('Cập nhật banner thành công!', 'success')
-            return redirect(url_for('admin.redirect_banners'))
+            return redirect(url_for('admin.manage_banners'))
         except Exception as e:
-            flash(f'LFLỗi khi cập nhật banner: {str(e)}', 'error')
+            flash(f'Lỗi khi cập nhật banner: {str(e)}', 'error')
     return render_template('admin/banners.html', form=form, banner=banner)
 
 @admin_bp.route('/banners/delete/<int:id>', methods=['POST'])
@@ -108,7 +112,7 @@ def edit_banner(id):
 def delete_banner(id):
     banner = Banner.query.get_or_404(id)
     try:
-        if banner.image_url and banner.image_url != '/static/uploads/default.jpg':
+        if banner.image_url and banner.image_url != '/static/images/default.jpg':
             file_path = os.path.join('app', banner.image_url.lstrip('/'))
             if os.path.exists(file_path):
                 os.remove(file_path)
@@ -116,8 +120,8 @@ def delete_banner(id):
         db.session.commit()
         flash('Xóa banner thành công!', 'success')
     except Exception as e:
-        flash(f'LFLỗi khi xóa banner: {str(e)}', 'error')
-    return redirect(url_for('admin.redirect_banners'))
+        flash(f'Lỗi khi xóa banner: {str(e)}', 'error')
+    return redirect(url_for('admin.manage_banners'))
 
 @admin_bp.route('/posts', methods=['GET'])
 @login_required
@@ -151,9 +155,9 @@ def add_post():
             db.session.add(post)
             db.session.commit()
             flash('Thêm bài viết thành công!', 'success')
-            return redirect(url_for('admin.redirect_posts'))
+            return redirect(url_for('admin.manage_posts'))
         except Exception as e:
-            flash(f'LFLỗi khi thêm bài viết: {str(e)}', 'error')
+            flash(f'Lỗi khi thêm bài viết: {str(e)}', 'error')
     return render_template('admin/post_form.html', form=form, title='Thêm bài viết')
 
 @admin_bp.route('/posts/edit/<int:id>', methods=['GET', 'POST'])
@@ -175,16 +179,16 @@ def edit_post(id):
                 file_path = os.path.join('app/static/uploads/posts', filename)
                 os.makedirs('app/static/uploads/posts', exist_ok=True)
                 file.save(file_path)
-                if post.image_url and post.image_url != '/static/uploads/default.jpg':
+                if post.image_url and post.image_url != '/static/images/default.jpg':
                     old_file = os.path.join('app', post.image_url.lstrip('/'))
                     if os.path.exists(old_file):
                         os.remove(old_file)
                 post.image_url = f'/static/uploads/posts/{filename}'
             db.session.commit()
             flash('Cập nhật bài viết thành công!', 'success')
-            return redirect(url_for('admin.redirect_posts'))
+            return redirect(url_for('admin.manage_posts'))
         except Exception as e:
-            flash(f'LFLỗi khi cập nhật bài viết: {str(e)}', 'error')
+            flash(f'Lỗi khi cập nhật bài viết: {str(e)}', 'error')
     return render_template('admin/post_form.html', form=form, title='Sửa bài viết', post=post)
 
 @admin_bp.route('/posts/delete/<int:id>', methods=['POST'])
@@ -193,7 +197,7 @@ def edit_post(id):
 def delete_post(id):
     post = Post.query.get_or_404(id)
     try:
-        if post.image_url and post.image_url != '/static/uploads/default.jpg':
+        if post.image_url and post.image_url != '/static/images/default.jpg':
             file_path = os.path.join('app', post.image_url.lstrip('/'))
             if os.path.exists(file_path):
                 os.remove(file_path)
@@ -201,8 +205,8 @@ def delete_post(id):
         db.session.commit()
         flash('Xóa bài viết thành công!', 'success')
     except Exception as e:
-        flash(f'LFLỗi khi xóa bài viết: {str(e)}', 'error')
-    return redirect(url_for('admin.redirect_posts'))
+        flash(f'Lỗi khi xóa bài viết: {str(e)}', 'error')
+    return redirect(url_for('admin.manage_posts'))
 
 @admin_bp.route('/upload_image', methods=['POST'])
 @login_required
@@ -247,9 +251,9 @@ def add_pricing():
             db.session.add(pricing)
             db.session.commit()
             flash('Thêm gói dịch vụ thành công!', 'success')
-            return redirect(url_for('admin.redirect_pricing'))
+            return redirect(url_for('admin.manage_pricing'))
         except Exception as e:
-            flash(f'LFLỗi khi thêm gói dịch vụ: {str(e)}', 'error')
+            flash(f'Lỗi khi thêm gói dịch vụ: {str(e)}', 'error')
     return render_template('admin/pricing_form.html', form=form, title='Thêm gói dịch vụ')
 
 @admin_bp.route('/pricing/edit/<int:id>', methods=['GET', 'POST'])
@@ -267,9 +271,9 @@ def edit_pricing(id):
             pricing.featured = form.featured.data
             db.session.commit()
             flash('Cập nhật gói dịch vụ thành công!', 'success')
-            return redirect(url_for('admin.redirect_pricing'))
+            return redirect(url_for('admin.manage_pricing'))
         except Exception as e:
-            flash(f'LFLỗi khi cập nhật gói dịch vụ: {str(e)}', 'error')
+            flash(f'Lỗi khi cập nhật gói dịch vụ: {str(e)}', 'error')
     return render_template('admin/pricing_form.html', form=form, title='Sửa gói dịch vụ', pricing=pricing)
 
 @admin_bp.route('/pricing/delete/<int:id>', methods=['POST'])
@@ -282,8 +286,8 @@ def delete_pricing(id):
         db.session.commit()
         flash('Xóa gói dịch vụ thành công!', 'success')
     except Exception as e:
-        flash(f'LFLỗi khi xóa gói dịch vụ: {str(e)}', 'error')
-    return redirect(url_for('admin.redirect_pricing'))
+        flash(f'Lỗi khi xóa gói dịch vụ: {str(e)}', 'error')
+    return redirect(url_for('admin.manage_pricing'))
 
 @admin_bp.route('/pricing_page', methods=['GET', 'POST'])
 @login_required
@@ -301,9 +305,9 @@ def manage_pricing_page():
             pricing_page.show_banner = form.show_banner.data
             db.session.commit()
             flash('Cập nhật nội dung trang bảng giá thành công!', 'success')
-            return redirect(url_for('admin.redirect_pricing_page'))
+            return redirect(url_for('admin.manage_pricing_page'))
         except Exception as e:
-            flash(f'LFLỗi khi cập nhật nội dung: {str(e)}', 'error')
+            flash(f'Lỗi khi cập nhật nội dung: {str(e)}', 'error')
     if pricing_page:
         form.title.data = pricing_page.title
         form.description.data = pricing_page.description
@@ -327,9 +331,9 @@ def manage_contact():
             contact_info.social_links = form.social_links.data
             db.session.commit()
             flash('Cập nhật thông tin liên hệ thành công!', 'success')
-            return redirect(url_for('admin.redirect_contact'))
+            return redirect(url_for('admin.manage_contact'))
         except Exception as e:
-            flash(f'LFLỗi khi cập nhật thông tin liên hệ: {str(e)}', 'error')
+            flash(f'Lỗi khi cập nhật thông tin liên hệ: {str(e)}', 'error')
     if contact_info:
         form.address.data = contact_info.address
         form.phone.data = contact_info.phone
@@ -363,9 +367,9 @@ def edit_user(id):
             user.is_admin = form.is_admin.data
             db.session.commit()
             flash('Cập nhật người dùng thành công!', 'success')
-            return redirect(url_for('admin.redirect_users'))
+            return redirect(url_for('admin.manage_users'))
         except Exception as e:
-            flash(f'LFLỗi khi cập nhật người dùng: {str(e)}', 'error')
+            flash(f'Lỗi khi cập nhật người dùng: {str(e)}', 'error')
     return render_template('admin/edit_user.html', form=form, user=user)
 
 @admin_bp.route('/users/delete/<int:id>', methods=['POST'])
@@ -376,13 +380,13 @@ def delete_user(id):
     try:
         if user.id == current_user.id:
             flash('Bạn không thể xóa chính mình!', 'error')
-            return redirect(url_for('admin.redirect_users'))
+            return redirect(url_for('admin.manage_users'))
         db.session.delete(user)
         db.session.commit()
         flash('Xóa người dùng thành công!', 'success')
     except Exception as e:
-        flash(f'LFLỗi khi xóa người dùng: {str(e)}', 'error')
-    return redirect(url_for('admin.redirect_users'))
+        flash(f'Lỗi khi xóa người dùng: {str(e)}', 'error')
+    return redirect(url_for('admin.manage_users'))
 
 @admin_bp.route('/home', methods=['GET', 'POST'])
 @login_required
@@ -394,7 +398,11 @@ def manage_home():
     testimonial_form = TestimonialForm()
     blog_form = BlogCardForm()
 
-    if intro_form.validate_on_submit():
+    form_name = request.form.get('form_name')
+    logging.debug(f"Form submitted: {form_name}")
+
+    if form_name == 'intro' and intro_form.validate_on_submit():
+        logging.debug("Processing intro form")
         try:
             intro = IntroSection.query.first()
             if not intro:
@@ -410,72 +418,80 @@ def manage_home():
                     file_path = os.path.join('app/static/uploads/home', filename)
                     os.makedirs('app/static/uploads/home', exist_ok=True)
                     file.save(file_path)
-                    if intro.image_url and intro.image_url != 'default_intro.jpg':
+                    if intro.image_url and intro.image_url != '/static/images/default.jpg':
                         old_file = os.path.join('app', intro.image_url.lstrip('/'))
                         if os.path.exists(old_file):
-                            try:
-                                os.remove(old_file)
-                            except Exception as e:
-                                pass
+                            os.remove(old_file)
                     intro.image_url = f'/static/uploads/home/{filename}'
                 else:
-                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif)', 'error')
+                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
                     return redirect(url_for('admin.manage_home'))
             db.session.commit()
             flash('Cập nhật phần giới thiệu thành công!', 'success')
             return redirect(url_for('admin.manage_home'))
         except Exception as e:
             flash(f'Lỗi khi cập nhật phần giới thiệu: {str(e)}', 'error')
-            return redirect(url_for('admin.manage_home'))
+            logging.error(f"Intro form error: {str(e)}")
 
-    if portfolio_form.validate_on_submit():
+    if form_name == 'portfolio' and portfolio_form.validate_on_submit() and not request.form.get('portfolio_id'):
+        logging.debug("Processing portfolio form")
         try:
-            file = portfolio_form.image.data
-            if allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads/home', filename)
-                os.makedirs('app/static/uploads/home', exist_ok=True)
-                file.save(file_path)
-                portfolio = PortfolioItem(
-                    title=portfolio_form.title.data,
-                    image_url=f'/static/uploads/home/{filename}'
-                )
-                db.session.add(portfolio)
-                db.session.commit()
-                flash('Thêm portfolio thành công!', 'success')
-                return redirect(url_for('admin.manage_home'))
-            else:
-                flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
+            image_url = '/static/images/default.jpg'
+            if portfolio_form.image.data:
+                file = portfolio_form.image.data
+                if allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join('app/static/uploads/home', filename)
+                    os.makedirs('app/static/uploads/home', exist_ok=True)
+                    file.save(file_path)
+                    image_url = f'/static/uploads/home/{filename}'
+                else:
+                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
+                    return redirect(url_for('admin.manage_home'))
+            portfolio = PortfolioItem(
+                title=portfolio_form.title.data,
+                image_url=image_url
+            )
+            db.session.add(portfolio)
+            db.session.commit()
+            flash('Thêm portfolio thành công!', 'success')
+            return redirect(url_for('admin.manage_home'))
         except Exception as e:
             flash(f'Lỗi khi thêm portfolio: {str(e)}', 'error')
-        return redirect(url_for('admin.manage_home'))
+            logging.error(f"Portfolio form error: {str(e)}")
 
-    if service_form.validate_on_submit():
+    if form_name == 'service' and service_form.validate_on_submit() and not request.form.get('service_id'):
+        logging.debug("Processing service form")
         try:
-            file = service_form.image.data
-            if allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads/home', filename)
-                os.makedirs('app/static/uploads/home', exist_ok=True)
-                file.save(file_path)
-                service = ServiceCard(
-                    title=service_form.title.data,
-                    description=service_form.description.data,
-                    image_url=f'/static/uploads/home/{filename}',
-                    cta_text=service_form.cta_text.data,
-                    cta_url=service_form.cta_url.data
-                )
-                db.session.add(service)
-                db.session.commit()
-                flash('Thêm dịch vụ thành công!', 'success')
-                return redirect(url_for('admin.manage_home'))
-            else:
-                flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
+            image_url = '/static/images/default.jpg'
+            if service_form.image.data:
+                file = service_form.image.data
+                if allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join('app/static/uploads/home', filename)
+                    os.makedirs('app/static/uploads/home', exist_ok=True)
+                    file.save(file_path)
+                    image_url = f'/static/uploads/home/{filename}'
+                else:
+                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
+                    return redirect(url_for('admin.manage_home'))
+            service = ServiceCard(
+                title=service_form.title.data,
+                description=service_form.description.data,
+                image_url=image_url,
+                cta_text=service_form.cta_text.data,
+                cta_url=service_form.cta_url.data
+            )
+            db.session.add(service)
+            db.session.commit()
+            flash('Thêm dịch vụ thành công!', 'success')
+            return redirect(url_for('admin.manage_home'))
         except Exception as e:
             flash(f'Lỗi khi thêm dịch vụ: {str(e)}', 'error')
-        return redirect(url_for('admin.manage_home'))
+            logging.error(f"Service form error: {str(e)}")
 
-    if testimonial_form.validate_on_submit():
+    if form_name == 'testimonial' and testimonial_form.validate_on_submit() and not request.form.get('testimonial_id'):
+        logging.debug("Processing testimonial form")
         try:
             testimonial = Testimonial(
                 content=testimonial_form.content.data,
@@ -487,32 +503,37 @@ def manage_home():
             return redirect(url_for('admin.manage_home'))
         except Exception as e:
             flash(f'Lỗi khi thêm đánh giá: {str(e)}', 'error')
-        return redirect(url_for('admin.manage_home'))
+            logging.error(f"Testimonial form error: {str(e)}")
 
-    if blog_form.validate_on_submit():
+    if form_name == 'blog' and blog_form.validate_on_submit() and not request.form.get('blog_id'):
+        logging.debug("Processing blog form")
         try:
-            file = blog_form.image.data
-            if allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads/home', filename)
-                os.makedirs('app/static/uploads/home', exist_ok=True)
-                file.save(file_path)
-                blog = BlogCard(
-                    title=blog_form.title.data,
-                    description=blog_form.description.data,
-                    image_url=f'/static/uploads/home/{filename}',
-                    cta_text=blog_form.cta_text.data,
-                    cta_url=blog_form.cta_url.data
-                )
-                db.session.add(blog)
-                db.session.commit()
-                flash('Thêm bài viết nổi bật thành công!', 'success')
-                return redirect(url_for('admin.manage_home'))
-            else:
-                flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
+            image_url = '/static/images/default.jpg'
+            if blog_form.image.data:
+                file = blog_form.image.data
+                if allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join('app/static/uploads/home', filename)
+                    os.makedirs('app/static/uploads/home', exist_ok=True)
+                    file.save(file_path)
+                    image_url = f'/static/uploads/home/{filename}'
+                else:
+                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
+                    return redirect(url_for('admin.manage_home'))
+            blog = BlogCard(
+                title=blog_form.title.data,
+                description=blog_form.description.data,
+                image_url=image_url,
+                cta_text=blog_form.cta_text.data,
+                cta_url=blog_form.cta_url.data
+            )
+            db.session.add(blog)
+            db.session.commit()
+            flash('Thêm bài viết nổi bật thành công!', 'success')
+            return redirect(url_for('admin.manage_home'))
         except Exception as e:
             flash(f'Lỗi khi thêm bài viết: {str(e)}', 'error')
-        return redirect(url_for('admin.manage_home'))
+            logging.error(f"Blog form error: {str(e)}")
 
     intro = IntroSection.query.first()
     portfolios = PortfolioItem.query.all()
@@ -525,7 +546,7 @@ def manage_home():
         intro_form.cta_text.data = intro.cta_text
         intro_form.cta_url.data = intro.cta_url
 
-    return render_template('admin/home.html', 
+    return render_template('admin/home.html',
                           intro_form=intro_form,
                           portfolio_form=portfolio_form,
                           service_form=service_form,
@@ -537,20 +558,174 @@ def manage_home():
                           testimonials=testimonials,
                           blogs=blogs)
 
-@admin_bp.route('/home/delete/<string:model>/<int:id>', methods=['POST'])
+@admin_bp.route('/home/portfolio/edit/<int:id>', methods=['GET'])
+@login_required
+@admin_required
+def get_portfolio(id):
+    portfolio = PortfolioItem.query.get_or_404(id)
+    return jsonify({
+        'id': portfolio.id,
+        'title': portfolio.title,
+        'image_url': portfolio.image_url
+    })
+
+@admin_bp.route('/home/service/edit/<int:id>', methods=['GET'])
+@login_required
+@admin_required
+def get_service(id):
+    service = ServiceCard.query.get_or_404(id)
+    return jsonify({
+        'id': service.id,
+        'title': service.title,
+        'description': service.description,
+        'cta_text': service.cta_text,
+        'cta_url': service.cta_url,
+        'image_url': service.image_url
+    })
+
+@admin_bp.route('/home/testimonial/edit/<int:id>', methods=['GET'])
+@login_required
+@admin_required
+def get_testimonial(id):
+    testimonial = Testimonial.query.get_or_404(id)
+    return jsonify({
+        'id': testimonial.id,
+        'content': testimonial.content,
+        'author': testimonial.author
+    })
+
+@admin_bp.route('/home/blog/edit/<int:id>', methods=['GET'])
+@login_required
+@admin_required
+def get_blog(id):
+    blog = BlogCard.query.get_or_404(id)
+    return jsonify({
+        'id': blog.id,
+        'title': blog.title,
+        'description': blog.description,
+        'cta_text': blog.cta_text,
+        'cta_url': blog.cta_url,
+        'image_url': blog.image_url
+    })
+
+@admin_bp.route('/home/<string:model>/edit/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def edit_home_item(model, id):
+    try:
+        if model == 'portfolio':
+            item = PortfolioItem.query.get_or_404(id)
+            form = PortfolioItemForm()
+            if form.validate_on_submit():
+                item.title = form.title.data
+                if form.image.data:
+                    file = form.image.data
+                    if allowed_file(file.filename):
+                        filename = secure_filename(file.filename)
+                        file_path = os.path.join('app/static/uploads/home', filename)
+                        os.makedirs('app/static/uploads/home', exist_ok=True)
+                        file.save(file_path)
+                        if item.image_url and item.image_url != '/static/images/default.jpg':
+                            old_file = os.path.join('app', item.image_url.lstrip('/'))
+                            if os.path.exists(old_file):
+                                os.remove(old_file)
+                        item.image_url = f'/static/uploads/home/{filename}'
+                db.session.commit()
+                flash('Cập nhật portfolio thành công!', 'success')
+                return redirect(url_for('admin.manage_home'))
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        flash(f'Lỗi {field}: {error}', 'error')
+        elif model == 'service':
+            item = ServiceCard.query.get_or_404(id)
+            form = ServiceCardForm()
+            if form.validate_on_submit():
+                item.title = form.title.data
+                item.description = form.description.data
+                item.cta_text = form.cta_text.data
+                item.cta_url = form.cta_url.data
+                if form.image.data:
+                    file = form.image.data
+                    if allowed_file(file.filename):
+                        filename = secure_filename(file.filename)
+                        file_path = os.path.join('app/static/uploads/home', filename)
+                        os.makedirs('app/static/uploads/home', exist_ok=True)
+                        file.save(file_path)
+                        if item.image_url and item.image_url != '/static/images/default.jpg':
+                            old_file = os.path.join('app', item.image_url.lstrip('/'))
+                            if os.path.exists(old_file):
+                                os.remove(old_file)
+                        item.image_url = f'/static/uploads/home/{filename}'
+                db.session.commit()
+                flash('Cập nhật dịch vụ thành công!', 'success')
+                return redirect(url_for('admin.manage_home'))
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        flash(f'Lỗi {field}: {error}', 'error')
+        elif model == 'testimonial':
+            item = Testimonial.query.get_or_404(id)
+            form = TestimonialForm()
+            if form.validate_on_submit():
+                item.content = form.content.data
+                item.author = form.author.data
+                db.session.commit()
+                flash('Cập nhật đánh giá thành công!', 'success')
+                return redirect(url_for('admin.manage_home'))
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        flash(f'Lỗi {field}: {error}', 'error')
+        elif model == 'blog':
+            item = BlogCard.query.get_or_404(id)
+            form = BlogCardForm()
+            if form.validate_on_submit():
+                item.title = form.title.data
+                item.description = form.description.data
+                item.cta_text = form.cta_text.data
+                item.cta_url = form.cta_url.data
+                if form.image.data:
+                    file = form.image.data
+                    if allowed_file(file.filename):
+                        filename = secure_filename(file.filename)
+                        file_path = os.path.join('app/static/uploads/home', filename)
+                        os.makedirs('app/static/uploads/home', exist_ok=True)
+                        file.save(file_path)
+                        if item.image_url and item.image_url != '/static/images/default.jpg':
+                            old_file = os.path.join('app', item.image_url.lstrip('/'))
+                            if os.path.exists(old_file):
+                                os.remove(old_file)
+                        item.image_url = f'/static/uploads/home/{filename}'
+                db.session.commit()
+                flash('Cập nhật bài viết thành công!', 'success')
+                return redirect(url_for('admin.manage_home'))
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        flash(f'Lỗi {field}: {error}', 'error')
+        else:
+            flash('Mục không hợp lệ.', 'error')
+            return redirect(url_for('admin.manage_home'))
+    except Exception as e:
+        flash(f'Lỗi khi cập nhật mục: {str(e)}', 'error')
+        logging.error(f"Edit {model} error: {str(e)}")
+    return redirect(url_for('admin.manage_home'))
+
+@admin_bp.route('/home/<string:model>/delete/<int:id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_home_item(model, id):
     try:
         if model == 'portfolio':
             item = PortfolioItem.query.get_or_404(id)
-            if item.image_url and item.image_url != 'default_intro.jpg':
+            if item.image_url and item.image_url != '/static/images/default.jpg':
                 file_path = os.path.join('app', item.image_url.lstrip('/'))
                 if os.path.exists(file_path):
                     os.remove(file_path)
         elif model == 'service':
             item = ServiceCard.query.get_or_404(id)
-            if item.image_url and item.image_url != 'default_intro.jpg':
+            if item.image_url and item.image_url != '/static/images/default.jpg':
                 file_path = os.path.join('app', item.image_url.lstrip('/'))
                 if os.path.exists(file_path):
                     os.remove(file_path)
@@ -558,17 +733,17 @@ def delete_home_item(model, id):
             item = Testimonial.query.get_or_404(id)
         elif model == 'blog':
             item = BlogCard.query.get_or_404(id)
-            if item.image_url and item.image_url != 'default_intro.jpg':
+            if item.image_url and item.image_url != '/static/images/default.jpg':
                 file_path = os.path.join('app', item.image_url.lstrip('/'))
                 if os.path.exists(file_path):
                     os.remove(file_path)
         else:
             flash('Mục không hợp lệ.', 'error')
             return redirect(url_for('admin.manage_home'))
-
         db.session.delete(item)
         db.session.commit()
         flash('Xóa mục thành công!', 'success')
     except Exception as e:
         flash(f'Lỗi khi xóa mục: {str(e)}', 'error')
+        logging.error(f"Delete {model} error: {str(e)}")
     return redirect(url_for('admin.manage_home'))
