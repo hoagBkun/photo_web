@@ -5,19 +5,34 @@ endblock %} {% block content %}
     <div class="card mb-4">
         <div class="card-body">
             <h5>Thêm Banner Mới</h5>
-            <form method="POST" enctype="multipart/form-data">
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+                id="add-banner-form"
+            >
                 {{ form.hidden_tag() }}
                 <div class="mb-3">
                     {{ form.image.label(class="form-label") }} {{
-                    form.image(class="form-control") }}
+                    form.image(class="form-control") }} {% if form.image.errors
+                    %}
+                    <div class="text-danger">{{ form.image.errors[0] }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     {{ form.title.label(class="form-label") }} {{
-                    form.title(class="form-control") }}
+                    form.title(class="form-control") }} {% if form.title.errors
+                    %}
+                    <div class="text-danger">{{ form.title.errors[0] }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     {{ form.description.label(class="form-label") }} {{
-                    form.description(class="form-control") }}
+                    form.description(class="form-control") }} {% if
+                    form.description.errors %}
+                    <div class="text-danger">
+                        {{ form.description.errors[0] }}
+                    </div>
+                    {% endif %}
                 </div>
                 {{ form.submit(class="btn btn-primary") }}
             </form>
@@ -38,7 +53,7 @@ endblock %} {% block content %}
                 </thead>
                 <tbody>
                     {% for banner in banners %}
-                    <tr>
+                    <tr id="banner-{{ banner.id }}">
                         <td>{{ banner.id }}</td>
                         <td>{{ banner.title }}</td>
                         <td>
@@ -55,12 +70,13 @@ endblock %} {% block content %}
                                 class="btn btn-sm btn-warning"
                                 >Sửa</a
                             >
-                            <a
-                                href="{{ url_for('admin.delete_banner', id=banner.id) }}"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                >Xóa</a
+                            <button
+                                class="btn btn-sm btn-danger delete-banner"
+                                data-id="{{ banner.id }}"
+                                onclick="deleteBanner({{ banner.id }})"
                             >
+                                Xóa
+                            </button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -69,4 +85,37 @@ endblock %} {% block content %}
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function deleteBanner(id) {
+            if (!confirm("Bạn có chắc muốn xóa banner này?")) return;
+
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute("content");
+
+            fetch("/admin/banners/delete/" + id, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-Token": csrfToken,
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        alert(data.message || "Xóa banner thành công!");
+                        document.getElementById("banner-" + id).remove();
+                    } else {
+                        alert(data.error || "Lỗi khi xóa banner.");
+                    }
+                })
+                .catch((error) => {
+                    alert("Lỗi khi xóa banner: " + error.message);
+                });
+        }
+
+        window.deleteBanner = deleteBanner;
+    });
+</script>
 {% endblock %}

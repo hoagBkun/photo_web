@@ -1,87 +1,85 @@
 {% extends "admin/base.html" %} {% block title %}Bảng Điều Khiển - HoagART{%
 endblock %} {% block content %}
 <div class="container-fluid">
-    <h1 class="mb-4">Bảng Điều Khiển Quản Trị</h1>
-    <div class="card">
-        <div class="card-body">
-            <h5>Danh sách Thống kê</h5>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Mục</th>
-                        <th>Số lượng</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Banner</td>
-                        <td>{{ banner_count }}</td>
-                        <td>
-                            <a
-                                href="{{ url_for('admin.manage_banners') }}"
-                                class="btn btn-sm btn-primary"
-                                >Quản lý</a
-                            >
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Bài viết</td>
-                        <td>{{ post_count }}</td>
-                        <td>
-                            <a
-                                href="{{ url_for('admin.manage_posts') }}"
-                                class="btn btn-sm btn-primary"
-                                >Quản lý</a
-                            >
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Người dùng</td>
-                        <td>{{ user_count }}</td>
-                        <td>
-                            <a
-                                href="{{ url_for('admin.manage_users') }}"
-                                class="btn btn-sm btn-primary"
-                                >Quản lý</a
-                            >
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Gói dịch vụ</td>
-                        <td>{{ pricing_count }}</td>
-                        <td>
-                            <a
-                                href="{{ url_for('admin.manage_pricing') }}"
-                                class="btn btn-sm btn-primary"
-                                >Quản lý</a
-                            >
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Trang Bảng Giá</td>
-                        <td>-</td>
-                        <td>
-                            <a
-                                href="{{ url_for('admin.manage_pricing_page') }}"
-                                class="btn btn-sm btn-primary"
-                                >Quản lý</a
-                            >
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Trang Chủ</td>
-                        <td>-</td>
-                        <td>
-                            <a
-                                href="{{ url_for('admin.manage_home') }}"
-                                class="btn btn-sm btn-primary"
-                                >Quản lý</a
-                            >
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <h1 class="mb-4">Bảng Điều Khiển</h1>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Banner</h5>
+                    <p class="card-text">{{ banner_count }} banner</p>
+                    <a
+                        href="{{ url_for('admin.manage_banners') }}"
+                        class="btn btn-light"
+                        >Quản lý</a
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Bài viết</h5>
+                    <p class="card-text">{{ post_count }} bài viết</p>
+                    <a
+                        href="{{ url_for('admin.manage_posts') }}"
+                        class="btn btn-light"
+                        >Quản lý</a
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Người dùng</h5>
+                    <p class="card-text">{{ user_count }} người dùng</p>
+                    <a
+                        href="{{ url_for('admin.manage_users') }}"
+                        class="btn btn-light"
+                        >Quản lý</a
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Gói dịch vụ</h5>
+                    <p class="card-text">{{ pricing_count }} gói</p>
+                    <a
+                        href="{{ url_for('admin.manage_pricing') }}"
+                        class="btn btn-light"
+                        >Quản lý</a
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">Thành viên đội ngũ</h5>
+                    <p class="card-text">{{ team_member_count }} thành viên</p>
+                    <a
+                        href="{{ url_for('admin.manage_introduce') }}"
+                        class="btn btn-light"
+                        >Quản lý</a
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-secondary">
+                <div class="card-body">
+                    <h5 class="card-title">Cơ sở</h5>
+                    <p class="card-text">{{ location_count }} cơ sở</p>
+                    <a
+                        href="{{ url_for('admin.manage_contact') }}"
+                        class="btn btn-light"
+                        >Quản lý</a
+                    >
+                </div>
+            </div>
         </div>
     </div>
 </div>

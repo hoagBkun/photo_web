@@ -1,26 +1,624 @@
-{% extends "admin/base.html" %} {% block title %}Quản lý Thông tin Liên hệ -
-HoagART{% endblock %} {% block content %}
-<div class="container-fluid">
-    <h1 class="mb-4">Quản lý Thông tin Liên hệ</h1>
-    <div class="card">
-        <div class="card-body">
-            <form method="POST">
-                {{ form.hidden_tag() }}
-                <div class="mb-3">
-                    {{ form.address.label(class="form-label") }} {{
-                    form.address(class="form-control") }}
+{% extends "admin/base.html" %} {% block title %}Quản Lý Liên Hệ{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <!-- Contact Info Section -->
+    <div class="contact-info-section mb-5">
+        <h2 class="mb-4">Thông Tin Liên Hệ</h2>
+        {% if contact_info %}
+        <div class="card shadow-sm" id="previewContact">
+            <div class="card-body position-relative">
+                <form
+                    id="contactInfoForm"
+                    method="POST"
+                    action="{{ url_for('admin.manage_contact') }}"
+                >
+                    <input
+                        type="hidden"
+                        name="form_name"
+                        value="contact_info"
+                    />
+                    {{ contact_info_form.hidden_tag() }}
+                    <div class="view-mode">
+                        <p class="mb-2">
+                            <strong>Email:</strong>
+                            <span id="contactEmailView"
+                                >{{ contact_info.email or 'Chưa thiết lập'
+                                }}</span
+                            >
+                        </p>
+                        <p class="mb-2">
+                            <strong>Hotline:</strong>
+                            <span id="contactHotlineView"
+                                >{{ contact_info.hotline or 'Chưa thiết lập'
+                                }}</span
+                            >
+                        </p>
+                        <p class="mb-2">
+                            <strong>Fanpage:</strong>
+                            <a
+                                href="{{ contact_info.fanpage or '#' }}"
+                                id="contactFanpageView"
+                                target="_blank"
+                                >{{ contact_info.fanpage or 'Chưa thiết lập'
+                                }}</a
+                            >
+                        </p>
+                    </div>
+                    <div class="edit-mode d-none">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            {{ contact_info_form.email(class="form-control",
+                            placeholder="Nhập email liên hệ") }} {% if
+                            contact_info_form.email.errors %}
+                            <div class="text-danger">
+                                {{ contact_info_form.email.errors | join(", ")
+                                }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="hotline" class="form-label"
+                                >Hotline</label
+                            >
+                            {{ contact_info_form.hotline(class="form-control",
+                            placeholder="Nhập số hotline") }} {% if
+                            contact_info_form.hotline.errors %}
+                            <div class="text-danger">
+                                {{ contact_info_form.hotline.errors | join(", ")
+                                }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="fanpage" class="form-label"
+                                >Fanpage URL</label
+                            >
+                            {{ contact_info_form.fanpage(class="form-control",
+                            placeholder="Nhập URL fanpage") }} {% if
+                            contact_info_form.fanpage.errors %}
+                            <div class="text-danger">
+                                {{ contact_info_form.fanpage.errors | join(", ")
+                                }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="edit-buttons d-none">
+                            <button
+                                type="submit"
+                                name="submit"
+                                class="btn btn-primary me-2"
+                            >
+                                Lưu
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                onclick="cancelEdit('previewContact')"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="item-actions position-absolute top-0 end-0 p-2"
+                        style="z-index: 10"
+                    >
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            onclick="toggleEdit('previewContact')"
+                            title="Sửa"
+                        >
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            Chưa có thông tin liên hệ. Vui lòng cập nhật.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Locations Section -->
+    <div class="locations-section mb-5">
+        <h2 class="mb-4">Cơ Sở Của Chúng Tôi</h2>
+        {% if locations %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for location in locations %}
+            <div class="col">
+                <div class="card shadow-sm" id="location_{{ location.id }}">
+                    <div class="card-body position-relative">
+                        <form
+                            id="locationForm_{{ location.id }}"
+                            method="POST"
+                            action="{{ url_for('admin.edit_location', id=location.id) }}"
+                        >
+                            <input
+                                type="hidden"
+                                name="form_name"
+                                value="location"
+                            />
+                            {{ location_form.hidden_tag() }}
+                            <div class="view-mode">
+                                <h5
+                                    class="card-title"
+                                    id="locationNameView_{{ location.id }}"
+                                >
+                                    {{ location.name }}
+                                </h5>
+                                <p
+                                    class="card-text"
+                                    id="locationAddressView_{{ location.id }}"
+                                >
+                                    {{ location.address }}
+                                </p>
+                                <div id="locationMapView_{{ location.id }}">
+                                    {% if location.google_maps_link %}
+                                    <iframe
+                                        src="{{ location.google_maps_link }}"
+                                        width="100%"
+                                        height="200"
+                                        style="border: 0; border-radius: 6px"
+                                        allowfullscreen=""
+                                        loading="lazy"
+                                    ></iframe>
+                                    {% else %}
+                                    <p class="text-muted">Chưa có bản đồ.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="edit-mode d-none">
+                                <div class="mb-3">
+                                    <label
+                                        for="locationName_{{ location.id }}"
+                                        class="form-label"
+                                        >Tên cơ sở</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="locationName_{{ location.id }}"
+                                        name="name"
+                                        value="{{ location.name }}"
+                                        required
+                                    />
+                                </div>
+                                <div class="mb-3">
+                                    <label
+                                        for="locationAddress_{{ location.id }}"
+                                        class="form-label"
+                                        >Địa chỉ</label
+                                    >
+                                    <textarea
+                                        class="form-control"
+                                        id="locationAddress_{{ location.id }}"
+                                        name="address"
+                                        required
+                                    >
+{{ location.address }}</textarea
+                                    >
+                                </div>
+                                <div class="mb-3">
+                                    <label
+                                        for="locationMap_{{ location.id }}"
+                                        class="form-label"
+                                        >URL nhúng Google Maps</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="locationMap_{{ location.id }}"
+                                        name="google_maps_link"
+                                        value="{{ location.google_maps_link }}"
+                                        placeholder="https://www.google.com/maps/embed?..."
+                                    />
+                                    <div class="form-text">
+                                        Sao chép URL nhúng từ Google Maps (Chia
+                                        sẻ > Nhúng bản đồ).
+                                    </div>
+                                    <div
+                                        id="mapPreview_{{ location.id }}"
+                                        class="mt-2"
+                                    ></div>
+                                </div>
+                                <div class="edit-buttons d-none">
+                                    <button
+                                        type="submit"
+                                        name="submit"
+                                        class="btn btn-primary me-2"
+                                    >
+                                        Lưu
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary"
+                                        onclick="cancelEdit('location_{{ location.id }}')"
+                                    >
+                                        Hủy
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                class="item-actions position-absolute top-0 end-0 p-2"
+                                style="z-index: 10"
+                            >
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-primary me-1"
+                                    onclick="toggleEdit('location_{{ location.id }}')"
+                                    title="Sửa"
+                                >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="deleteItem('location', {{ location.id }})"
+                                    title="Xóa"
+                                >
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    {{ form.phone.label(class="form-label") }} {{
-                    form.phone(class="form-control") }}
-                </div>
-                <div class="mb-3">
-                    {{ form.email.label(class="form-label") }} {{
-                    form.email(class="form-control") }}
-                </div>
-                {{ form.submit(class="btn btn-primary") }}
-            </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">Chưa có cơ sở. Vui lòng thêm mới.</div>
+        {% endif %}
+        <div class="mt-4 text-end">
+            <button
+                type="button"
+                class="btn btn-primary"
+                onclick="toggleAdd('addLocationForm')"
+            >
+                <i class="fas fa-plus"></i> Thêm cơ sở
+            </button>
+        </div>
+        <div class="card shadow-sm mt-3 d-none" id="addLocationForm">
+            <div class="card-body">
+                <h5 class="card-title">Thêm Cơ Sở Mới</h5>
+                <form
+                    id="locationAddForm"
+                    method="POST"
+                    action="{{ url_for('admin.manage_contact') }}"
+                >
+                    <input type="hidden" name="form_name" value="location" />
+                    {{ location_form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label for="addLocationName" class="form-label"
+                            >Tên cơ sở</label
+                        >
+                        {{ location_form.name(class="form-control",
+                        id="addLocationName", placeholder="Nhập tên cơ sở",
+                        required=True) }} {% if location_form.name.errors %}
+                        <div class="text-danger">
+                            {{ location_form.name.errors | join(", ") }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="addLocationAddress" class="form-label"
+                            >Địa chỉ</label
+                        >
+                        {{ location_form.address(class="form-control",
+                        id="addLocationAddress", placeholder="Nhập địa chỉ",
+                        required=True) }} {% if location_form.address.errors %}
+                        <div class="text-danger">
+                            {{ location_form.address.errors | join(", ") }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="addLocationMap" class="form-label"
+                            >URL nhúng Google Maps</label
+                        >
+                        {{ location_form.google_maps_link(class="form-control",
+                        id="addLocationMap",
+                        placeholder="https://www.google.com/maps/embed?...") }}
+                        <div class="form-text">
+                            Sao chép URL nhúng từ Google Maps (Chia sẻ > Nhúng
+                            bản đồ).
+                        </div>
+                        {% if location_form.google_maps_link.errors %}
+                        <div class="text-danger">
+                            {{ location_form.google_maps_link.errors | join(",
+                            ") }}
+                        </div>
+                        {% endif %}
+                        <div id="addMapPreview" class="mt-2"></div>
+                    </div>
+                    <div>
+                        <button
+                            type="submit"
+                            name="submit"
+                            class="btn btn-primary me-2"
+                        >
+                            Thêm
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            onclick="toggleAdd('addLocationForm')"
+                        >
+                            Hủy
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 8px;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .item-actions {
+        display: flex;
+        align-items: center;
+        z-index: 10;
+    }
+    .item-actions .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    .edit-buttons {
+        display: flex;
+        align-items: center;
+    }
+    .alert {
+        border-radius: 8px;
+    }
+    .form-label {
+        font-weight: 500;
+        color: #333;
+    }
+    .form-control,
+    .form-control:focus {
+        border-radius: 6px;
+        border-color: #ced4da;
+    }
+    textarea.form-control {
+        min-height: 100px;
+    }
+    iframe {
+        border-radius: 6px;
+        margin-top: 10px;
+    }
+    .text-muted {
+        font-style: italic;
+    }
+</style>
+
+<script>
+    function toggleEdit(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section.classList.contains("editing")) {
+            cancelEdit(sectionId);
+        } else {
+            // Close other editing sections
+            document
+                .querySelectorAll(".editing")
+                .forEach((s) => cancelEdit(s.id));
+            section.classList.add("editing");
+            section.querySelector(".view-mode").classList.add("d-none");
+            section.querySelector(".edit-mode").classList.remove("d-none");
+            section.querySelector(".edit-buttons").classList.remove("d-none");
+            if (sectionId === "previewContact") {
+                const emailView =
+                    document.getElementById("contactEmailView").textContent;
+                const hotlineView =
+                    document.getElementById("contactHotlineView").textContent;
+                const fanpageView =
+                    document.getElementById("contactFanpageView").href;
+                document.getElementById("email").value =
+                    emailView === "Chưa thiết lập" ? "" : emailView;
+                document.getElementById("hotline").value =
+                    hotlineView === "Chưa thiết lập" ? "" : hotlineView;
+                document.getElementById("fanpage").value =
+                    fanpageView === "#" ? "" : fanpageView;
+            } else if (sectionId.startsWith("location_")) {
+                const id = sectionId.split("_")[1];
+                updateIframe(
+                    `mapPreview_${id}`,
+                    document.getElementById(`locationMap_${id}`).value
+                );
+            }
+        }
+    }
+
+    function cancelEdit(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.classList.remove("editing");
+            section.querySelector(".view-mode").classList.remove("d-none");
+            section.querySelector(".edit-mode").classList.add("d-none");
+            section.querySelector(".edit-buttons").classList.add("d-none");
+        }
+    }
+
+    function toggleAdd(formId) {
+        const form = document.getElementById(formId);
+        if (form.classList.contains("d-none")) {
+            form.classList.remove("d-none");
+            document.getElementById("locationAddForm").reset();
+            document
+                .querySelectorAll(".text-end button")
+                .forEach((btn) => btn.classList.add("d-none"));
+            updateIframe("addMapPreview", "");
+        } else {
+            form.classList.add("d-none");
+            document
+                .querySelectorAll(".text-end button")
+                .forEach((btn) => btn.classList.remove("d-none"));
+        }
+    }
+
+    function deleteItem(type, id) {
+        if (
+            confirm(
+                `Bạn có chắc chắn muốn xóa ${
+                    type === "location" ? "cơ sở" : "thông tin"
+                } này?`
+            )
+        ) {
+            fetch(`/admin/contact/${type}/delete/${id}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-Token": document.querySelector(
+                        'input[name="csrf_token"]'
+                    ).value,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({}),
+            })
+                .then((response) => {
+                    console.log("Delete response status:", response.status);
+                    if (!response.ok) {
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Delete response data:", data);
+                    if (data.success) {
+                        document.getElementById(`${type}_${id}`)?.remove();
+                        alert(data.message || "Xóa thành công!");
+                    } else {
+                        alert(data.error || "Xóa thất bại!");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Delete error:", error);
+                    alert("Lỗi khi xóa: " + error.message);
+                });
+        }
+    }
+
+    function updateIframe(previewId, url) {
+        const preview = document.getElementById(previewId);
+        if (url && url.startsWith("https://www.google.com/maps/embed")) {
+            preview.innerHTML = `<iframe src="${url}" width="100%" height="200" style="border:0; border-radius:6px;" allowfullscreen="" loading="lazy"></iframe>`;
+        } else {
+            preview.innerHTML =
+                '<p class="text-muted">Nhập URL để xem trước bản đồ.</p>';
+        }
+    }
+
+    document.querySelectorAll("form").forEach((form) => {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const url = form.action;
+            console.log(
+                "Submitting form to:",
+                url,
+                "Data:",
+                Object.fromEntries(formData)
+            );
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-Token": document.querySelector(
+                        'input[name="csrf_token"]'
+                    ).value,
+                },
+                body: formData,
+            })
+                .then((response) => {
+                    console.log("Response status:", response.status);
+                    if (!response.ok) {
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Response data:", data);
+                    if (data.success) {
+                        alert(data.message || "Lưu thành công!");
+                        if (form.id.startsWith("locationForm_")) {
+                            const id = form.id.split("_")[1];
+                            document.getElementById(
+                                `locationNameView_${id}`
+                            ).textContent = formData.get("name");
+                            document.getElementById(
+                                `locationAddressView_${id}`
+                            ).textContent = formData.get("address");
+                            const mapView = document.getElementById(
+                                `locationMapView_${id}`
+                            );
+                            const mapLink = formData.get("google_maps_link");
+                            mapView.innerHTML = mapLink
+                                ? `<iframe src="${mapLink}" width="100%" height="200" style="border:0; border-radius:6px;" allowfullscreen="" loading="lazy"></iframe>`
+                                : `<p class="text-muted">Chưa có bản đồ.</p>`;
+                            cancelEdit(`location_${id}`);
+                        } else if (form.id === "contactInfoForm") {
+                            document.getElementById(
+                                "contactEmailView"
+                            ).textContent =
+                                formData.get("email") || "Chưa thiết lập";
+                            document.getElementById(
+                                "contactHotlineView"
+                            ).textContent =
+                                formData.get("hotline") || "Chưa thiết lập";
+                            const fanpageView =
+                                document.getElementById("contactFanpageView");
+                            fanpageView.href = formData.get("fanpage") || "#";
+                            fanpageView.textContent =
+                                formData.get("fanpage") || "Chưa thiết lập";
+                            cancelEdit("previewContact");
+                        } else if (form.id === "locationAddForm") {
+                            location.reload();
+                        }
+                    } else {
+                        alert(
+                            data.error ||
+                                "Dữ liệu không hợp lệ: " +
+                                    JSON.stringify(data.details || {})
+                        );
+                    }
+                })
+                .catch((error) => {
+                    console.error("AJAX error:", error);
+                    alert("Lỗi khi gửi dữ liệu: " + error.message);
+                });
+        });
+    });
+
+    document
+        .querySelectorAll('input[name="google_maps_link"]')
+        .forEach((input) => {
+            input.addEventListener("input", function (e) {
+                const value = e.target.value;
+                const previewId =
+                    e.target.id === "addLocationMap"
+                        ? "addMapPreview"
+                        : `mapPreview_${e.target.id.split("_")[1]}`;
+                updateIframe(previewId, value);
+                if (
+                    value &&
+                    !value.startsWith("https://www.google.com/maps/embed")
+                ) {
+                    e.target.setCustomValidity(
+                        "Vui lòng nhập URL nhúng Google Maps hợp lệ (bắt đầu bằng https://www.google.com/maps/embed)."
+                    );
+                } else {
+                    e.target.setCustomValidity("");
+                }
+            });
+        });
+</script>
 {% endblock %}

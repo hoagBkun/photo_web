@@ -6,8 +6,14 @@ from wtforms.validators import DataRequired, Email, Optional, Length, URL
 from app.models.post import Post
 
 class BannerForm(FlaskForm):
-    image = FileField('Hình ảnh Banner', validators=[DataRequired()])
-    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=200)])
+    image = FileField('Hình ảnh Banner', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Mô tả', validators=[Optional()])
+    submit = SubmitField('Lưu')
+
+class EditBannerForm(FlaskForm):
+    image = FileField('Hình ảnh Banner', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('Mô tả', validators=[Optional()])
     submit = SubmitField('Lưu')
 
@@ -15,13 +21,6 @@ class PostForm(FlaskForm):
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=200)])
     content = TextAreaField('Nội dung', validators=[DataRequired()])
     image = FileField('Ảnh bìa', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
-    submit = SubmitField('Lưu')
-
-class ContactInfoForm(FlaskForm):
-    address = StringField('Địa chỉ', validators=[Optional()])
-    phone = StringField('Số điện thoại', validators=[Optional()])
-    email = StringField('Email', validators=[Optional(), Email()])
-    social_links = TextAreaField('Liên kết mạng xã hội (mỗi dòng 1 link)', validators=[Optional()])
     submit = SubmitField('Lưu')
 
 class UserForm(FlaskForm):
@@ -76,3 +75,40 @@ class FeaturedPostForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(FeaturedPostForm, self).__init__(*args, **kwargs)
         self.post_id.choices = [(post.id, post.title) for post in Post.query.order_by(Post.created_at.desc()).all()]
+
+class IntroduceSectionForm(FlaskForm):
+    text = TextAreaField('Văn bản', validators=[DataRequired(), Length(max=1000)])
+    cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
+    cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
+    image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    submit = SubmitField('Lưu')
+
+class TeamMemberForm(FlaskForm):
+    name = StringField('Tên', validators=[DataRequired(), Length(max=100)])
+    role = StringField('Vai trò', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Mô tả', validators=[DataRequired(), Length(max=500)])
+    image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    submit = SubmitField('Lưu')
+
+class MissionSectionForm(FlaskForm):
+    text = TextAreaField('Văn bản', validators=[DataRequired(), Length(max=1000)])
+    image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    submit = SubmitField('Lưu')
+
+class ContactInfoForm(FlaskForm):
+    email = StringField('Email', validators=[Optional(), Email(), Length(max=255)])
+    hotline = StringField('Hotline', validators=[Optional(), Length(max=20)])
+    fanpage = StringField('Fanpage URL', validators=[Optional(), Length(max=255)])
+    submit = SubmitField('Submit')
+
+class LocationForm(FlaskForm):
+    name = StringField('Tên cơ sở', validators=[DataRequired(), Length(min=1, max=100)])
+    address = TextAreaField('Địa chỉ', validators=[DataRequired(), Length(min=1, max=255)])
+    google_maps_link = StringField('Google Maps Link', validators=[Optional(), Length(max=1000)])
+    submit = SubmitField('Submit')
+
+class ContactForm(FlaskForm):
+    name = StringField('Họ và Tên', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone = StringField('Số Điện Thoại', validators=[DataRequired()])
+    message = TextAreaField('Tin Nhắn', validators=[DataRequired()])

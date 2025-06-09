@@ -2,101 +2,73 @@
 endblock %} {% block content %}
 <!-- Nội dung chính -->
 <div class="container">
-    <!-- Lịch sử -->
+    <!-- Giới thiệu -->
+    {% if introduce %}
     <div class="intro-section">
         <h2>Về HoagART</h2>
         <div class="intro-grid">
             <div class="intro-text">
-                <p>
-                    HoagART được thành lập vào năm 2015 tại Hà Nội, khởi nguồn
-                    từ niềm đam mê nhiếp ảnh của hai nhà sáng lập. Với hơn 10
-                    năm kinh nghiệm, chúng tôi đã phục vụ hàng ngàn khách hàng,
-                    từ cá nhân đến các doanh nghiệp lớn, mang đến những bức ảnh
-                    nghệ thuật đầy cảm hứng.
-                </p>
-                <p>
-                    Chúng tôi không ngừng sáng tạo để biến mỗi khoảnh khắc của
-                    bạn thành một tác phẩm nghệ thuật vĩnh cửu.
-                </p>
-                <a href="{{ url_for('main.contact') }}" class="btn"
-                    >Liên Hệ Ngay</a
+                {% for paragraph in introduce.text.split('\n') if
+                paragraph.strip() %}
+                <p>{{ paragraph }}</p>
+                {% endfor %}
+                <a href="{{ introduce.cta_url }}" class="btn"
+                    >{{ introduce.cta_text }}</a
                 >
             </div>
             <div class="intro-image">
-                <img
-                    src="https://i.pinimg.com/736x/51/f1/48/51f1484c60e5f37e5a4bbdd8e983b64c.jpg"
-                    alt="Lịch sử HoagART"
-                />
+                <img src="{{ introduce.image_url }}" alt="Giới thiệu HoagART" />
             </div>
         </div>
     </div>
+    {% else %}
+    <div class="intro-section">
+        <h2>Về HoagART</h2>
+        <p class="no-data">Chưa có nội dung giới thiệu.</p>
+    </div>
+    {% endif %}
 
     <!-- Đội ngũ -->
     <div class="team-section">
         <h2>Đội Ngũ Của Chúng Tôi</h2>
+        {% if team_members %}
         <p>
             Đội ngũ chuyên nghiệp của HoagART luôn sẵn sàng mang đến những trải
             nghiệm nhiếp ảnh tuyệt vời nhất.
         </p>
         <div class="team-grid">
+            {% for member in team_members %}
             <div class="team-member">
                 <div class="team-image">
-                    <img
-                        src="https://i.pinimg.com/736x/51/f1/48/51f1484c60e5f37e5a4bbdd8e983b64c.jpg"
-                        alt="Lê Văn Hòa"
-                    />
+                    <img src="{{ member.image_url }}" alt="{{ member.name }}" />
                 </div>
-                <h3>Lê Văn Hòa</h3>
-                <p class="role">Nhiếp ảnh gia trưởng</p>
-                <p>
-                    12 năm kinh nghiệm trong lĩnh vực nhiếp ảnh nghệ thuật và
-                    thương mại.
-                </p>
+                <h3>{{ member.name }}</h3>
+                <p class="role">{{ member.role }}</p>
+                <p>{{ member.description }}</p>
             </div>
-            <div class="team-member">
-                <div class="team-image">
-                    <img
-                        src="https://i.pinimg.com/736x/51/f1/48/51f1484c60e5f37e5a4bbdd8e983b64c.jpg"
-                        alt="Nguyễn Thị Lan"
-                    />
-                </div>
-                <h3>Nguyễn Thị Lan</h3>
-                <p class="role">Chuyên gia chỉnh sửa ảnh</p>
-                <p>
-                    9 năm kinh nghiệm, chuyên về chỉnh sửa ảnh nghệ thuật và hậu
-                    kỳ.
-                </p>
-            </div>
-            <div class="team-member">
-                <div class="team-image">
-                    <img
-                        src="https://i.pinimg.com/736x/51/f1/48/51f1484c60e5f37e5a4bbdd8e983b64c.jpg"
-                        alt="Trần Văn Cường"
-                    />
-                </div>
-                <h3>Trần Văn Cường</h3>
-                <p class="role">Quản lý dự án</p>
-                <p>7 năm kinh nghiệm quản lý các dự án nhiếp ảnh quy mô lớn.</p>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <p class="no-data">Chưa có thành viên đội ngũ.</p>
+        {% endif %}
     </div>
 
     <!-- Sứ mệnh -->
+    {% if mission %}
     <div class="mission-section">
         <h2>Sứ Mệnh Của HoagART</h2>
         <div class="mission-content">
-            <p>
-                Chúng tôi tin rằng mỗi bức ảnh là một câu chuyện, và sứ mệnh của
-                HoagART là lưu giữ những khoảnh khắc quý giá của bạn qua lăng
-                kính nghệ thuật. Với sự tận tâm và sáng tạo, chúng tôi cam kết
-                mang đến những tác phẩm chất lượng cao nhất, để mỗi bức ảnh
-                không chỉ là hình ảnh mà còn là cảm xúc.
-            </p>
-            <img
-                src="https://i.pinimg.com/736x/51/f1/48/51f1484c60e5f37e5a4bbdd8e983b64c.jpg"
-                alt="Sứ mệnh HoagART"
-            />
+            {% for paragraph in mission.text.split('\n') if paragraph.strip() %}
+            <p>{{ paragraph }}</p>
+            {% endfor %}
+            <img src="{{ mission.image_url }}" alt="Sứ mệnh HoagART" />
         </div>
     </div>
+    {% else %}
+    <div class="mission-section">
+        <h2>Sứ Mệnh Của HoagART</h2>
+        <p class="no-data">Chưa có nội dung sứ mệnh.</p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

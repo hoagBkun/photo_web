@@ -1,1007 +1,1024 @@
 {% extends "admin/base.html" %} {% block title %}Quản lý Trang Chủ{% endblock %}
 {% block content %}
+<!-- Kế thừa CSS từ main/home.html -->
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}"
+/>
+
 <style>
-    body {
-        margin: 0;
-        overflow-x: hidden;
-    }
-    .container-fluid {
-        padding: 0;
-    }
-    .row {
-        margin: 0;
-    }
-    .sidebar {
-        display: none !important;
-    }
-    .content {
-        margin-left: 0 !important;
-        padding: 0 !important;
-    }
-    .navbar-admin {
-        margin-left: 0 !important;
-        padding: 10px 20px;
-    }
     .preview-container {
-        background-color: #ffffff;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .crud-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .crud-buttons button {
+        border: none;
+        background: transparent;
+        color: #333;
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.6rem;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+    .crud-buttons button:hover {
+        opacity: 1;
+    }
+    .item-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 5px;
+        z-index: 10;
+    }
+    .item-actions button {
+        border: none;
+        background: transparent;
+        color: #333;
+        padding: 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.4rem;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+    .item-actions button:hover {
+        opacity: 1;
+    }
+    .editable-text,
+    .editable-textarea,
+    .form-control {
         border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 20px;
-        height: calc(100vh - 150px);
-        overflow-y: auto;
+        padding: 5px;
+        border-radius: 4px;
+        width: 100%;
+        background: #fff;
     }
-    .form-container {
-        background-color: #f8f9fa;
+    .editable-text:focus,
+    .editable-textarea:focus,
+    .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+    .editable-image {
+        display: block;
+        margin-top: 10px;
+    }
+    .edit-mode {
+        display: none;
+    }
+    .view-mode {
+        display: block;
+    }
+    .edit-buttons {
+        margin-top: 10px;
+        display: none;
+    }
+    .editing .edit-mode {
+        display: block;
+    }
+    .editing .view-mode {
+        display: none;
+    }
+    .editing .edit-buttons {
+        display: block;
+    }
+    .portfolio-item,
+    .service-card,
+    .testimonial-item,
+    .blog-card {
+        position: relative;
+    }
+    .no-data {
+        color: #888;
+        font-style: italic;
+    }
+    .add-form {
+        margin-top: 20px;
+        padding: 20px;
         border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 20px;
-        height: calc(100vh - 150px);
-        overflow-y: auto;
-    }
-    .preview-header {
-        background-color: #2c3e50;
-        color: white;
-        padding: 15px;
-        text-align: center;
-    }
-    .preview-section {
-        padding: 20px;
-        border-bottom: 1px solid #eee;
-    }
-    .preview-footer {
-        background-color: #2c3e50;
-        color: white;
-        padding: 20px;
-        text-align: center;
-    }
-    .preview-img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-    }
-    .modal-content {
-        border-radius: 8px;
-    }
-    .modal-header {
-        background-color: #2c3e50;
-        color: white;
+        border-radius: 4px;
+        background: #f9f9f9;
     }
 </style>
 
 <div class="container-fluid">
     <h2 class="my-4">Quản lý Trang Chủ</h2>
-    <div class="row">
-        <!-- Form Container -->
-        <div class="col-md-6 form-container">
-            <!-- Intro Section Form -->
-            <h4>Phần Giới thiệu</h4>
-            <form method="POST" enctype="multipart/form-data" id="introForm">
-                <input type="hidden" name="form_name" value="intro" />
-                {{ intro_form.hidden_tag() }}
-                <div class="mb-3">
-                    {{ intro_form.text.label(class="form-label") }} {{
-                    intro_form.text(class="form-control", id="introText") }}
-                </div>
-                <div class="mb-3">
-                    {{ intro_form.cta_text.label(class="form-label") }} {{
-                    intro_form.cta_text(class="form-control", id="introCtaText")
-                    }}
-                </div>
-                <div class="mb-3">
-                    {{ intro_form.cta_url.label(class="form-label") }} {{
-                    intro_form.cta_url(class="form-control", id="introCtaUrl")
-                    }}
-                </div>
-                <div class="mb-3">
-                    {{ intro_form.image.label(class="form-label") }} {{
-                    intro_form.image(class="form-control", id="introImage") }}
-                </div>
-                <button type="submit" name="submit" class="btn btn-primary">
-                    Cập nhật Giới thiệu
-                </button>
-            </form>
-
-            <hr />
-            <!-- Portfolio Form -->
-            <h4>Portfolio</h4>
+    <div class="preview-container">
+        <!-- Giới thiệu ngắn -->
+        <div class="intro-section container" id="previewIntro">
+            <h2>Về HoagART</h2>
+            {% if intro %}
             <form
+                id="introForm"
                 method="POST"
                 enctype="multipart/form-data"
-                id="portfolioForm"
+                action="{{ url_for('admin.manage_home') }}"
             >
-                <input type="hidden" name="form_name" value="portfolio" />
-                {{ portfolio_form.hidden_tag() }}
-                <div class="mb-3">
-                    {{ portfolio_form.title.label(class="form-label") }} {{
-                    portfolio_form.title(class="form-control",
-                    id="portfolioTitle") }}
-                </div>
-                <div class="mb-3">
-                    {{ portfolio_form.image.label(class="form-label") }} {{
-                    portfolio_form.image(class="form-control",
-                    id="portfolioImage") }}
-                </div>
-                <button type="submit" name="submit" class="btn btn-primary">
-                    Thêm Portfolio
-                </button>
-            </form>
-            <table class="table table-bordered mt-3">
-                <thead>
-                    <tr>
-                        <th>Tiêu đề</th>
-                        <th>Hình ảnh</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for portfolio in portfolios %}
-                    <tr>
-                        <td>{{ portfolio.title }}</td>
-                        <td>
-                            <img
-                                src="{{ portfolio.image_url or '/static/images/default.jpg' }}"
-                                alt="{{ portfolio.title }}"
-                                width="50"
-                            />
-                        </td>
-                        <td>
-                            <button
-                                class="btn btn-sm btn-warning"
-                                onclick="loadPortfolioEdit({{ portfolio.id }})"
-                            >
-                                Sửa
-                            </button>
-                            <form
-                                action="{{ url_for('admin.delete_home_item', model='portfolio', id=portfolio.id) }}"
-                                method="POST"
-                                style="display: inline"
-                            >
-                                <button
-                                    type="submit"
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                >
-                                    Xóa
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <hr />
-            <!-- Service Form -->
-            <h4>Dịch vụ</h4>
-            <form method="POST" enctype="multipart/form-data" id="serviceForm">
-                <input type="hidden" name="form_name" value="service" />
-                {{ service_form.hidden_tag() }}
-                <div class="mb-3">
-                    {{ service_form.title.label(class="form-label") }} {{
-                    service_form.title(class="form-control", id="serviceTitle")
-                    }}
-                </div>
-                <div class="mb-3">
-                    {{ service_form.description.label(class="form-label") }} {{
-                    service_form.description(class="form-control",
-                    id="serviceDescription") }}
-                </div>
-                <div class="mb-3">
-                    {{ service_form.cta_text.label(class="form-label") }} {{
-                    service_form.cta_text(class="form-control",
-                    id="serviceCtaText") }}
-                </div>
-                <div class="mb-3">
-                    {{ service_form.cta_url.label(class="form-label") }} {{
-                    service_form.cta_url(class="form-control",
-                    id="serviceCtaUrl") }}
-                </div>
-                <div class="mb-3">
-                    {{ service_form.image.label(class="form-label") }} {{
-                    service_form.image(class="form-control", id="serviceImage")
-                    }}
-                </div>
-                <button type="submit" name="submit" class="btn btn-primary">
-                    Thêm Dịch vụ
-                </button>
-            </form>
-            <table class="table table-bordered mt-3">
-                <thead>
-                    <tr>
-                        <th>Tiêu đề</th>
-                        <th>Mô tả</th>
-                        <th>Hình ảnh</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for service in services %}
-                    <tr>
-                        <td>{{ service.title }}</td>
-                        <td>{{ service.description|truncate(100) }}</td>
-                        <td>
-                            <img
-                                src="{{ service.image_url or '/static/images/default.jpg' }}"
-                                alt="{{ service.title }}"
-                                width="50"
-                            />
-                        </td>
-                        <td>
-                            <button
-                                class="btn btn-sm btn-warning"
-                                onclick="loadServiceEdit({{ service.id }})"
-                            >
-                                Sửa
-                            </button>
-                            <form
-                                action="{{ url_for('admin.delete_home_item', model='service', id=service.id) }}"
-                                method="POST"
-                                style="display: inline"
-                            >
-                                <button
-                                    type="submit"
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                >
-                                    Xóa
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <hr />
-            <!-- Testimonial Form -->
-            <h4>Đánh giá</h4>
-            <form method="POST" id="testimonialForm">
-                <input type="hidden" name="form_name" value="testimonial" />
-                {{ testimonial_form.hidden_tag() }}
-                <div class="mb-3">
-                    {{ testimonial_form.content.label(class="form-label") }} {{
-                    testimonial_form.content(class="form-control",
-                    id="testimonialContent") }}
-                </div>
-                <div class="mb-3">
-                    {{ testimonial_form.author.label(class="form-label") }} {{
-                    testimonial_form.author(class="form-control",
-                    id="testimonialAuthor") }}
-                </div>
-                <button type="submit" name="submit" class="btn btn-primary">
-                    Thêm Đánh giá
-                </button>
-            </form>
-            <table class="table table-bordered mt-3">
-                <thead>
-                    <tr>
-                        <th>Nội dung</th>
-                        <th>Tác giả</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for testimonial in testimonials %}
-                    <tr>
-                        <td>{{ testimonial.content|truncate(100) }}</td>
-                        <td>{{ testimonial.author }}</td>
-                        <td>
-                            <button
-                                class="btn btn-sm btn-warning"
-                                onclick="loadTestimonialEdit({{ testimonial.id }})"
-                            >
-                                Sửa
-                            </button>
-                            <form
-                                action="{{ url_for('admin.delete_home_item', model='testimonial', id=testimonial.id) }}"
-                                method="POST"
-                                style="display: inline"
-                            >
-                                <button
-                                    type="submit"
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                >
-                                    Xóa
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <hr />
-            <!-- Featured Post Form -->
-            <h4>Bài viết nổi bật</h4>
-            <form method="POST" id="featuredPostForm">
-                <input type="hidden" name="form_name" value="featured_post" />
-                {{ featured_post_form.hidden_tag() }}
-                <div class="mb-3">
-                    {{ featured_post_form.post_id.label(class="form-label") }}
-                    {{ featured_post_form.post_id(class="form-control",
-                    id="featuredPostId",
-                    onchange="previewFeaturedPost(this.value)") }}
-                </div>
-                <button type="submit" name="submit" class="btn btn-primary">
-                    Thêm Bài viết nổi bật
-                </button>
-            </form>
-            <table class="table table-bordered mt-3">
-                <thead>
-                    <tr>
-                        <th>Tiêu đề</th>
-                        <th>Hình ảnh</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for post in featured_posts %}
-                    <tr>
-                        <td>{{ post.title }}</td>
-                        <td>
-                            <img
-                                src="{{ post.image_url or '/static/images/default.jpg' }}"
-                                alt="{{ post.title }}"
-                                width="50"
-                            />
-                        </td>
-                        <td>
-                            <form
-                                action="{{ url_for('admin.delete_home_item', model='featured_post', id=post.id) }}"
-                                method="POST"
-                                style="display: inline"
-                            >
-                                <button
-                                    type="submit"
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                >
-                                    Xóa
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Preview Container -->
-        <div class="col-md-6 preview-container">
-            <!-- Header -->
-            <header class="preview-header">
-                <h1>HoagART</h1>
-                <nav>
-                    <a href="#" class="text-white mx-2">Trang chủ</a>
-                    <a href="#" class="text-white mx-2">Dịch vụ</a>
-                    <a href="#" class="text-white mx-2">Portfolio</a>
-                    <a href="#" class="text-white mx-2">Liên hệ</a>
-                </nav>
-            </header>
-
-            <!-- Intro Section -->
-            <section class="preview-section" id="previewIntro">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h2 id="previewIntroText">
-                            {{ intro.text if intro else 'Chào mừng đến với
-                            HoagART' }}
-                        </h2>
-                        <p>
-                            Chúng tôi cung cấp dịch vụ nhiếp ảnh chuyên nghiệp。
+                <input type="hidden" name="form_name" value="intro" />
+                {{ intro_form.hidden_tag() }}
+                <div class="intro-grid">
+                    <div class="intro-text">
+                        <p class="view-mode" id="introTextView">
+                            {{ intro.text }}
                         </p>
+                        <div class="edit-mode">
+                            <textarea
+                                class="editable-textarea"
+                                id="introText"
+                                name="text"
+                            >
+{{ intro.text }}</textarea
+                            >
+                        </div>
                         <a
-                            id="previewIntroCta"
-                            href="{{ intro.cta_url if intro else '#' }}"
-                            class="btn btn-primary"
-                            >{{ intro.cta_text if intro else 'Browse More' }}</a
+                            href="{{ intro.cta_url }}"
+                            class="btn view-mode"
+                            id="introCtaView"
+                            >{{ intro.cta_text }}</a
                         >
-                    </div>
-                    <div class="col-md-6">
-                        <img
-                            id="previewIntroImage"
-                            src="{{ intro.image_url if intro else '/static/images/default.jpg' }}"
-                            alt="Intro Image"
-                            class="preview-img"
-                        />
-                    </div>
-                </div>
-            </section>
-
-            <!-- Portfolio Section -->
-            <section class="preview-section" id="previewPortfolio">
-                <h2>Portfolio</h2>
-                <div class="row">
-                    {% for portfolio in portfolios %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img
-                                src="{{ portfolio.image_url or '/static/images/default.jpg' }}"
-                                alt="{{ portfolio.title }}"
-                                class="card-img-top preview-img"
-                            />
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    {{ portfolio.title }}
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </section>
-
-            <!-- Services Section -->
-            <section class="preview-section" id="previewServices">
-                <h2>Services</h2>
-                <div class="row">
-                    {% for service in services %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img
-                                src="{{ service.image_url or '/static/images/default.jpg' }}"
-                                alt="{{ service.title }}"
-                                class="card-img-top preview-img"
-                            />
-                            <div class="card-body">
-                                <h5 class="card-title">{{ service.title }}</h5>
-                                <p class="card-text">
-                                    {{ service.description }}
-                                </p>
-                                <a
-                                    href="{{ service.cta_url }}"
-                                    class="btn btn-primary"
-                                    >{{ service.cta_text }}</a
-                                >
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </section>
-
-            <!-- Testimonials Section -->
-            <section class="preview-section" id="previewTestimonials">
-                <h2>Testimonials</h2>
-                <div class="row">
-                    {% for testimonial in testimonials %}
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text">
-                                    "{{ testimonial.content }}"
-                                </p>
-                                <h6 class="card-title">
-                                    {{ testimonial.author }}
-                                </h6>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </section>
-
-            <!-- Featured Posts Section -->
-            <section class="preview-section" id="previewFeaturedPosts">
-                <h2>Featured Posts</h2>
-                <div class="row">
-                    {% for post in featured_posts %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img
-                                src="{{ post.image_url or '/static/images/default.jpg' }}"
-                                alt="{{ post.title }}"
-                                class="card-img-top preview-img"
-                            />
-                            <div class="card-body">
-                                <h5 class="card-title">{{ post.title }}</h5>
-                                <p class="card-text">
-                                    {{ post.content|truncate(100)|safe }}
-                                </p>
-                                <a
-                                    href="{{ url_for('blog.blog_detail', id=post.id) }}"
-                                    class="btn btn-primary"
-                                    >Read More</a
-                                >
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <div
-                        id="newFeaturedPostPreview"
-                        class="col-md-4 mb-4"
-                        style="display: none"
-                    >
-                        <div class="card">
-                            <img
-                                id="previewFeaturedPostImage"
-                                src="/static/images/default.jpg"
-                                alt="New Post"
-                                class="card-img-top preview-img"
-                            />
-                            <div class="card-body">
-                                <h5
-                                    id="previewFeaturedPostTitle"
-                                    class="card-title"
-                                ></h5>
-                                <p
-                                    id="previewFeaturedPostContent"
-                                    class="card-text"
-                                ></p>
-                                <a
-                                    id="previewFeaturedPostCta"
-                                    href="#"
-                                    class="btn btn-primary"
-                                    >Read More</a
-                                >
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Footer -->
-            <footer class="preview-footer">
-                <p>© 2025 HoagART. All rights reserved.</p>
-            </footer>
-        </div>
-    </div>
-
-    <!-- Modal for Editing Portfolio -->
-    <div class="modal fade" id="editPortfolioModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Portfolio</h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body">
-                    <form
-                        id="editPortfolioForm"
-                        method="POST"
-                        enctype="multipart/form-data"
-                        action="{{ url_for('admin.edit_home_item', model='portfolio', id=0) }}"
-                    >
-                        <input
-                            type="hidden"
-                            name="portfolio_id"
-                            id="editPortfolioId"
-                        />
-                        <div class="mb-3">
-                            <label for="editPortfolioTitle" class="form-label"
-                                >Title</label
-                            >
+                        <div class="edit-mode">
                             <input
                                 type="text"
                                 class="form-control"
-                                id="editPortfolioTitle"
-                                name="title"
-                                required
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editPortfolioImage" class="form-label"
-                                >Image</label
-                            >
-                            <input
-                                type="file"
-                                class="form-control"
-                                id="editPortfolioImage"
-                                name="image"
-                                accept="image/*"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            name="submit"
-                            class="btn btn-primary"
-                        >
-                            Save Changes
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Editing Service -->
-    <div class="modal fade" id="editServiceModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Service</h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body">
-                    <form
-                        id="editServiceForm"
-                        method="POST"
-                        enctype="multipart/form-data"
-                        action="{{ url_for('admin.edit_home_item', model='service', id=0) }}"
-                    >
-                        <input
-                            type="hidden"
-                            name="service_id"
-                            id="editServiceId"
-                        />
-                        <div class="mb-3">
-                            <label for="editServiceTitle" class="form-label"
-                                >Title</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="editServiceTitle"
-                                name="title"
-                                required
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label
-                                for="editServiceDescription"
-                                class="form-label"
-                                >Description</label
-                            >
-                            <textarea
-                                class="form-control"
-                                id="editServiceDescription"
-                                name="description"
-                                required
-                            ></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editServiceCtaText" class="form-label"
-                                >CTA Button</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="editServiceCtaText"
+                                id="introCtaText"
                                 name="cta_text"
-                                required
+                                value="{{ intro.cta_text }}"
+                                placeholder="CTA Text"
                             />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editServiceCtaUrl" class="form-label"
-                                >CTA Link</label
-                            >
                             <input
                                 type="text"
-                                class="form-control"
-                                id="editServiceCtaUrl"
+                                class="form-control mt-2"
+                                id="introCtaUrl"
                                 name="cta_url"
-                                required
+                                value="{{ intro.cta_url }}"
+                                placeholder="CTA URL"
                             />
                         </div>
-                        <div class="mb-3">
-                            <label for="editServiceImage" class="form-label"
-                                >Image</label
-                            >
+                    </div>
+                    <div class="intro-image">
+                        <img
+                            class="view-mode"
+                            id="previewIntroImage"
+                            src="{{ intro.image_url }}"
+                            alt="Giới thiệu HoagART"
+                        />
+                        <div class="edit-mode">
+                            <img
+                                id="previewIntroImageEdit"
+                                src="{{ intro.image_url }}"
+                                alt="Giới thiệu HoagART"
+                            />
                             <input
                                 type="file"
-                                class="form-control"
-                                id="editServiceImage"
+                                class="editable-image"
+                                id="introImage"
                                 name="image"
                                 accept="image/*"
                             />
                         </div>
-                        <button
-                            type="submit"
-                            name="submit"
-                            class="btn btn-primary"
-                        >
-                            Save Changes
-                        </button>
-                    </form>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Editing Testimonial -->
-    <div class="modal fade" id="editTestimonialModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Testimonial</h5>
+                <div class="crud-buttons">
                     <button
                         type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
+                        onclick="toggleEdit('previewIntro')"
+                        title="Sửa"
+                    >
+                        <i class="fas fa-edit"></i>
+                    </button>
                 </div>
-                <div class="modal-body">
+                <div class="edit-buttons">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="cancelEdit('previewIntro')"
+                    >
+                        Hủy
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <p class="no-data">Chưa có phần giới thiệu.</p>
+            {% endif %}
+        </div>
+
+        <!-- Portfolio Slider -->
+        <div class="portfolio-section" id="previewPortfolio">
+            <div class="container">
+                <h2>Portfolio Nổi Bật</h2>
+                <div class="portfolio-slider">
+                    {% if portfolios %} {% for item in portfolios %}
+                    <div class="portfolio-item" id="portfolio_{{ item.id }}">
+                        <form
+                            id="portfolioForm_{{ item.id }}"
+                            method="POST"
+                            enctype="multipart/form-data"
+                            action="{{ url_for('admin.edit_home_item', model='portfolio', id=item.id) }}"
+                        >
+                            <input
+                                type="hidden"
+                                name="form_name"
+                                value="portfolio"
+                            />
+                            {{ portfolio_form.hidden_tag() }}
+                            <img
+                                class="view-mode"
+                                id="portfolioImageView_{{ item.id }}"
+                                src="{{ item.image_url }}"
+                                alt="{{ item.title }}"
+                            />
+                            <div class="edit-mode">
+                                <img
+                                    id="portfolioImage_{{ item.id }}"
+                                    src="{{ item.image_url }}"
+                                    alt="{{ item.title }}"
+                                />
+                                <input
+                                    type="file"
+                                    class="editable-image"
+                                    id="portfolioImageInput_{{ item.id }}"
+                                    name="image"
+                                    accept="image/*"
+                                />
+                            </div>
+                            <div class="portfolio-overlay">
+                                <h4
+                                    class="view-mode"
+                                    id="portfolioTitleView_{{ item.id }}"
+                                >
+                                    {{ item.title }}
+                                </h4>
+                                <div class="edit-mode">
+                                    <input
+                                        type="text"
+                                        class="editable-text"
+                                        id="portfolioTitle_{{ item.id }}"
+                                        name="title"
+                                        value="{{ item.title }}"
+                                    />
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <button
+                                    type="button"
+                                    onclick="toggleEdit('portfolio_{{ item.id }}')"
+                                    title="Sửa"
+                                >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    onclick="deleteItem('portfolio', {{ item.id }})"
+                                    title="Xóa"
+                                >
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="edit-buttons">
+                                <button type="submit" class="btn btn-primary">
+                                    Lưu
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    onclick="cancelEdit('portfolio_{{ item.id }}')"
+                                >
+                                    Hủy
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endfor %} {% else %}
+                    <p class="no-data">Chưa có portfolio.</p>
+                    {% endif %}
+                </div>
+                <a href="{{ url_for('main.pricing') }}" class="btn"
+                    >Xem Thêm Portfolio</a
+                >
+                <div class="crud-buttons">
+                    <button
+                        type="button"
+                        onclick="toggleAdd('addPortfolioForm')"
+                        title="Thêm"
+                    >
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div
+                    class="add-form"
+                    id="addPortfolioForm"
+                    style="display: none"
+                >
                     <form
-                        id="editTestimonialForm"
                         method="POST"
-                        action="{{ url_for('admin.edit_home_item', model='testimonial', id=0) }}"
+                        enctype="multipart/form-data"
+                        action="{{ url_for('admin.manage_home') }}"
                     >
                         <input
                             type="hidden"
-                            name="testimonial_id"
-                            id="editTestimonialId"
+                            name="form_name"
+                            value="portfolio"
                         />
-                        <div class="mb-3">
-                            <label
-                                for="editTestimonialContent"
-                                class="form-label"
-                                >Content</label
-                            >
-                            <textarea
-                                class="form-control"
-                                id="editTestimonialContent"
-                                name="content"
-                                required
-                            ></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label
-                                for="editTestimonialAuthor"
-                                class="form-label"
-                                >Author</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="editTestimonialAuthor"
-                                name="author"
-                                required
-                            />
-                        </div>
+                        {{ portfolio_form.hidden_tag() }}
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="addPortfolioTitle"
+                            name="title"
+                            placeholder="Tiêu đề Portfolio"
+                            required
+                        />
+                        <input
+                            type="file"
+                            class="editable-image"
+                            id="addPortfolioImage"
+                            name="image"
+                            accept="image/*"
+                        />
+                        <button type="submit" class="btn btn-primary mt-2">
+                            Thêm
+                        </button>
                         <button
-                            type="submit"
-                            name="submit"
-                            class="btn btn-primary"
+                            type="button"
+                            class="btn btn-secondary mt-2"
+                            onclick="toggleAdd('addPortfolioForm')"
                         >
-                            Save Changes
+                            Hủy
                         </button>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // JavaScript for initialization and modal handling
-        document.addEventListener("DOMContentLoaded", function () {
-            // Intro Section Preview
-            const introText = document.getElementById("introText");
-            const introCtaText = document.getElementById("introCtaText");
-            const introCtaUrl = document.getElementById("introCtaUrl");
-            const introImage = document.getElementById("introImage");
-            const previewIntroText =
-                document.getElementById("previewIntroText");
-            const previewIntroCta = document.getElementById("previewIntroCta");
-            const previewIntroImage =
-                document.getElementById("previewIntroImage");
-
-            if (introText) {
-                introText.addEventListener("input", () => {
-                    previewIntroText.textContent =
-                        introText.value || "Chào mừng đến với HoagART";
-                });
-            }
-            if (introCtaText) {
-                introCtaText.addEventListener("input", () => {
-                    previewIntroCta.textContent =
-                        introCtaText.value || "Browse More";
-                });
-            }
-            if (introCtaUrl) {
-                introCtaUrl.addEventListener("input", () => {
-                    previewIntroCta.href = introCtaUrl.value || "#";
-                });
-            }
-            if (introImage) {
-                introImage.addEventListener("change", (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            previewIntroImage.src = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-
-            // Portfolio Preview
-            const portfolioTitle = document.getElementById("portfolioTitle");
-            const portfolioImage = document.getElementById("portfolioImage");
-            if (portfolioImage) {
-                portfolioImage.addEventListener("change", (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const newPortfolio = document.createElement("div");
-                            newPortfolio.className = "col-md-4 mb-4";
-                            newPortfolio.innerHTML = `
-                            <div class="card">
-                                <img src="${e.target.result}" alt="${
-                                portfolioTitle.value || "New Portfolio"
-                            }" class="card-img-top preview-img">
-                                <div class="card-body">
-                                    <h5 class="card-title">${
-                                        portfolioTitle.value || "New Portfolio"
-                                    }</h5>
-                                </div>
-                            </div>
-                        `;
-                            document
-                                .getElementById("previewPortfolio")
-                                .querySelector(".row")
-                                .appendChild(newPortfolio);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-
-            // Service Preview
-            const serviceTitle = document.getElementById("serviceTitle");
-            const serviceDescription =
-                document.getElementById("serviceDescription");
-            const serviceCtaText = document.getElementById("serviceCtaText");
-            const serviceCtaUrl = document.getElementById("serviceCtaUrl");
-            const serviceImage = document.getElementById("serviceImage");
-            if (serviceImage) {
-                serviceImage.addEventListener("change", (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const newService = document.createElement("div");
-                            newService.className = "col-md-4 mb-4";
-                            newService.innerHTML = `
-                            <div class="card">
-                                <img src="${e.target.result}" alt="${
-                                serviceTitle.value || "New Service"
-                            }" class="card-img-top preview-img">
-                                <div class="card-body">
-                                    <h5 class="card-title">${
-                                        serviceTitle.value || "New Service"
-                                    }</h5>
-                                    <p class="card-text">${
-                                        serviceDescription.value || ""
-                                    }</p>
-                                    <a href="${
-                                        serviceCtaUrl.value || "#"
-                                    }" class="btn btn-primary">${
-                                serviceCtaText.value || "Learn More"
-                            }</a>
-                                </div>
-                            </div>
-                        `;
-                            document
-                                .getElementById("previewServices")
-                                .querySelector(".row")
-                                .appendChild(newService);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-
-            // Testimonial Preview
-            const testimonialContent =
-                document.getElementById("testimonialContent");
-            const testimonialAuthor =
-                document.getElementById("testimonialAuthor");
-            if (testimonialContent && testimonialAuthor) {
-                const updateTestimonialPreview = () => {
-                    const newTestimonial = document.createElement("div");
-                    newTestimonial.className = "col-md-6 mb-4";
-                    newTestimonial.innerHTML = `
-                    <div class="card">
-                        <div class="card-body">
-                            <p class="card-text">"${
-                                testimonialContent.value || "New Testimonial"
-                            }"</p>
-                            <h6 class="card-title">${
-                                testimonialAuthor.value || "Anonymous"
-                            }</h6>
+        <!-- Dịch vụ -->
+        <div class="services-section container" id="previewServices">
+            <h2>Dịch Vụ Của Chúng Tôi</h2>
+            {% if services %}
+            <div class="services-grid">
+                {% for service in services %}
+                <div class="service-card" id="service_{{ service.id }}">
+                    <form
+                        id="serviceForm_{{ service.id }}"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        action="{{ url_for('admin.edit_home_item', model='service', id=service.id) }}"
+                    >
+                        <input type="hidden" name="form_name" value="service" />
+                        {{ service_form.hidden_tag() }}
+                        <img
+                            class="view-mode"
+                            id="serviceImageView_{{ service.id }}"
+                            src="{{ service.image_url }}"
+                            alt="{{ service.title }}"
+                        />
+                        <div class="edit-mode">
+                            <img
+                                id="serviceImage_{{ service.id }}"
+                                src="{{ service.image_url }}"
+                                alt="{{ service.title }}"
+                            />
+                            <input
+                                type="file"
+                                class="editable-image"
+                                id="serviceImageInput_{{ service.id }}"
+                                name="image"
+                                accept="image/*"
+                            />
                         </div>
+                        <h3
+                            class="view-mode"
+                            id="serviceTitleView_{{ service.id }}"
+                        >
+                            {{ service.title }}
+                        </h3>
+                        <div class="edit-mode">
+                            <input
+                                type="text"
+                                class="editable-text"
+                                id="serviceTitle_{{ service.id }}"
+                                name="title"
+                                value="{{ service.title }}"
+                            />
+                        </div>
+                        <p
+                            class="view-mode"
+                            id="serviceDescriptionView_{{ service.id }}"
+                        >
+                            {{ service.description }}
+                        </p>
+                        <div class="edit-mode">
+                            <textarea
+                                class="editable-textarea"
+                                id="serviceDescription_{{ service.id }}"
+                                name="description"
+                            >
+{{ service.description }}</textarea
+                            >
+                        </div>
+                        <a
+                            href="{{ service.cta_url }}"
+                            class="btn view-mode"
+                            id="serviceCtaView_{{ service.id }}"
+                            >{{ service.cta_text }}</a
+                        >
+                        <div class="edit-mode">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="serviceCtaText_{{ service.id }}"
+                                name="cta_text"
+                                value="{{ service.cta_text }}"
+                                placeholder="CTA Text"
+                            />
+                            <input
+                                type="text"
+                                class="form-control mt-2"
+                                id="serviceCtaUrl_{{ service.id }}"
+                                name="cta_url"
+                                value="{{ service.cta_url }}"
+                                placeholder="CTA URL"
+                            />
+                        </div>
+                        <div class="item-actions">
+                            <button
+                                type="button"
+                                onclick="toggleEdit('service_{{ service.id }}')"
+                                title="Sửa"
+                            >
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button
+                                type="button"
+                                onclick="deleteItem('service', {{ service.id }})"
+                                title="Xóa"
+                            >
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="edit-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                Lưu
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                onclick="cancelEdit('service_{{ service.id }}')"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">Chưa có dịch vụ.</p>
+            {% endif %}
+            <div class="crud-buttons">
+                <button
+                    type="button"
+                    onclick="toggleAdd('addServiceForm')"
+                    title="Thêm"
+                >
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="add-form" id="addServiceForm" style="display: none">
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                    action="{{ url_for('admin.manage_home') }}"
+                >
+                    <input type="hidden" name="form_name" value="service" />
+                    {{ service_form.hidden_tag() }}
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="addServiceTitle"
+                        name="title"
+                        placeholder="Tiêu đề Dịch vụ"
+                        required
+                    />
+                    <textarea
+                        class="form-control"
+                        id="addServiceDescription"
+                        name="description"
+                        placeholder="Mô tả Dịch vụ"
+                    ></textarea>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="addServiceCtaText"
+                        name="cta_text"
+                        placeholder="Text nút CTA"
+                    />
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="addServiceCtaUrl"
+                        name="cta_url"
+                        placeholder="URL nút CTA"
+                    />
+                    <input
+                        type="file"
+                        class="editable-image"
+                        id="addServiceImage"
+                        name="image"
+                        accept="image/*"
+                    />
+                    <button type="submit" class="btn btn-primary mt-2">
+                        Thêm
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary mt-2"
+                        onclick="toggleAdd('addServiceForm')"
+                    >
+                        Hủy
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Testimonial -->
+        <div class="testimonial-section container" id="previewTestimonials">
+            <h2>Khách Hàng Nói Gì</h2>
+            <div class="testimonial-slider">
+                {% if testimonials %} {% for testimonial in testimonials %}
+                <div
+                    class="testimonial-item"
+                    id="testimonial_{{ testimonial.id }}"
+                >
+                    <form
+                        id="testimonialForm_{{ testimonial.id }}"
+                        method="POST"
+                        action="{{ url_for('admin.edit_home_item', model='testimonial', id=testimonial.id) }}"
+                    >
+                        <input
+                            type="hidden"
+                            name="form_name"
+                            value="testimonial"
+                        />
+                        {{ testimonial_form.hidden_tag() }}
+                        <p
+                            class="view-mode"
+                            id="testimonialContentView_{{ testimonial.id }}"
+                        >
+                            {{ testimonial.content }}
+                        </p>
+                        <div class="edit-mode">
+                            <textarea
+                                class="editable-textarea"
+                                id="testimonialContent_{{ testimonial.id }}"
+                                name="content"
+                            >
+{{ testimonial.content }}</textarea
+                            >
+                        </div>
+                        <h4
+                            class="view-mode"
+                            id="testimonialAuthorView_{{ testimonial.id }}"
+                        >
+                            {{ testimonial.author }}
+                        </h4>
+                        <div class="edit-mode">
+                            <input
+                                type="text"
+                                class="editable-text"
+                                id="testimonialAuthor_{{ testimonial.id }}"
+                                name="author"
+                                value="{{ testimonial.author }}"
+                            />
+                        </div>
+                        <div class="item-actions">
+                            <button
+                                type="button"
+                                onclick="toggleEdit('testimonial_{{ testimonial.id }}')"
+                                title="Sửa"
+                            >
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button
+                                type="button"
+                                onclick="deleteItem('testimonial', {{ testimonial.id }})"
+                                title="Xóa"
+                            >
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="edit-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                Lưu
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                onclick="cancelEdit('testimonial_{{ testimonial.id }}')"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endfor %} {% else %}
+                <p class="no-data">Chưa có đánh giá.</p>
+                {% endif %}
+            </div>
+            <div class="crud-buttons">
+                <button
+                    type="button"
+                    onclick="toggleAdd('addTestimonialForm')"
+                    title="Thêm"
+                >
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="add-form" id="addTestimonialForm" style="display: none">
+                <form method="POST" action="{{ url_for('admin.manage_home') }}">
+                    <input type="hidden" name="form_name" value="testimonial" />
+                    {{ testimonial_form.hidden_tag() }}
+                    <textarea
+                        class="form-control"
+                        id="addTestimonialContent"
+                        name="content"
+                        placeholder="Nội dung Đánh giá"
+                        required
+                    ></textarea>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="addTestimonialAuthor"
+                        name="author"
+                        placeholder="Tác giả"
+                        required
+                    />
+                    <button type="submit" class="btn btn-primary mt-2">
+                        Thêm
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary mt-2"
+                        onclick="toggleAdd('addTestimonialForm')"
+                    >
+                        Hủy
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Blog nổi bật -->
+        <div class="blog-section container" id="previewFeaturedPosts">
+            <h2>Bài Viết Nổi Bật</h2>
+            <div class="blog-grid">
+                {% if featured_posts %} {% for post in featured_posts %}
+                <div class="blog-card" id="featuredPost_{{ post.id }}">
+                    <img
+                        class="view-mode"
+                        id="featuredPostImageView_{{ post.id }}"
+                        src="{{ post.image_url or url_for('static', filename='images/default.jpg') }}"
+                        alt="{{ post.title }}"
+                    />
+                    <h3
+                        class="view-mode"
+                        id="featuredPostTitleView_{{ post.id }}"
+                    >
+                        {{ post.title }}
+                    </h3>
+                    <p
+                        class="view-mode"
+                        id="featuredPostContentView_{{ post.id }}"
+                    >
+                        {{ post.content|striptags|truncate(100) }}
+                    </p>
+                    <a
+                        href="{{ url_for('blog.blog_detail', id=post.id) }}"
+                        class="btn"
+                        >Đọc Thêm</a
+                    >
+                    <div class="item-actions">
+                        <button
+                            type="button"
+                            onclick="deleteItem('featured_post', {{ post.id }})"
+                            title="Xóa"
+                        >
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
-                `;
-                    const previewTestimonials = document
-                        .getElementById("previewTestimonials")
-                        .querySelector(".row");
-                    const existingPreview =
-                        previewTestimonials.querySelector(".preview-temp");
-                    if (existingPreview) {
-                        previewTestimonials.removeChild(existingPreview);
-                    }
-                    if (testimonialContent.value || testimonialAuthor.value) {
-                        newTestimonial.classList.add("preview-temp");
-                        previewTestimonials.appendChild(newTestimonial);
-                    }
-                };
-                testimonialContent.addEventListener(
-                    "input",
-                    updateTestimonialPreview
-                );
-                testimonialAuthor.addEventListener(
-                    "input",
-                    updateTestimonialPreview
-                );
+                </div>
+                {% endfor %} {% else %}
+                <p class="no-data">Chưa có bài viết nổi bật.</p>
+                {% endif %}
+                <div
+                    id="newFeaturedPostPreview"
+                    class="blog-card"
+                    style="display: none"
+                >
+                    <img
+                        id="previewFeaturedPostImage"
+                        src="{{ url_for('static', filename='images/default.jpg') }}"
+                        alt="New Post"
+                    />
+                    <h3 id="previewFeaturedPostTitle"></h3>
+                    <p id="previewFeaturedPostContent"></p>
+                    <a id="previewFeaturedPostCta" href="#" class="btn"
+                        >Đọc Thêm</a
+                    >
+                </div>
+            </div>
+            <div class="crud-buttons">
+                <button
+                    type="button"
+                    onclick="toggleAdd('addFeaturedPostForm')"
+                    title="Thêm"
+                >
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div
+                class="add-form"
+                id="addFeaturedPostForm"
+                style="display: none"
+            >
+                <form method="POST" action="{{ url_for('admin.manage_home') }}">
+                    <input
+                        type="hidden"
+                        name="form_name"
+                        value="featured_post"
+                    />
+                    {{ featured_post_form.hidden_tag() }} {{
+                    featured_post_form.post_id(class="form-control",
+                    id="addFeaturedPostId",
+                    onchange="previewFeaturedPost(this.value)") }}
+                    <button type="submit" class="btn btn-primary mt-2">
+                        Thêm
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary mt-2"
+                        onclick="toggleAdd('addFeaturedPostForm')"
+                    >
+                        Hủy
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Chat icon -->
+        <div class="chat-icon">
+            <a href="{{ url_for('main.contact') }}">
+                <img
+                    src="{{ url_for('static', filename='images/icon_chat.png') }}"
+                    alt="Chat"
+                />
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    console.log("JavaScript loaded");
+    function toggleEdit(sectionId) {
+        console.log("toggleEdit called for", sectionId);
+        const section = document.getElementById(sectionId);
+        if (section.classList.contains("editing")) {
+            cancelEdit(sectionId);
+        } else {
+            section.classList.add("editing");
+            if (sectionId === "previewIntro") {
+                document.getElementById("introText").value =
+                    document.getElementById("introTextView").textContent;
+                document.getElementById("introCtaText").value =
+                    document.getElementById("introCtaView").textContent;
+                document.getElementById("introCtaUrl").value =
+                    document.getElementById("introCtaView").href;
+                document.getElementById("previewIntroImageEdit").src =
+                    document.getElementById("previewIntroImage").src;
+            } else if (sectionId.startsWith("portfolio_")) {
+                const id = sectionId.split("_")[1];
+                document.getElementById(`portfolioTitle_${id}`).value =
+                    document.getElementById(
+                        `portfolioTitleView_${id}`
+                    ).textContent;
+                document.getElementById(`portfolioImage_${id}`).src =
+                    document.getElementById(`portfolioImageView_${id}`).src;
+            } else if (sectionId.startsWith("service_")) {
+                const id = sectionId.split("_")[1];
+                document.getElementById(`serviceTitle_${id}`).value =
+                    document.getElementById(
+                        `serviceTitleView_${id}`
+                    ).textContent;
+                document.getElementById(`serviceDescription_${id}`).value =
+                    document.getElementById(
+                        `serviceDescriptionView_${id}`
+                    ).textContent;
+                document.getElementById(`serviceCtaText_${id}`).value =
+                    document.getElementById(`serviceCtaView_${id}`).textContent;
+                document.getElementById(`serviceCtaUrl_${id}`).value =
+                    document.getElementById(`serviceCtaView_${id}`).href;
+                document.getElementById(`serviceImage_${id}`).src =
+                    document.getElementById(`serviceImageView_${id}`).src;
+            } else if (sectionId.startsWith("testimonial_")) {
+                const id = sectionId.split("_")[1];
+                document.getElementById(`testimonialContent_${id}`).value =
+                    document.getElementById(
+                        `testimonialContentView_${id}`
+                    ).textContent;
+                document.getElementById(`testimonialAuthor_${id}`).value =
+                    document.getElementById(
+                        `testimonialAuthorView_${id}`
+                    ).textContent;
             }
+        }
+    }
+
+    function cancelEdit(sectionId) {
+        console.log("cancelEdit called for", sectionId);
+        if (!sectionId) {
+            console.warn(
+                "cancelEdit called with invalid sectionId:",
+                sectionId
+            );
+            return;
+        }
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.classList.remove("editing");
+        } else {
+            console.error("Section not found for sectionId:", sectionId);
+        }
+    }
+
+    function toggleAdd(formId) {
+        console.log("toggleAdd called for", formId);
+        const form = document.getElementById(formId);
+        form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM loaded");
+        document.querySelectorAll('input[type="file"]').forEach((input) => {
+            input.addEventListener("change", (e) => {
+                console.log("Image input changed", input.id);
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imgId = input.id
+                            .replace("ImageInput", "Image")
+                            .replace("introImage", "previewIntroImageEdit");
+                        document.getElementById(imgId).src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         });
 
-        // Load Portfolio Edit Data
-        function loadPortfolioEdit(id) {
-            fetch(`/admin/home/portfolio/edit/${id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    document.getElementById("editPortfolioId").value = data.id;
-                    document.getElementById("editPortfolioTitle").value =
-                        data.title;
-                    document.getElementById(
-                        "editPortfolioForm"
-                    ).action = `/admin/home/portfolio/edit/${data.id}`;
-                    new bootstrap.Modal(
-                        document.getElementById("editPortfolioModal")
-                    ).show();
-                });
-        }
+        document.querySelectorAll("form").forEach((form) => {
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                console.log("Form submitted", form.id, "Action:", form.action);
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then((response) => {
+                        console.log("Response status:", response.status);
+                        if (!response.ok) {
+                            throw new Error(
+                                `HTTP error! Status: ${response.status}`
+                            );
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log("AJAX response", data);
+                        if (data.success) {
+                            alert(data.message || "Lưu thành công!");
+                            const sectionId = form.closest(
+                                ".intro-section, .portfolio-item, .service-card, .testimonial-item, .blog-card"
+                            )?.id;
+                            console.log("sectionId:", sectionId);
+                            if (form.id.startsWith("add")) {
+                                location.reload(); // Reload để hiển thị item mới
+                                toggleAdd(form.id); // Ẩn form thêm
+                            } else {
+                                // Chỉ gọi cancelEdit cho form chỉnh sửa
+                                if (sectionId) {
+                                    if (sectionId === "previewIntro") {
+                                        document.getElementById(
+                                            "introTextView"
+                                        ).textContent =
+                                            document.getElementById(
+                                                "introText"
+                                            ).value;
+                                        document.getElementById(
+                                            "introCtaView"
+                                        ).textContent =
+                                            document.getElementById(
+                                                "introCtaText"
+                                            ).value;
+                                        document.getElementById(
+                                            "introCtaView"
+                                        ).href =
+                                            document.getElementById(
+                                                "introCtaUrl"
+                                            ).value;
+                                        document.getElementById(
+                                            "previewIntroImage"
+                                        ).src = document.getElementById(
+                                            "previewIntroImageEdit"
+                                        ).src;
+                                    } else if (
+                                        sectionId.startsWith("portfolio_")
+                                    ) {
+                                        const id = sectionId.split("_")[1];
+                                        document.getElementById(
+                                            `portfolioTitleView_${id}`
+                                        ).textContent = document.getElementById(
+                                            `portfolioTitle_${id}`
+                                        ).value;
+                                        document.getElementById(
+                                            `portfolioImageView_${id}`
+                                        ).src = document.getElementById(
+                                            `portfolioImage_${id}`
+                                        ).src;
+                                    } else if (
+                                        sectionId.startsWith("service_")
+                                    ) {
+                                        const id = sectionId.split("_")[1];
+                                        document.getElementById(
+                                            `serviceTitleView_${id}`
+                                        ).textContent = document.getElementById(
+                                            `serviceTitle_${id}`
+                                        ).value;
+                                        document.getElementById(
+                                            `serviceDescriptionView_${id}`
+                                        ).textContent = document.getElementById(
+                                            `serviceDescription_${id}`
+                                        ).value;
+                                        document.getElementById(
+                                            `serviceCtaView_${id}`
+                                        ).textContent = document.getElementById(
+                                            `serviceCtaText_${id}`
+                                        ).value;
+                                        document.getElementById(
+                                            `serviceCtaView_${id}`
+                                        ).href = document.getElementById(
+                                            `serviceCtaUrl_${id}`
+                                        ).value;
+                                        document.getElementById(
+                                            `serviceImageView_${id}`
+                                        ).src = document.getElementById(
+                                            `serviceImage_${id}`
+                                        ).src;
+                                    } else if (
+                                        sectionId.startsWith("testimonial_")
+                                    ) {
+                                        const id = sectionId.split("_")[1];
+                                        document.getElementById(
+                                            `testimonialContentView_${id}`
+                                        ).textContent = document.getElementById(
+                                            `testimonialContent_${id}`
+                                        ).value;
+                                        document.getElementById(
+                                            `testimonialAuthorView_${id}`
+                                        ).textContent = document.getElementById(
+                                            `testimonialAuthor_${id}`
+                                        ).value;
+                                    }
+                                    cancelEdit(sectionId);
+                                }
+                            }
+                        } else {
+                            console.error(
+                                "Form error:",
+                                data.error,
+                                "Details:",
+                                data.details
+                            );
+                            alert(data.error || "Dữ liệu không hợp lệ");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("AJAX error:", error);
+                        alert("Lỗi khi gửi dữ liệu: " + error.message);
+                    });
+            });
+        });
 
-        // Load Service Edit Data
-        function loadServiceEdit(id) {
-            fetch(`/admin/home/service/edit/${id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    document.getElementById("editServiceId").value = data.id;
-                    document.getElementById("editServiceTitle").value =
-                        data.title;
-                    document.getElementById("editServiceDescription").value =
-                        data.description;
-                    document.getElementById("editServiceCtaText").value =
-                        data.cta_text;
-                    document.getElementById("editServiceCtaUrl").value =
-                        data.cta_url;
-                    document.getElementById(
-                        "editServiceForm"
-                    ).action = `/admin/home/service/edit/${data.id}`;
-                    new bootstrap.Modal(
-                        document.getElementById("editServiceModal")
-                    ).show();
-                });
-        }
-
-        // Load Testimonial Edit Data
-        function loadTestimonialEdit(id) {
-            fetch(`/admin/home/testimonial/edit/${id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    document.getElementById("editTestimonialId").value =
-                        data.id;
-                    document.getElementById("editTestimonialContent").value =
-                        data.content;
-                    document.getElementById("editTestimonialAuthor").value =
-                        data.author;
-                    document.getElementById(
-                        "editTestimonialForm"
-                    ).action = `/admin/home/testimonial/edit/${data.id}`;
-                    new bootstrap.Modal(
-                        document.getElementById("editTestimonialModal")
-                    ).show();
-                });
-        }
-
-        // Preview Featured Post
         function previewFeaturedPost(postId) {
+            console.log("previewFeaturedPost called for", postId);
             if (!postId) {
                 document.getElementById(
                     "newFeaturedPostPreview"
@@ -1009,12 +1026,18 @@
                 return;
             }
             fetch(`/blog/${postId}`, {
-                headers: {
-                    Accept: "application/json",
-                },
+                headers: { Accept: "application/json" },
             })
-                .then((response) => response.json())
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    }
+                    return response.json();
+                })
                 .then((data) => {
+                    console.log("Preview data", data);
                     document.getElementById(
                         "previewFeaturedPostTitle"
                     ).textContent = data.title;
@@ -1022,7 +1045,8 @@
                         "previewFeaturedPostContent"
                     ).innerHTML = data.content.substring(0, 100) + "...";
                     document.getElementById("previewFeaturedPostImage").src =
-                        data.image_url;
+                        data.image_url ||
+                        "{{ url_for('static', filename='images/default.jpg') }}";
                     document.getElementById(
                         "previewFeaturedPostCta"
                     ).href = `/blog/${data.id}`;
@@ -1037,6 +1061,53 @@
                     ).style.display = "none";
                 });
         }
-    </script>
-    {% endblock %}
-</div>
+
+        const featuredPostSelect = document.getElementById("addFeaturedPostId");
+        if (featuredPostSelect) {
+            featuredPostSelect.addEventListener("change", () =>
+                previewFeaturedPost(featuredPostSelect.value)
+            );
+        }
+    });
+
+    function deleteItem(model, id) {
+        console.log("deleteItem called for", model, id);
+        if (confirm("Bạn có chắc muốn xóa?")) {
+            const formData = new FormData();
+            formData.append(
+                "{{ intro_form.csrf_token.name }}",
+                "{{ intro_form.csrf_token.data }}"
+            );
+            fetch(`/admin/home/${model}/delete/${id}`, {
+                method: "POST",
+                body: formData,
+            })
+                .then((response) => {
+                    console.log("Delete response status:", response.status);
+                    if (!response.ok) {
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Delete response", data);
+                    if (data.success) {
+                        const item =
+                            document.getElementById(`${model}_${id}`) ||
+                            document.getElementById(`featuredPost_${id}`);
+                        if (item) item.remove();
+                        alert(data.message || "Xóa thành công!");
+                    } else {
+                        alert(data.error || "Lỗi khi xóa mục");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Delete error:", error);
+                    alert("Lỗi khi xóa mục: " + error.message);
+                });
+        }
+    }
+</script>
+{% endblock %}

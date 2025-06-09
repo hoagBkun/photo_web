@@ -4,7 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from config import Config
+import re
 
+def extract_iframe_src(iframe):
+    if iframe and isinstance(iframe, str) and iframe.startswith('<iframe'):
+        match = re.search(r'src="([^"]+)"', iframe)
+        return match.group(1) if match else iframe
+    return iframe
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
@@ -30,9 +36,11 @@ def create_app():
     from app.models.user import User
     from app.models.banner import Banner
     from app.models.post import Post
-    from app.models.contact_info import ContactInfo
+    from app.models.contact_info import ContactInfo, Contact, Location
     from app.models.pricing import Pricing
     from app.models.pricing_page import PricingPage
+    from app.models.home import IntroSection, PortfolioItem, ServiceCard, Testimonial
+    from app.models.introduce import IntroduceSection, TeamMember, MissionSection
 
     # Đăng ký blueprints
     from app.blueprints.main.routes import main
@@ -48,8 +56,6 @@ def create_app():
     # In danh sách route để debug
     print(app.url_map)
 
-    with app.app_context():
-        db.create_all()
 
     @login_manager.user_loader
     def load_user(user_id):

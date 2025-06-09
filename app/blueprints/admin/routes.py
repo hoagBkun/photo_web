@@ -1,24 +1,38 @@
-# app/blueprints/admin/routes.py
+
+# Phần 2.1: Import các module và package
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from app import db
 from app.models.user import User
 from app.models.post import Post
 from app.models.banner import Banner
-from app.models.contact_info import ContactInfo
+from app.models.contact_info import ContactInfo, Location, Contact
 from app.models.pricing import Pricing
 from app.models.pricing_page import PricingPage
 from app.models.home import IntroSection, PortfolioItem, ServiceCard, Testimonial
-from app.blueprints.admin.forms import BannerForm, PostForm, ContactInfoForm, UserForm, PricingForm, PricingPageForm, IntroSectionForm, PortfolioItemForm, ServiceCardForm, TestimonialForm, FeaturedPostForm
+from app.models.introduce import IntroduceSection, TeamMember, MissionSection
+from app.blueprints.admin.forms import (
+    BannerForm, PostForm, ContactInfoForm, UserForm, PricingForm, PricingPageForm,
+    IntroSectionForm, PortfolioItemForm, ServiceCardForm, TestimonialForm,
+    FeaturedPostForm, IntroduceSectionForm, TeamMemberForm, MissionSectionForm,
+    LocationForm, ContactForm, EditBannerForm
+)
 from functools import wraps
 from werkzeug.utils import secure_filename
 import os
 import logging
+from PIL import Image
+import re
 
+# Phần 2.2: Định nghĩa blueprint và decorator
 admin_bp = Blueprint('admin', __name__)
 
 # Setup logging
-logging.basicConfig(filename='flask.log', level=logging.DEBUG)
+logging.basicConfig(
+    filename='flask.log',
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+)
 
 def admin_required(f):
     @wraps(f)
@@ -29,10 +43,31 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Phần 2.3: Hàm tiện ích
 def allowed_file(filename):
+    """Check if file has allowed extension."""
     ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def resize_image(image_path, output_path, max_size):
+    """Resize image to fit within max_size while maintaining aspect ratio."""
+    try:
+        with Image.open(image_path) as img:
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
+            img.save(output_path, quality=85)
+    except Exception as e:
+        logging.error(f"Image resize error: {str(e)}")
+        raise
+
+def extract_iframe_src(iframe):
+    """Extract src URL from iframe tag or return input if not iframe."""
+    if iframe and iframe.startswith('<iframe'):
+        match = re.search(r'src="([^"]+)"', iframe)
+        if match:
+            return match.group(1)
+    return iframe
+
+# Phần 2.4: Route quản lý dashboard
 @admin_bp.route('/dashboard')
 @login_required
 @admin_required
@@ -41,12 +76,17 @@ def dashboard():
     post_count = Post.query.count()
     user_count = User.query.count()
     pricing_count = Pricing.query.count()
+    team_member_count = TeamMember.query.count()
+    location_count = Location.query.count()
     return render_template('admin/dashboard.html',
                            banner_count=banner_count,
                            post_count=post_count,
                            user_count=user_count,
-                           pricing_count=pricing_count)
+                           pricing_count=pricing_count,
+                           team_member_count=team_member_count,
+                           location_count=location_count)
 
+# Phần 2.5: Route quản lý banner
 @admin_bp.route('/banners', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -59,11 +99,16 @@ def manage_banners():
                 flash('Vui lòng chọn hình ảnh hợp lệ (jpg, jpeg, png, gif).', 'error')
                 return redirect(url_for('admin.manage_banners'))
             filename = secure_filename(file.filename)
-            file_path = os.path.join('app/static/uploads/banners', filename)
-            os.makedirs('app/static/uploads/banners', exist_ok=True)
-            file.save(file_path)
+            upload_folder = 'app/static/uploads/banners'
+            os.makedirs(upload_folder, exist_ok=True)
+            original_path = os.path.join(upload_folder, filename)
+            file.save(original_path)
+            resized_filename = f"resized_{filename}"
+            resized_path = os.path.join(upload_folder, resized_filename)
+            resize_image(original_path, resized_path, max_size=(1200, 600))
+            os.remove(original_path)
             banner = Banner(
-                image_url=f'/static/uploads/banners/{filename}',
+                image_url=f'/static/uploads/banners/{resized_filename}',
                 title=form.title.data,
                 description=form.description.data
             )
@@ -72,16 +117,18 @@ def manage_banners():
             flash('Thêm banner thành công!', 'success')
             return redirect(url_for('admin.manage_banners'))
         except Exception as e:
+            db.session.rollback()
             flash(f'Lỗi khi thêm banner: {str(e)}', 'error')
+            logging.error(f"Error adding banner: {str(e)}")
     banners = Banner.query.all()
-    return render_template('admin/banners/home.html', form=form, banners=banners)
+    return render_template('admin/banners.html', form=form, banners=banners)
 
 @admin_bp.route('/banners/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_banner(id):
     banner = Banner.query.get_or_404(id)
-    form = BannerForm(obj=banner)
+    form = EditBannerForm(obj=banner)
     if form.validate_on_submit():
         try:
             if form.image.data:
@@ -90,22 +137,29 @@ def edit_banner(id):
                     flash('Hình ảnh không hợp lệ (jpg, jpeg, png, gif).', 'error')
                     return redirect(url_for('admin.edit_banner', id=id))
                 filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads/banners', filename)
-                os.makedirs('app/static/uploads/banners', exist_ok=True)
-                file.save(file_path)
+                upload_folder = 'app/static/uploads/banners'
+                os.makedirs(upload_folder, exist_ok=True)
+                original_path = os.path.join(upload_folder, filename)
+                file.save(original_path)
+                resized_filename = f"resized_{filename}"
+                resized_path = os.path.join(upload_folder, resized_filename)
+                resize_image(original_path, resized_path, max_size=(1200, 600))
+                os.remove(original_path)
                 if banner.image_url and banner.image_url != '/static/images/default.jpg':
                     old_file = os.path.join('app', banner.image_url.lstrip('/'))
                     if os.path.exists(old_file):
                         os.remove(old_file)
-                banner.image_url = f'/static/uploads/banners/{filename}'
+                banner.image_url = f'/static/uploads/banners/{resized_filename}'
             banner.title = form.title.data
             banner.description = form.description.data
             db.session.commit()
             flash('Cập nhật banner thành công!', 'success')
             return redirect(url_for('admin.manage_banners'))
         except Exception as e:
+            db.session.rollback()
             flash(f'Lỗi khi cập nhật banner: {str(e)}', 'error')
-    return render_template('admin/banners.html', form=form, banner=banner)
+            logging.error(f"Error editing banner ID {id}: {str(e)}")
+    return render_template('admin/edit_banner.html', form=form, banner=banner)
 
 @admin_bp.route('/banners/delete/<int:id>', methods=['POST'])
 @login_required
@@ -119,11 +173,12 @@ def delete_banner(id):
                 os.remove(file_path)
         db.session.delete(banner)
         db.session.commit()
-        flash('Xóa banner thành công!', 'success')
+        return jsonify({'success': True, 'message': 'Xóa banner thành công!'})
     except Exception as e:
-        flash(f'Lỗi khi xóa banner: {str(e)}', 'error')
-    return redirect(url_for('admin.manage_banners'))
+        db.session.rollback()
+        return jsonify({'success': False, 'error': f'Lỗi khi xóa banner: {str(e)}'}), 500
 
+# Phần 2.6: Route quản lý bài viết
 @admin_bp.route('/posts', methods=['GET'])
 @login_required
 @admin_required
@@ -143,22 +198,29 @@ def add_post():
                 content=form.content.data,
                 user_id=current_user.id
             )
-            if form.image.data:
+            if form.image.data and form.image.data.filename:
                 file = form.image.data
                 if not allowed_file(file.filename):
                     flash('Ảnh bìa không hợp lệ (jpg, jpeg, png, gif).', 'error')
                     return redirect(url_for('admin.add_post'))
                 filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads/posts', filename)
-                os.makedirs('app/static/uploads/posts', exist_ok=True)
-                file.save(file_path)
-                post.image_url = f'/static/uploads/posts/{filename}'
+                upload_folder = 'app/static/uploads/posts'
+                os.makedirs(upload_folder, exist_ok=True)
+                original_path = os.path.join(upload_folder, filename)
+                file.save(original_path)
+                resized_filename = f"resized_{filename}"
+                resized_path = os.path.join(upload_folder, resized_filename)
+                resize_image(original_path, resized_path, max_size=(800, 400))
+                os.remove(original_path)
+                post.image_url = f'/static/uploads/posts/{resized_filename}'
             db.session.add(post)
             db.session.commit()
             flash('Thêm bài viết thành công!', 'success')
             return redirect(url_for('admin.manage_posts'))
         except Exception as e:
+            db.session.rollback()
             flash(f'Lỗi khi thêm bài viết: {str(e)}', 'error')
+            logging.error(f"Error adding post: {str(e)}")
     return render_template('admin/post_form.html', form=form, title='Thêm bài viết')
 
 @admin_bp.route('/posts/edit/<int:id>', methods=['GET', 'POST'])
@@ -171,25 +233,32 @@ def edit_post(id):
         try:
             post.title = form.title.data
             post.content = form.content.data
-            if form.image.data:
+            if form.image.data and form.image.data.filename:
                 file = form.image.data
                 if not allowed_file(file.filename):
                     flash('Ảnh bìa không hợp lệ (jpg, jpeg, png, gif).', 'error')
                     return redirect(url_for('admin.edit_post', id=id))
                 filename = secure_filename(file.filename)
-                file_path = os.path.join('app/static/uploads/posts', filename)
-                os.makedirs('app/static/uploads/posts', exist_ok=True)
-                file.save(file_path)
+                upload_folder = 'app/static/uploads/posts'
+                os.makedirs(upload_folder, exist_ok=True)
+                original_path = os.path.join(upload_folder, filename)
+                file.save(original_path)
+                resized_filename = f"resized_{filename}"
+                resized_path = os.path.join(upload_folder, resized_filename)
+                resize_image(original_path, resized_path, max_size=(800, 400))
+                os.remove(original_path)
                 if post.image_url and post.image_url != '/static/images/default.jpg':
                     old_file = os.path.join('app', post.image_url.lstrip('/'))
                     if os.path.exists(old_file):
                         os.remove(old_file)
-                post.image_url = f'/static/uploads/posts/{filename}'
+                post.image_url = f'/static/uploads/posts/{resized_filename}'
             db.session.commit()
             flash('Cập nhật bài viết thành công!', 'success')
             return redirect(url_for('admin.manage_posts'))
         except Exception as e:
+            db.session.rollback()
             flash(f'Lỗi khi cập nhật bài viết: {str(e)}', 'error')
+            logging.error(f"Error editing post ID {id}: {str(e)}")
     return render_template('admin/post_form.html', form=form, title='Sửa bài viết', post=post)
 
 @admin_bp.route('/posts/delete/<int:id>', methods=['POST'])
@@ -206,28 +275,36 @@ def delete_post(id):
         db.session.commit()
         flash('Xóa bài viết thành công!', 'success')
     except Exception as e:
+        db.session.rollback()
         flash(f'Lỗi khi xóa bài viết: {str(e)}', 'error')
+        logging.error(f"Error deleting post ID {id}: {str(e)}")
     return redirect(url_for('admin.manage_posts'))
 
 @admin_bp.route('/upload_image', methods=['POST'])
 @login_required
 @admin_required
 def upload_image():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded.'}), 400
-    file = request.files['file']
-    if file and allowed_file(file.filename):
-        try:
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded.'}), 400
+        file = request.files['file']
+        if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_path = os.path.join('app/static/uploads/posts', filename)
-            os.makedirs('app/static/uploads/posts', exist_ok=True)
-            file.save(file_path)
-            url = f'/static/uploads/posts/{filename}'
+            upload_folder = 'app/static/uploads/posts'
+            os.makedirs(upload_folder, exist_ok=True)
+            original_path = os.path.join(upload_folder, filename)
+            file.save(original_path)
+            resized_filename = f"resized_{filename}"
+            resized_path = os.path.join(upload_folder, resized_filename)
+            resize_image(original_path, resized_path, max_size=(800, 400))
+            os.remove(original_path)
+            url = f'/static/uploads/posts/{resized_filename}'
             return jsonify({'image': url})
-        except Exception as e:
-            return jsonify({'error': f'Upload failed: {str(e)}'}), 500
-    return jsonify({'error': 'Invalid file type.'}), 400
+        return jsonify({'error': 'Invalid file type.'}), 400
+    except Exception as e:
+        return jsonify({'error': f'Upload failed: {str(e)}'}), 500
 
+# Phần 2.7: Route quản lý giá
 @admin_bp.route('/pricing', methods=['GET'])
 @login_required
 @admin_required
@@ -254,7 +331,9 @@ def add_pricing():
             flash('Thêm gói dịch vụ thành công!', 'success')
             return redirect(url_for('admin.manage_pricing'))
         except Exception as e:
+            db.session.rollback()
             flash(f'Lỗi khi thêm gói dịch vụ: {str(e)}', 'error')
+            logging.error(f"Error adding pricing: {str(e)}")
     return render_template('admin/pricing_form.html', form=form, title='Thêm gói dịch vụ')
 
 @admin_bp.route('/pricing/edit/<int:id>', methods=['GET', 'POST'])
@@ -274,7 +353,9 @@ def edit_pricing(id):
             flash('Cập nhật gói dịch vụ thành công!', 'success')
             return redirect(url_for('admin.manage_pricing'))
         except Exception as e:
+            db.session.rollback()
             flash(f'Lỗi khi cập nhật gói dịch vụ: {str(e)}', 'error')
+            logging.error(f"Error editing pricing ID {id}: {str(e)}")
     return render_template('admin/pricing_form.html', form=form, title='Sửa gói dịch vụ', pricing=pricing)
 
 @admin_bp.route('/pricing/delete/<int:id>', methods=['POST'])
@@ -287,7 +368,9 @@ def delete_pricing(id):
         db.session.commit()
         flash('Xóa gói dịch vụ thành công!', 'success')
     except Exception as e:
+        db.session.rollback()
         flash(f'Lỗi khi xóa gói dịch vụ: {str(e)}', 'error')
+        logging.error(f"Error deleting pricing ID {id}: {str(e)}")
     return redirect(url_for('admin.manage_pricing'))
 
 @admin_bp.route('/pricing_page', methods=['GET', 'POST'])
@@ -308,40 +391,142 @@ def manage_pricing_page():
             flash('Cập nhật nội dung trang bảng giá thành công!', 'success')
             return redirect(url_for('admin.manage_pricing_page'))
         except Exception as e:
+            db.session.rollback()
             flash(f'Lỗi khi cập nhật nội dung: {str(e)}', 'error')
+            logging.error(f"Error updating pricing page: {str(e)}")
     if pricing_page:
         form.title.data = pricing_page.title
         form.description.data = pricing_page.description
         form.show_banner.data = pricing_page.show_banner
     return render_template('admin/pricing_page.html', form=form, title='Quản lý Trang Bảng Giá')
 
+# Phần 2.8: Route quản lý liên hệ
 @admin_bp.route('/contact', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def manage_contact():
-    form = ContactInfoForm()
-    contact_info = ContactInfo.query.first()
-    if form.validate_on_submit():
-        try:
-            if not contact_info:
-                contact_info = ContactInfo()
-                db.session.add(contact_info)
-            contact_info.address = form.address.data
-            contact_info.phone = form.phone.data
-            contact_info.email = form.email.data
-            contact_info.social_links = form.social_links.data
-            db.session.commit()
-            flash('Cập nhật thông tin liên hệ thành công!', 'success')
-            return redirect(url_for('admin.manage_contact'))
-        except Exception as e:
-            flash(f'Lỗi khi cập nhật thông tin liên hệ: {str(e)}', 'error')
-    if contact_info:
-        form.address.data = contact_info.address
-        form.phone.data = contact_info.phone
-        form.email.data = contact_info.email
-        form.social_links.data = contact_info.social_links
-    return render_template('admin/contact.html', form=form)
+    logging.debug(f"Request: {request.method} {request.url} Form: {request.form}")
+    contact_info_form = ContactInfoForm()
+    location_form = LocationForm()
+    form_name = request.form.get('form_name')
+    logging.debug(f"Form submitted: {form_name}")
 
+    if request.method == 'POST':
+        try:
+            if form_name == 'contact_info' and contact_info_form.validate_on_submit():
+                logging.debug("Processing contact info form")
+                contact_info = ContactInfo.query.first()
+                if not contact_info:
+                    contact_info = ContactInfo()
+                    db.session.add(contact_info)
+                contact_info.email = contact_info_form.email.data
+                contact_info.hotline = contact_info_form.hotline.data
+                contact_info.fanpage = contact_info_form.fanpage.data
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Cập nhật thông tin liên hệ thành công!'})
+
+            elif form_name == 'location' and location_form.validate_on_submit():
+                logging.debug("Processing location form")
+                google_maps_link = location_form.google_maps_link.data
+                if google_maps_link:
+                    google_maps_link = extract_iframe_src(google_maps_link)
+                    if not google_maps_link.startswith('https://www.google.com/maps/embed'):
+                        return jsonify({'success': False, 'error': 'URL Google Maps không hợp lệ.'}), 400
+                location = Location(
+                    name=location_form.name.data,
+                    address=location_form.address.data,
+                    google_maps_link=google_maps_link
+                )
+                db.session.add(location)
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Thêm cơ sở thành công!'})
+
+            else:
+                errors = {}
+                for form in [contact_info_form, location_form]:
+                    if form.errors:
+                        for field, errs in form.errors.items():
+                            errors[field] = errs
+                logging.error(f"Form validation errors: {errors}")
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
+
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Form {form_name} error: {str(e)}")
+            return jsonify({'success': False, 'error': f'Lỗi khi xử lý: {str(e)}'}), 500
+
+    contact_info = ContactInfo.query.first()
+    locations = Location.query.order_by(Location.created_at.asc()).all()
+
+    if contact_info:
+        contact_info_form.email.data = contact_info.email
+        contact_info_form.hotline.data = contact_info.hotline
+        contact_info_form.fanpage.data = contact_info.fanpage
+
+    return render_template('admin/contact.html',
+                           contact_info_form=contact_info_form,
+                           location_form=location_form,
+                           contact_info=contact_info,
+                           locations=locations)
+
+@admin_bp.route('/contact/location/edit/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def edit_location(id):
+    try:
+        location = Location.query.get_or_404(id)
+        form = LocationForm()
+        if form.validate_on_submit():
+            google_maps_link = form.google_maps_link.data
+            if google_maps_link:
+                google_maps_link = extract_iframe_src(google_maps_link)
+                if not google_maps_link.startswith('https://www.google.com/maps/embed'):
+                    return jsonify({'success': False, 'error': 'URL Google Maps không hợp lệ.'}), 400
+            location.name = form.name.data
+            location.address = form.address.data
+            location.google_maps_link = google_maps_link
+            db.session.commit()
+            return jsonify({
+                'success': True,
+                'data': {
+                    'id': location.id,
+                    'name': location.name,
+                    'address': location.address,
+                    'google_maps_link': location.google_maps_link
+                }
+            })
+        else:
+            errors = {field: errs for field, errs in form.errors.items()}
+            logging.error(f"Form validation errors: {errors}")
+            return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error editing location: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi cập nhật cơ sở: {str(e)}'}), 500
+
+@admin_bp.route('/contact/submissions', methods=['GET'])
+@login_required
+@admin_required
+def manage_contact_submissions():
+    contacts = Contact.query.order_by(Contact.created_at.desc()).all()
+    return render_template('admin/contact_submissions.html', contacts=contacts)
+
+@admin_bp.route('/contact/submissions/delete/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_contact_submission(id):
+    try:
+        contact = Contact.query.get_or_404(id)
+        db.session.delete(contact)
+        db.session.commit()
+        flash('Xóa tin nhắn liên hệ thành công!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Lỗi khi xóa tin nhắn: {str(e)}', 'error')
+        logging.error(f"Error deleting contact submission ID {id}: {str(e)}")
+    return redirect(url_for('admin.manage_contact_submissions'))
+
+# Phần 2.9: Route quản lý người dùng
 @admin_bp.route('/users', methods=['GET'])
 @login_required
 @admin_required
@@ -349,7 +534,7 @@ def manage_users():
     users = User.query.all()
     return render_template('admin/users.html', users=users)
 
-@admin_bp.route('/users/edit/<int:id>', methods=['GET', 'POST'])
+@admin_bp.route('/users/edit/<id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_user(id):
@@ -357,12 +542,12 @@ def edit_user(id):
     form = UserForm(obj=user)
     if form.validate_on_submit():
         try:
-            if User.query.filter_by(username=form.username.data).first() and User.query.filter_by(username=form.username.data).first().id != user.id:
+            if User.query.filter_by(username=form.username.data).first() and form.username.data != user.username:
                 flash('Tên người dùng đã tồn tại.', 'error')
-                return redirect(url_for('admin.edit_user', id=user.id))
-            if User.query.filter_by(email=form.email.data).first() and User.query.filter_by(email=form.email.data).first().id != user.id:
+                return redirect(url_for('admin.edit_user', id=id))
+            if User.query.filter_by(email=form.email.data).first() and form.email.data != user.email:
                 flash('Email đã tồn tại.', 'error')
-                return redirect(url_for('admin.edit_user', id=user.id))
+                return redirect(url_for('admin.edit_user', id=id))
             user.username = form.username.data
             user.email = form.email.data
             user.is_admin = form.is_admin.data
@@ -370,249 +555,226 @@ def edit_user(id):
             flash('Cập nhật người dùng thành công!', 'success')
             return redirect(url_for('admin.manage_users'))
         except Exception as e:
+            db.session.rollback()
             flash(f'Lỗi khi cập nhật người dùng: {str(e)}', 'error')
+            logging.error(f"Error editing user ID {id}: {str(e)}")
     return render_template('admin/edit_user.html', form=form, user=user)
 
-@admin_bp.route('/users/delete/<int:id>', methods=['POST'])
+@admin_bp.route('/users/delete/<id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_user(id):
     user = User.query.get_or_404(id)
     try:
         if user.id == current_user.id:
-            flash('Bạn không thể xóa chính mình!', 'error')
+            flash('Không thể xóa tài khoản của chính bạn!', 'error')
             return redirect(url_for('admin.manage_users'))
         db.session.delete(user)
         db.session.commit()
         flash('Xóa người dùng thành công!', 'success')
     except Exception as e:
+        db.session.rollback()
         flash(f'Lỗi khi xóa người dùng: {str(e)}', 'error')
+        logging.error(f"Error deleting user ID {id}: {str(e)}")
     return redirect(url_for('admin.manage_users'))
 
+# Phần 2.10: Route quản lý trang chủ
 @admin_bp.route('/home', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def manage_home():
+    logging.debug(f"Request: {request.method} {request.url} Form: {request.form}")
     intro_form = IntroSectionForm()
     portfolio_form = PortfolioItemForm()
     service_form = ServiceCardForm()
     testimonial_form = TestimonialForm()
     featured_post_form = FeaturedPostForm()
-
     form_name = request.form.get('form_name')
     logging.debug(f"Form submitted: {form_name}")
 
-    if form_name == 'intro' and intro_form.validate_on_submit():
-        logging.debug("Processing intro form")
-        try:
-            intro = IntroSection.query.first()
-            if not intro:
-                intro = IntroSection()
-                db.session.add(intro)
-            intro.text = intro_form.text.data
-            intro.cta_text = intro_form.cta_text.data
-            intro.cta_url = intro_form.cta_url.data
-            if intro_form.image.data:
-                file = intro_form.image.data
-                if allowed_file(file.filename):
+    try:
+        if request.method == 'POST':
+            upload_folder = 'app/static/uploads/home'
+            os.makedirs(upload_folder, exist_ok=True)
+
+            if form_name == 'intro' and intro_form.validate_on_submit():
+                logging.debug("Processing intro form")
+                intro = IntroSection.query.first()
+                if not intro:
+                    intro = IntroSection()
+                    db.session.add(intro)
+                intro.text = intro_form.text.data
+                intro.cta_text = intro_form.cta_text.data
+                intro.cta_url = intro_form.cta_url.data
+                if intro_form.image.data:
+                    file = intro_form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ (jpg, jpeg, png, gif).'})
                     filename = secure_filename(file.filename)
-                    file_path = os.path.join('app/static/uploads/home', filename)
-                    os.makedirs('app/static/uploads/home', exist_ok=True)
-                    file.save(file_path)
-                    if intro.image_url and intro.image_url != '/static/images/default.jpg':
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(800, 400))
+                    os.remove(original_path)
+                    if intro.image_url and intro.image_url != '/static/images/default_image.jpg':
                         old_file = os.path.join('app', intro.image_url.lstrip('/'))
                         if os.path.exists(old_file):
                             os.remove(old_file)
-                    intro.image_url = f'/static/uploads/home/{filename}'
-                else:
-                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
-                    return redirect(url_for('admin.manage_home'))
-            db.session.commit()
-            flash('Cập nhật phần giới thiệu thành công!', 'success')
-            return redirect(url_for('admin.manage_home'))
-        except Exception as e:
-            flash(f'Lỗi khi cập nhật phần giới thiệu: {str(e)}', 'error')
-            logging.error(f"Intro form error: {str(e)}")
-
-    if form_name == 'portfolio' and portfolio_form.validate_on_submit() and not request.form.get('portfolio_id'):
-        logging.debug("Processing portfolio form")
-        try:
-            image_url = '/static/images/default.jpg'
-            if portfolio_form.image.data:
-                file = portfolio_form.image.data
-                if allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-                    file_path = os.path.join('app/static/uploads/home', filename)
-                    os.makedirs('app/static/uploads/home', exist_ok=True)
-                    file.save(file_path)
-                    image_url = f'/static/uploads/home/{filename}'
-                else:
-                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
-                    return redirect(url_for('admin.manage_home'))
-            portfolio = PortfolioItem(
-                title=portfolio_form.title.data,
-                image_url=image_url
-            )
-            db.session.add(portfolio)
-            db.session.commit()
-            flash('Thêm portfolio thành công!', 'success')
-            return redirect(url_for('admin.manage_home'))
-        except Exception as e:
-            flash(f'Lỗi khi thêm portfolio: {str(e)}', 'error')
-            logging.error(f"Portfolio form error: {str(e)}")
-
-    if form_name == 'service' and service_form.validate_on_submit() and not request.form.get('service_id'):
-        logging.debug("Processing service form")
-        try:
-            image_url = '/static/images/default.jpg'
-            if service_form.image.data:
-                file = service_form.image.data
-                if allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-                    file_path = os.path.join('app/static/uploads/home', filename)
-                    os.makedirs('app/static/uploads/home', exist_ok=True)
-                    file.save(file_path)
-                    image_url = f'/static/uploads/home/{filename}'
-                else:
-                    flash('Vui lòng chọn file hợp lệ (jpg, jpeg, png, gif).', 'error')
-                    return redirect(url_for('admin.manage_home'))
-            service = ServiceCard(
-                title=service_form.title.data,
-                description=service_form.description.data,
-                image_url=image_url,
-                cta_text=service_form.cta_text.data,
-                cta_url=service_form.cta_url.data
-            )
-            db.session.add(service)
-            db.session.commit()
-            flash('Thêm dịch vụ thành công!', 'success')
-            return redirect(url_for('admin.manage_home'))
-        except Exception as e:
-            flash(f'Lỗi khi thêm dịch vụ: {str(e)}', 'error')
-            logging.error(f"Service form error: {str(e)}")
-
-    if form_name == 'testimonial' and testimonial_form.validate_on_submit() and not request.form.get('testimonial_id'):
-        logging.debug("Processing testimonial form")
-        try:
-            testimonial = Testimonial(
-                content=testimonial_form.content.data,
-                author=testimonial_form.author.data
-            )
-            db.session.add(testimonial)
-            db.session.commit()
-            flash('Thêm đánh giá thành công!', 'success')
-            return redirect(url_for('admin.manage_home'))
-        except Exception as e:
-            flash(f'Lỗi khi thêm đánh giá: {str(e)}', 'error')
-            logging.error(f"Testimonial form error: {str(e)}")
-
-    if form_name == 'featured_post' and featured_post_form.validate_on_submit():
-        logging.debug("Processing featured post form")
-        try:
-            post_id = featured_post_form.post_id.data
-            post = Post.query.get_or_404(post_id)
-            if not post.is_featured:
-                if Post.query.filter_by(is_featured=True).count() >= 3:  # Giới hạn 3 bài
-                    flash('Đã đủ 3 bài viết nổi bật!', 'warning')
-                    return redirect(url_for('admin.manage_home'))
-                post.is_featured = True
+                    intro.image_url = f'/static/uploads/home/{resized_filename}'
                 db.session.commit()
-                flash('Thêm bài viết nổi bật thành công!', 'success')
+                return jsonify({'success': True, 'message': 'Cập nhật phần giới thiệu thành công!'})
+
+            elif form_name == 'portfolio' and portfolio_form.validate_on_submit():
+                logging.debug("Processing portfolio form")
+                image_url = '/static/images/default_image.jpg'
+                if portfolio_form.image.data:
+                    file = portfolio_form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(300, 300))
+                    os.remove(original_path)
+                    image_url = f'/static/uploads/home/{resized_filename}'
+                portfolio = PortfolioItem(
+                    title=portfolio_form.title.data,
+                    image_url=image_url
+                )
+                db.session.add(portfolio)
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Thêm mục portfolio thành công!'})
+
+            elif form_name == 'service' and service_form.validate_on_submit():
+                logging.debug("Processing service form")
+                image_url = '/static/images/default_image.jpg'
+                if service_form.image.data:
+                    file = service_form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(300, 200))
+                    os.remove(original_path)
+                    image_url = f'/static/uploads/home/{resized_filename}'
+                service = ServiceCard(
+                    title=service_form.title.data,
+                    description=service_form.description.data,
+                    image_url=image_url,
+                    cta_text=service_form.cta_text.data,
+                    cta_url=service_form.cta_url.data
+                )
+                db.session.add(service)
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Thêm dịch vụ thành công!'})
+
+            elif form_name == 'testimonial' and testimonial_form.validate_on_submit():
+                logging.debug("Processing testimonial form")
+                testimonial = Testimonial(
+                    content=testimonial_form.content.data,
+                    author=testimonial_form.author.data
+                )
+                db.session.add(testimonial)
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Thêm đánh giá thành công!'})
+
+            elif form_name == 'featured_post' and featured_post_form.validate_on_submit():
+                logging.debug("Processing featured post form")
+                post_id = featured_post_form.post_id.data
+                post = Post.query.get_or_404(post_id)
+                if not post.is_featured:
+                    if Post.query.filter_by(is_featured=True).count() >= 3:
+                        return jsonify({'success': False, 'error': 'Đã đủ 3 bài viết nổi bật!'})
+                    post.is_featured = True
+                    db.session.commit()
+                    return jsonify({'success': True, 'message': 'Thêm bài viết nổi bật thành công!'})
+                return jsonify({'success': False, 'error': 'Bài viết này đã được chọn làm nổi bật!'})
+
             else:
-                flash('Bài viết này đã được chọn!', 'warning')
-            return redirect(url_for('admin.manage_home'))
-        except Exception as e:
-            flash(f'Lỗi khi thêm bài viết nổi bật: {str(e)}', 'error')
-            logging.error(f"Featured post form error: {str(e)}")
+                errors = {}
+                for form in [intro_form, portfolio_form, service_form, testimonial_form, featured_post_form]:
+                    if form.errors:
+                        for field, errs in form.errors.items():
+                            errors[field] = errs
+                logging.error(f"Form validation errors: {errors}")
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
 
-    intro = IntroSection.query.first()
-    portfolios = PortfolioItem.query.all()
-    services = ServiceCard.query.all()
-    testimonials = Testimonial.query.all()
-    featured_posts = Post.query.filter_by(is_featured=True).all()
+        intro = IntroSection.query.first()
+        portfolios = PortfolioItem.query.all()
+        services = ServiceCard.query.all()
+        testimonials = Testimonial.query.all()
+        featured_posts = Post.query.filter_by(is_featured=True).all()
 
-    if intro:
-        intro_form.text.data = intro.text
-        intro_form.cta_text.data = intro.cta_text
-        intro_form.cta_url.data = intro.cta_url
+        if intro:
+            intro_form.text.data = intro.text
+            intro_form.cta_text.data = intro.cta_text
+            intro_form.cta_url.data = intro.cta_url
 
-    return render_template('admin/home.html',
-                          intro_form=intro_form,
-                          portfolio_form=portfolio_form,
-                          service_form=service_form,
-                          testimonial_form=testimonial_form,
-                          featured_post_form=featured_post_form,
-                          intro=intro,
-                          portfolios=portfolios,
-                          services=services,
-                          testimonials=testimonials,
-                          featured_posts=featured_posts)
+        return render_template('admin/home.html',
+                               intro_form=intro_form,
+                               portfolio_form=portfolio_form,
+                               service_form=service_form,
+                               testimonial_form=testimonial_form,
+                               featured_post_form=featured_post_form,
+                               intro=intro,
+                               portfolios=portfolios,
+                               services=services,
+                               testimonials=testimonials,
+                               featured_posts=featured_posts)
 
-@admin_bp.route('/home/portfolio/edit/<int:id>', methods=['GET'])
-@login_required
-@admin_required
-def get_portfolio(id):
-    portfolio = PortfolioItem.query.get_or_404(id)
-    return jsonify({
-        'id': portfolio.id,
-        'title': portfolio.title,
-        'image_url': portfolio.image_url
-    })
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Form {form_name} error: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi xử lý: {str(e)}'}), 500
 
-@admin_bp.route('/home/service/edit/<int:id>', methods=['GET'])
-@login_required
-@admin_required
-def get_service(id):
-    service = ServiceCard.query.get_or_404(id)
-    return jsonify({
-        'id': service.id,
-        'title': service.title,
-        'description': service.description,
-        'cta_text': service.cta_text,
-        'cta_url': service.cta_url,
-        'image_url': service.image_url
-    })
-
-@admin_bp.route('/home/testimonial/edit/<int:id>', methods=['GET'])
-@login_required
-@admin_required
-def get_testimonial(id):
-    testimonial = Testimonial.query.get_or_404(id)
-    return jsonify({
-        'id': testimonial.id,
-        'content': testimonial.content,
-        'author': testimonial.author
-    })
-
-@admin_bp.route('/home/<string:model>/edit/<int:id>', methods=['POST'])
+@admin_bp.route('/home/<model>/<int:id>', methods=['POST'])
 @login_required
 @admin_required
 def edit_home_item(model, id):
     try:
+        upload_folder = 'app/static/uploads/home'
+        os.makedirs(upload_folder, exist_ok=True)
+
         if model == 'portfolio':
             item = PortfolioItem.query.get_or_404(id)
             form = PortfolioItemForm()
             if form.validate_on_submit():
                 item.title = form.title.data
-                if form.image.data:
+                if form.image.data and form.image.data.filename:
                     file = form.image.data
-                    if allowed_file(file.filename):
-                        filename = secure_filename(file.filename)
-                        file_path = os.path.join('app/static/uploads/home', filename)
-                        os.makedirs('app/static/uploads/home', exist_ok=True)
-                        file.save(file_path)
-                        if item.image_url and item.image_url != '/static/images/default.jpg':
-                            old_file = os.path.join('app', item.image_url.lstrip('/'))
-                            if os.path.exists(old_file):
-                                os.remove(old_file)
-                        item.image_url = f'/static/uploads/home/{filename}'
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(300, 300))
+                    os.remove(original_path)
+                    if item.image_url and item.image_url != '/static/images/default_image.jpg':
+                        old_file = os.path.join('app', item.image_url.lstrip('/'))
+                        if os.path.exists(old_file):
+                            os.remove(old_file)
+                    item.image_url = f'/static/uploads/home/{resized_filename}'
                 db.session.commit()
-                flash('Cập nhật portfolio thành công!', 'success')
-                return redirect(url_for('admin.manage_home'))
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'id': item.id,
+                        'title': item.title,
+                        'image_url': item.image_url
+                    }
+                })
             else:
-                for field, errors in form.errors.items():
-                    for error in errors:
-                        flash(f'Lỗi {field}: {error}', 'error')
+                errors = {field: errs for field, errs in form.errors.items()}
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
+
         elif model == 'service':
             item = ServiceCard.query.get_or_404(id)
             form = ServiceCardForm()
@@ -621,25 +783,38 @@ def edit_home_item(model, id):
                 item.description = form.description.data
                 item.cta_text = form.cta_text.data
                 item.cta_url = form.cta_url.data
-                if form.image.data:
+                if form.image.data and form.image.data.filename:
                     file = form.image.data
-                    if allowed_file(file.filename):
-                        filename = secure_filename(file.filename)
-                        file_path = os.path.join('app/static/uploads/home', filename)
-                        os.makedirs('app/static/uploads/home', exist_ok=True)
-                        file.save(file_path)
-                        if item.image_url and item.image_url != '/static/images/default.jpg':
-                            old_file = os.path.join('app', item.image_url.lstrip('/'))
-                            if os.path.exists(old_file):
-                                os.remove(old_file)
-                        item.image_url = f'/static/uploads/home/{filename}'
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(300, 200))
+                    os.remove(original_path)
+                    if item.image_url and item.image_url != '/static/images/default_image.jpg':
+                        old_file = os.path.join('app', item.image_url.lstrip('/'))
+                        if os.path.exists(old_file):
+                            os.remove(old_file)
+                    item.image_url = f'/static/uploads/home/{resized_filename}'
                 db.session.commit()
-                flash('Cập nhật dịch vụ thành công!', 'success')
-                return redirect(url_for('admin.manage_home'))
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'id': item.id,
+                        'title': item.title,
+                        'description': item.description,
+                        'cta_text': item.cta_text,
+                        'cta_url': item.cta_url,
+                        'image_url': item.image_url
+                    }
+                })
             else:
-                for field, errors in form.errors.items():
-                    for error in errors:
-                        flash(f'Lỗi {field}: {error}', 'error')
+                errors = {field: errs for field, errs in form.errors.items()}
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
+
         elif model == 'testimonial':
             item = Testimonial.query.get_or_404(id)
             form = TestimonialForm()
@@ -647,56 +822,335 @@ def edit_home_item(model, id):
                 item.content = form.content.data
                 item.author = form.author.data
                 db.session.commit()
-                flash('Cập nhật đánh giá thành công!', 'success')
-                return redirect(url_for('admin.manage_home'))
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'id': item.id,
+                        'content': item.content,
+                        'author': item.author
+                    }
+                })
             else:
-                for field, errors in form.errors.items():
-                    for error in errors:
-                        flash(f'Lỗi {field}: {error}', 'error')
-        else:
-            flash('Mục không hợp lệ.', 'error')
-            return redirect(url_for('admin.manage_home'))
-    except Exception as e:
-        flash(f'Lỗi khi cập nhật mục: {str(e)}', 'error')
-        logging.error(f"Edit {model} error: {str(e)}")
-    return redirect(url_for('admin.manage_home'))
+                errors = {field: errs for field, errs in form.errors.items()}
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
 
-@admin_bp.route('/home/<string:model>/delete/<int:id>', methods=['POST'])
+        else:
+            return jsonify({'success': False, 'error': 'Mục không hợp lệ!'}), 400
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error editing {model} ID {id}: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi chỉnh sửa mục: {str(e)}'}), 500
+
+@admin_bp.route('/home/<model>/<int:id>', methods=['DELETE'])
 @login_required
 @admin_required
 def delete_home_item(model, id):
     try:
         if model == 'portfolio':
             item = PortfolioItem.query.get_or_404(id)
-            if item.image_url and item.image_url != '/static/images/default.jpg':
+            if item.image_url and item.image_url != '/static/images/default_image.jpg':
                 file_path = os.path.join('app', item.image_url.lstrip('/'))
                 if os.path.exists(file_path):
                     os.remove(file_path)
             db.session.delete(item)
-            flash('Xóa portfolio thành công!', 'success')
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Xóa mục portfolio thành công!'})
+
         elif model == 'service':
             item = ServiceCard.query.get_or_404(id)
-            if item.image_url and item.image_url != '/static/images/default.jpg':
+            if item.image_url and item.image_url != '/static/images/default_image.jpg':
                 file_path = os.path.join('app', item.image_url.lstrip('/'))
                 if os.path.exists(file_path):
                     os.remove(file_path)
             db.session.delete(item)
-            flash('Xóa dịch vụ thành công!', 'success')
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Xóa dịch vụ thành công!'})
+
         elif model == 'testimonial':
             item = Testimonial.query.get_or_404(id)
             db.session.delete(item)
-            flash('Xóa đánh giá thành công!', 'success')
-        elif model == 'featured_post':
-            item = Post.query.get_or_404(id)
-            item.is_featured = False
             db.session.commit()
-            flash('Xóa bài viết nổi bật thành công!', 'success')
+            return jsonify({'success': True, 'message': 'Xóa đánh giá thành công!'})
+
         else:
-            flash('Mục không hợp lệ.', 'error')
-            return redirect(url_for('admin.manage_home'))
-        db.session.commit()
-        flash('Xóa mục thành công!', 'success')
+            return jsonify({'success': False, 'error': 'Mục không hợp lệ!'}), 400
+
     except Exception as e:
-        flash(f'Lỗi khi xóa mục: {str(e)}', 'error')
-        logging.error(f"Delete {model} error: {str(e)}")
-    return redirect(url_for('admin.manage_home'))
+        db.session.rollback()
+        logging.error(f"Error deleting {model} ID {id}: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi xóa mục: {str(e)}'}), 500
+
+# Phần 2.11: Route quản lý giới thiệu
+@admin_bp.route('/introduce', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def manage_introduce():
+    logging.debug(f"Request: {request.method} {request.url} Form: {request.form}")
+    introduce_form = IntroduceSectionForm()
+    team_form = TeamMemberForm()
+    mission_form = MissionSectionForm()
+    form_name = request.form.get('form_name')
+    logging.debug(f"Form submitted: {form_name}")
+
+    try:
+        if request.method == 'POST':
+            upload_folder = 'app/static/uploads/introduce'
+            os.makedirs(upload_folder, exist_ok=True)
+
+            if form_name == 'introduce' and introduce_form.validate_on_submit():
+                introduce = IntroduceSection.query.first()
+                if not introduce:
+                    introduce = IntroduceSection()
+                    db.session.add(introduce)
+                introduce.text = introduce_form.text.data
+                introduce.cta_text = introduce_form.cta_text.data
+                introduce.cta_url = introduce_form.cta_url.data
+                if introduce_form.image.data:
+                    file = introduce_form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(800, 400))
+                    os.remove(original_path)
+                    if introduce.image_url and introduce.image_url != '/static/images/default_image.jpg':
+                        old_file = os.path.join('app', introduce.image_url.lstrip('/'))
+                        if os.path.exists(old_file):
+                            os.remove(old_file)
+                    introduce.image_url = f'/static/uploads/introduce/{resized_filename}'
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Cập nhật phần giới thiệu thành công!'})
+
+            elif form_name == 'team_member' and team_form.validate_on_submit():
+                team_member = TeamMember(
+                    name=team_form.name.data,
+                    role=team_form.role.data,
+                    description=team_form.description.data
+                )
+                if team_form.image.data:
+                    file = team_form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(200, 200))
+                    os.remove(original_path)
+                    team_member.image_url = f'/static/uploads/introduce/{resized_filename}'
+                db.session.add(team_member)
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Thêm thành viên đội ngũ thành công!'})
+
+            elif form_name == 'mission' and mission_form.validate_on_submit():
+                mission = MissionSection.query.first()
+                if not mission:
+                    mission = MissionSection()
+                    db.session.add(mission)
+                mission.text = mission_form.text.data
+                if mission_form.image.data:
+                    file = mission_form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(800, 400))
+                    os.remove(original_path)
+                    if mission.image_url and mission.image_url != '/static/images/default_image.jpg':
+                        old_file = os.path.join('app', mission.image_url.lstrip('/'))
+                        if os.path.exists(old_file):
+                            os.remove(old_file)
+                    mission.image_url = f'/static/uploads/introduce/{resized_filename}'
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Cập nhật mission thành công!'})
+
+            else:
+                errors = {}
+                for form in [introduce_form, team_form, mission_form]:
+                    if form.errors:
+                        for field, errs in form.errors.items():
+                            errors[field] = errs
+                logging.error(f"Form validation errors: {errors}")
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
+
+        introduce = IntroduceSection.query.first()
+        team_members = TeamMember.query.all()
+        mission = MissionSection.query.first()
+
+        if introduce:
+            introduce_form.text.data = introduce.text
+            introduce_form.cta_text.data = introduce.cta_text
+            introduce_form.cta_url.data = introduce.cta_url
+
+        if mission:
+            mission_form.text.data = mission.text
+
+        return render_template('admin/introduce.html',
+                               introduce_form=introduce_form,
+                               team_form=team_form,
+                               mission_form=mission_form,
+                               introduce=introduce,
+                               team_members=team_members,
+                               mission=mission)
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Form {form_name} error: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi xử lý: {str(e)}'}), 500
+
+@admin_bp.route('/introduce/<model>/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def edit_introduce_item(model, id):
+    try:
+        upload_folder = 'app/static/uploads/introduce'
+        os.makedirs(upload_folder, exist_ok=True)
+
+        if model == 'introduce':
+            item = IntroduceSection.query.get_or_404(id)
+            form = IntroduceSectionForm()
+            if form.validate_on_submit():
+                item.text = form.text.data
+                item.cta_text = form.cta_text.data
+                item.cta_url = form.cta_url.data
+                if form.image.data and form.image.data.filename:
+                    file = form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(800, 400))
+                    os.remove(original_path)
+                    if item.image_url and item.image_url != '/static/images/default_image.jpg':
+                        old_file = os.path.join('app', item.image_url.lstrip('/'))
+                        if os.path.exists(old_file):
+                            os.remove(old_file)
+                    item.image_url = f'/static/uploads/introduce/{resized_filename}'
+                db.session.commit()
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'id': item.id,
+                        'text': item.text,
+                        'cta_text': item.cta_text,
+                        'cta_url': item.cta_url,
+                        'image_url': item.image_url
+                    }
+                })
+            else:
+                errors = {field: errs for field, errs in form.errors.items()}
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
+
+        elif model == 'team_member':
+            item = TeamMember.query.get_or_404(id)
+            form = TeamMemberForm()
+            if form.validate_on_submit():
+                item.name = form.name.data
+                item.role = form.role.data
+                item.description = form.description.data
+                if form.image.data and form.image.data.filename:
+                    file = form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(200, 200))
+                    os.remove(original_path)
+                    if item.image_url and item.image_url != '/static/images/default_image.jpg':
+                        old_file = os.path.join('app', item.image_url.lstrip('/'))
+                        if os.path.exists(old_file):
+                            os.remove(old_file)
+                    item.image_url = f'/static/uploads/introduce/{resized_filename}'
+                db.session.commit()
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'id': item.id,
+                        'name': item.name,
+                        'role': item.role,
+                        'description': item.description,
+                        'image_url': item.image_url
+                    }
+                })
+            else:
+                errors = {field: errs for field, errs in form.errors.items()}
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
+
+        elif model == 'mission':
+            item = MissionSection.query.get_or_404(id)
+            form = MissionSectionForm()
+            if form.validate_on_submit():
+                item.text = form.text.data
+                if form.image.data and form.image.data.filename:
+                    file = form.image.data
+                    if not allowed_file(file.filename):
+                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
+                    filename = secure_filename(file.filename)
+                    original_path = os.path.join(upload_folder, filename)
+                    file.save(original_path)
+                    resized_filename = f"resized_{filename}"
+                    resized_path = os.path.join(upload_folder, resized_filename)
+                    resize_image(original_path, resized_path, max_size=(800, 400))
+                    os.remove(original_path)
+                    if item.image_url and item.image_url != '/static/images/default_image.jpg':
+                        old_file = os.path.join('app', item.image_url.lstrip('/'))
+                        if os.path.exists(old_file):
+                            os.remove(old_file)
+                    item.image_url = f'/static/uploads/introduce/{resized_filename}'
+                db.session.commit()
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'id': item.id,
+                        'text': item.text,
+                        'image_url': item.image_url
+                    }
+                })
+            else:
+                errors = {field: errs for field, errs in form.errors.items()}
+                return jsonify({'success': False, 'error': 'Dữ liệu không hợp lệ', 'details': errors}), 400
+
+        else:
+            return jsonify({'success': False, 'error': 'Mục không hợp lệ!'}), 400
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error editing {model} ID {id}: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi chỉnh sửa mục: {str(e)}'}), 500
+
+@admin_bp.route('/introduce/<model>/<int:id>', methods=['DELETE'])
+@login_required
+@admin_required
+def delete_introduce_item(model, id):
+    try:
+        if model == 'team_member':
+            item = TeamMember.query.get_or_404(id)
+            if item.image_url and item.image_url != '/static/images/default_image.jpg':
+                file_path = os.path.join('app', item.image_url.lstrip('/'))
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            db.session.delete(item)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Xóa thành viên đội ngũ thành công!'})
+
+        else:
+            return jsonify({'success': False, 'error': 'Mục không hợp lệ!'}), 400
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting {model} ID {id}: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi xóa: {str(e)}'}), 500

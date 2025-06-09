@@ -1,0 +1,72 @@
+{% extends "admin/base.html" %} {% block title %}Quản Lý Tin Nhắn Liên Hệ -
+HoagART{% endblock %} {% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Quản Lý Tin Nhắn Liên Hệ</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div
+        class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show"
+        role="alert"
+    >
+        {{ message }}
+        <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+        >
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %} {% endif %} {% endwith %} {% if contacts %}
+    <div class="card">
+        <div class="card-body">
+            <h5>Danh Sách Tin Nhắn</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Họ và Tên</th>
+                        <th>Email</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Tin Nhắn</th>
+                        <th>Ngày Gửi</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contact in contacts %}
+                    <tr>
+                        <td>{{ contact.name }}</td>
+                        <td>{{ contact.email }}</td>
+                        <td>{{ contact.phone }}</td>
+                        <td>{{ contact.message }}</td>
+                        <td>
+                            {{ contact.created_at.strftime('%d/%m/%Y %H:%M') }}
+                        </td>
+                        <td>
+                            <form
+                                action="{{ url_for('admin.delete_contact_submission', id=contact.id) }}"
+                                method="POST"
+                                class="d-inline"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Bạn có chắc muốn xóa tin nhắn này?')"
+                                >
+                                    Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">Chưa có tin nhắn liên hệ nào.</div>
+    {% endif %}
+</div>
+{% endblock %}

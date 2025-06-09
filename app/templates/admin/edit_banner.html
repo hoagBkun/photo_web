@@ -12,14 +12,34 @@ endblock %} {% block content %}
                     <small class="form-text text-muted"
                         >Để trống nếu không muốn thay đổi hình ảnh.</small
                     >
+                    {% if form.image.errors %}
+                    <div class="text-danger">{{ form.image.errors[0] }}</div>
+                    {% endif %} {% if banner.image_url %}
+                    <div class="mt-2">
+                        <p>Hình ảnh hiện tại:</p>
+                        <img
+                            src="{{ banner.image_url }}"
+                            alt="{{ banner.title }}"
+                            width="200"
+                        />
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     {{ form.title.label(class="form-label") }} {{
-                    form.title(class="form-control") }}
+                    form.title(class="form-control") }} {% if form.title.errors
+                    %}
+                    <div class="text-danger">{{ form.title.errors[0] }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     {{ form.description.label(class="form-label") }} {{
-                    form.description(class="form-control") }}
+                    form.description(class="form-control") }} {% if
+                    form.description.errors %}
+                    <div class="text-danger">
+                        {{ form.description.errors[0] }}
+                    </div>
+                    {% endif %}
                 </div>
                 {{ form.submit(class="btn btn-primary") }}
             </form>

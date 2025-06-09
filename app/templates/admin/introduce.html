@@ -1,0 +1,678 @@
+{% extends "admin/base.html" %} {% block title %}Quản lý Trang Giới Thiệu{%
+endblock %} {% block content %}
+<!-- Kế thừa CSS từ main/introduce.html -->
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}"
+/>
+
+<style>
+    .preview-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .crud-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .crud-buttons button {
+        border: none;
+        background: transparent;
+        color: #333;
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.6rem;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+    .crud-buttons button:hover {
+        opacity: 1;
+    }
+    .item-actions {
+        display: flex;
+        gap: 5px;
+        margin-top: 10px;
+    }
+    .item-actions button {
+        border: none;
+        background: transparent;
+        color: #333;
+        padding: 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.4rem;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+    .item-actions button:hover {
+        opacity: 1;
+    }
+    .editable-text,
+    .editable-textarea,
+    .form-control {
+        border: 1px solid #ddd;
+        padding: 5px;
+        border-radius: 4px;
+        width: 100%;
+        background: #fff;
+    }
+    .editable-text:focus,
+    .editable-textarea:focus,
+    .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+    .editable-image {
+        display: block;
+        margin-top: 10px;
+    }
+    .edit-mode {
+        display: none;
+    }
+    .view-mode {
+        display: block;
+    }
+    .edit-buttons {
+        margin-top: 10px;
+        display: none;
+    }
+    .editing .edit-mode {
+        display: block;
+    }
+    .editing .view-mode {
+        display: none;
+    }
+    .editing .edit-buttons {
+        display: block;
+    }
+    .no-data {
+        color: #888;
+        font-style: italic;
+    }
+    .add-form {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #f9f9f9;
+    }
+</style>
+
+<div class="container">
+    <h2 class="my-4">Quản lý Trang Giới Thiệu</h2>
+    <div class="preview-container">
+        <!-- Giới thiệu -->
+        <div class="introduce-section" id="previewIntroduce">
+            <h2>Về HoagART</h2>
+            {% if introduce %}
+            <form
+                id="introduceForm"
+                method="POST"
+                enctype="multipart/form-data"
+                action="{{ url_for('admin.manage_introduce') }}"
+            >
+                <input type="hidden" name="form_name" value="introduce" />
+                {{ introduce_form.hidden_tag() }}
+                <div class="intro-grid">
+                    <div class="intro-text">
+                        <p class="view-mode" id="introduceTextView">
+                            {{ introduce.text }}
+                        </p>
+                        <div class="edit-mode">
+                            <textarea
+                                class="editable-textarea"
+                                id="introduceText"
+                                name="text"
+                            >
+{{ introduce.text }}</textarea
+                            >
+                        </div>
+                        <a
+                            href="{{ introduce.cta_url }}"
+                            class="btn view-mode"
+                            id="introduceCtaView"
+                            >{{ introduce.cta_text }}</a
+                        >
+                        <div class="edit-mode">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="introduceCtaText"
+                                name="cta_text"
+                                value="{{ introduce.cta_text }}"
+                                placeholder="CTA Text"
+                            />
+                            <input
+                                type="text"
+                                class="form-control mt-2"
+                                id="introduceCtaUrl"
+                                name="cta_url"
+                                value="{{ introduce.cta_url }}"
+                                placeholder="CTA URL"
+                            />
+                        </div>
+                    </div>
+                    <div class="intro-image">
+                        <img
+                            class="view-mode"
+                            id="previewIntroduceImageView"
+                            src="{{ introduce.image_url }}"
+                            alt="Giới thiệu HoagART"
+                        />
+                        <div class="edit-mode">
+                            <img
+                                id="previewIntroduceImageEdit"
+                                src="{{ introduce.image_url }}"
+                                alt="Giới thiệu HoagART"
+                            />
+                            <input
+                                type="file"
+                                class="editable-image"
+                                id="introduceImage"
+                                name="image"
+                                accept="image/*"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="crud-buttons">
+                    <button
+                        type="button"
+                        onclick="toggleEdit('previewIntroduce')"
+                        title="Sửa"
+                    >
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="edit-buttons">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="cancelEdit('previewIntroduce')"
+                    >
+                        Hủy
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <p class="no-data">Chưa có phần giới thiệu.</p>
+            <div class="add-form">
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                    action="{{ url_for('admin.manage_introduce') }}"
+                >
+                    <input type="hidden" name="form_name" value="introduce" />
+                    {{ introduce_form.hidden_tag() }}
+                    <textarea
+                        class="form-control"
+                        name="text"
+                        placeholder="Nội dung giới thiệu"
+                        required
+                    ></textarea>
+                    <input
+                        type="text"
+                        class="form-control mt-2"
+                        name="cta_text"
+                        placeholder="CTA Text"
+                        required
+                    />
+                    <input
+                        type="text"
+                        class="form-control mt-2"
+                        name="cta_url"
+                        placeholder="CTA URL"
+                        required
+                    />
+                    <input
+                        type="file"
+                        class="editable-image mt-2"
+                        name="image"
+                        accept="image/*"
+                    />
+                    <button type="submit" class="btn btn-primary mt-2">
+                        Thêm
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Đội ngũ -->
+        <div class="team-section" id="previewTeam">
+            <h2>Đội Ngũ Của Chúng Tôi</h2>
+            {% if team_members %}
+            <div class="team-grid">
+                {% for member in team_members %}
+                <div class="team-member" id="team_{{ member.id }}">
+                    <form
+                        id="teamForm_{{ member.id }}"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        action="{{ url_for('admin.edit_introduce_item', model='team', id=member.id) }}"
+                    >
+                        <input type="hidden" name="form_name" value="team" />
+                        {{ team_form.hidden_tag() }}
+                        <div class="team-image">
+                            <img
+                                class="view-mode"
+                                id="teamImageView_{{ member.id }}"
+                                src="{{ member.image_url }}"
+                                alt="{{ member.name }}"
+                            />
+                            <div class="edit-mode">
+                                <img
+                                    id="teamImageEdit_{{ member.id }}"
+                                    src="{{ member.image_url }}"
+                                    alt="{{ member.name }}"
+                                />
+                                <input
+                                    type="file"
+                                    class="editable-image"
+                                    id="teamImageInput_{{ member.id }}"
+                                    name="image"
+                                    accept="image/*"
+                                />
+                            </div>
+                        </div>
+                        <h3 class="view-mode" id="teamNameView_{{ member.id }}">
+                            {{ member.name }}
+                        </h3>
+                        <div class="edit-mode">
+                            <input
+                                type="text"
+                                class="editable-text"
+                                id="teamName_{{ member.id }}"
+                                name="name"
+                                value="{{ member.name }}"
+                            />
+                        </div>
+                        <p
+                            class="role view-mode"
+                            id="teamRoleView_{{ member.id }}"
+                        >
+                            {{ member.role }}
+                        </p>
+                        <div class="edit-mode">
+                            <input
+                                type="text"
+                                class="editable-text"
+                                id="teamRole_{{ member.id }}"
+                                name="role"
+                                value="{{ member.role }}"
+                            />
+                        </div>
+                        <p
+                            class="view-mode"
+                            id="teamDescriptionView_{{ member.id }}"
+                        >
+                            {{ member.description }}
+                        </p>
+                        <div class="edit-mode">
+                            <textarea
+                                class="editable-textarea"
+                                id="teamDescription_{{ member.id }}"
+                                name="description"
+                            >
+{{ member.description }}</textarea
+                            >
+                        </div>
+                        <div class="item-actions">
+                            <button
+                                type="button"
+                                onclick="toggleEdit('team_{{ member.id }}')"
+                                title="Sửa"
+                            >
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button
+                                type="button"
+                                onclick="deleteItem('team', {{ member.id }})"
+                                title="Xóa"
+                            >
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="edit-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                Lưu
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                onclick="cancelEdit('team_{{ member.id }}')"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">Chưa có thành viên đội ngũ.</p>
+            {% endif %}
+            <div class="crud-buttons">
+                <button
+                    type="button"
+                    onclick="toggleAdd('addTeamForm')"
+                    title="Thêm"
+                >
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="add-form" id="addTeamForm" style="display: none">
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                    action="{{ url_for('admin.manage_introduce') }}"
+                >
+                    <input type="hidden" name="form_name" value="team" />
+                    {{ team_form.hidden_tag() }}
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="name"
+                        placeholder="Tên thành viên"
+                        required
+                    />
+                    <input
+                        type="text"
+                        class="form-control mt-2"
+                        name="role"
+                        placeholder="Vai trò"
+                        required
+                    />
+                    <textarea
+                        class="form-control mt-2"
+                        name="description"
+                        placeholder="Mô tả"
+                        required
+                    ></textarea>
+                    <input
+                        type="file"
+                        class="editable-image mt-2"
+                        name="image"
+                        accept="image/*"
+                    />
+                    <button type="submit" class="btn btn-primary mt-2">
+                        Thêm
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary mt-2"
+                        onclick="toggleAdd('addTeamForm')"
+                    >
+                        Hủy
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sứ mệnh -->
+        <div class="mission-section" id="previewMission">
+            <h2>Sứ Mệnh Của HoagART</h2>
+            {% if mission %}
+            <form
+                id="missionForm"
+                method="POST"
+                enctype="multipart/form-data"
+                action="{{ url_for('admin.manage_introduce') }}"
+            >
+                <input type="hidden" name="form_name" value="mission" />
+                {{ mission_form.hidden_tag() }}
+                <div class="mission-content">
+                    <p class="view-mode" id="missionTextView">
+                        {{ mission.text }}
+                    </p>
+                    <div class="edit-mode">
+                        <textarea
+                            class="editable-textarea"
+                            id="missionText"
+                            name="text"
+                        >
+{{ mission.text }}</textarea
+                        >
+                    </div>
+                    <img
+                        class="view-mode"
+                        id="missionImageView"
+                        src="{{ mission.image_url }}"
+                        alt="Sứ mệnh HoagART"
+                    />
+                    <div class="edit-mode">
+                        <img
+                            id="previewMissionImageEdit"
+                            src="{{ mission.image_url }}"
+                            alt="Sứ mệnh HoagART"
+                        />
+                        <input
+                            type="file"
+                            class="editable-image"
+                            id="missionImage"
+                            name="image"
+                            accept="image/*"
+                        />
+                    </div>
+                </div>
+                <div class="crud-buttons">
+                    <button
+                        type="button"
+                        onclick="toggleEdit('previewMission')"
+                        title="Sửa"
+                    >
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="edit-buttons">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="cancelEdit('previewMission')"
+                    >
+                        Hủy
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <p class="no-data">Chưa có phần sứ mệnh.</p>
+            <div class="add-form">
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                    action="{{ url_for('admin.manage_introduce') }}"
+                >
+                    <input type="hidden" name="form_name" value="mission" />
+                    {{ mission_form.hidden_tag() }}
+                    <textarea
+                        class="form-control"
+                        name="text"
+                        placeholder="Nội dung sứ mệnh"
+                        required
+                    ></textarea>
+                    <input
+                        type="file"
+                        class="editable-image mt-2"
+                        name="image"
+                        accept="image/*"
+                    />
+                    <button type="submit" class="btn btn-primary mt-2">
+                        Thêm
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleEdit(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section.classList.contains("editing")) {
+            cancelEdit(sectionId);
+        } else {
+            section.classList.add("editing");
+            if (sectionId === "previewIntroduce") {
+                document.getElementById("introduceText").value =
+                    document.getElementById("introduceTextView").textContent;
+                document.getElementById("introduceCtaText").value =
+                    document.getElementById("introduceCtaView").textContent;
+                document.getElementById("introduceCtaUrl").value =
+                    document.getElementById("introduceCtaView").href;
+                document.getElementById("previewIntroduceImageEdit").src =
+                    document.getElementById("previewIntroduceImageView").src;
+            } else if (sectionId.startsWith("team_")) {
+                const id = sectionId.split("_")[1];
+                document.getElementById(`teamName_${id}`).value =
+                    document.getElementById(`teamNameView_${id}`).textContent;
+                document.getElementById(`teamRole_${id}`).value =
+                    document.getElementById(`teamRoleView_${id}`).textContent;
+                document.getElementById(`teamDescription_${id}`).value =
+                    document.getElementById(
+                        `teamDescriptionView_${id}`
+                    ).textContent;
+                document.getElementById(`teamImageEdit_${id}`).src =
+                    document.getElementById(`teamImageView_${id}`).src;
+            } else if (sectionId === "previewMission") {
+                document.getElementById("missionText").value =
+                    document.getElementById("missionTextView").textContent;
+                document.getElementById("previewMissionImageEdit").src =
+                    document.getElementById("missionImageView").src;
+            }
+        }
+    }
+
+    function cancelEdit(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.classList.remove("editing");
+    }
+
+    function toggleAdd(formId) {
+        const form = document.getElementById(formId);
+        form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+
+    function deleteItem(model, id) {
+        if (confirm("Bạn có chắc chắn muốn xóa?")) {
+            fetch(`/admin/introduce/${model}/delete/${id}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-Token": "{{ introduce_form.csrf_token._value() }}",
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        document.getElementById(`${model}_${id}`).remove();
+                        alert(data.message);
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch((error) => alert("Lỗi khi xóa mục: " + error));
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Image preview
+        document.querySelectorAll('input[type="file"]').forEach((input) => {
+            input.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imgId = input.id
+                            .replace("ImageInput", "ImageEdit")
+                            .replace(
+                                "introduceImage",
+                                "previewIntroduceImageEdit"
+                            )
+                            .replace("missionImage", "previewMissionImageEdit");
+                        const imgElement = document.getElementById(imgId);
+                        imgElement.src = e.target.result;
+                        // Set preview dimensions
+                        if (imgId.includes("teamImageEdit")) {
+                            imgElement.style.maxHeight = "200px";
+                            imgElement.style.width = "100%";
+                        } else {
+                            imgElement.style.maxHeight = "400px";
+                            imgElement.style.width = "100%";
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // Form submissions
+        document.querySelectorAll("form").forEach((form) => {
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            alert(data.message);
+                            if (form.id.startsWith("add")) {
+                                location.reload();
+                            } else {
+                                const sectionId = form.closest(
+                                    ".introduce-section, .team-member, .mission-section"
+                                ).id;
+                                if (sectionId === "previewIntroduce") {
+                                    document.getElementById(
+                                        "introduceTextView"
+                                    ).textContent = data.data.text;
+                                    document.getElementById(
+                                        "introduceCtaView"
+                                    ).textContent = data.data.cta_text;
+                                    document.getElementById(
+                                        "introduceCtaView"
+                                    ).href = data.data.cta_url;
+                                    document.getElementById(
+                                        "previewIntroduceImageView"
+                                    ).src = data.data.image_url;
+                                } else if (sectionId.startsWith("team_")) {
+                                    const id = sectionId.split("_")[1];
+                                    document.getElementById(
+                                        `teamNameView_${id}`
+                                    ).textContent = data.data.name;
+                                    document.getElementById(
+                                        `teamRoleView_${id}`
+                                    ).textContent = data.data.role;
+                                    document.getElementById(
+                                        `teamDescriptionView_${id}`
+                                    ).textContent = data.data.description;
+                                    document.getElementById(
+                                        `teamImageView_${id}`
+                                    ).src = data.data.image_url;
+                                } else if (sectionId === "previewMission") {
+                                    document.getElementById(
+                                        "missionTextView"
+                                    ).textContent = data.data.text;
+                                    document.getElementById(
+                                        "missionImageView"
+                                    ).src = data.data.image_url;
+                                }
+                                cancelEdit(sectionId);
+                            }
+                        } else {
+                            alert(data.error);
+                        }
+                    })
+                    .catch((error) => alert("Lỗi khi gửi dữ liệu: " + error));
+            });
+        });
+    });
+</script>
+{% endblock %}

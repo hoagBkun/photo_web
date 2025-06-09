@@ -1961,3 +1961,62 @@ h2 {
         padding: 1rem;
     }
 }
+
+
+/* Team Section Images */
+.team-image img {
+    width: 100%;
+    max-height: 200px; /* Consistent height for team member images */
+    object-fit: cover; /* Maintain aspect ratio, crop if necessary */
+    border-radius: 8px;
+    box-shadow: var(--shadow-light);
+}
+
+/* Mission Section Images */
+.mission-content img {
+    width: 100%;
+    max-height: 400px; /* Match intro-image for consistency */
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+}
+
+/* Ensure admin preview images match front-end sizes */
+.preview-container .intro-image img,
+.preview-container .team-image img,
+.preview-container .mission-content img {
+    width: 100%;
+    max-height: inherit; /* Inherit max-height from parent section */
+    object-fit: cover;
+}
+
+/* Adjust team grid for consistent image display */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.team-member {
+    text-align: center;
+}
+
+iframe {
+    display: block;
+    width: 100%;
+    height: 400px;
+    border: 0;
+}
+.location .embed-responsive {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 ratio */
+    height: 0;
+    overflow: hidden;
+}
+.location .embed-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

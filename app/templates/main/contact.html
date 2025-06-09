@@ -1,131 +1,204 @@
 {% extends "layouts/base.html" %} {% block title %}Liên Hệ - HoagART{% endblock
 %} {% block content %}
-<!-- Nội dung chính -->
-<div class="container">
+<div class="container mt-5">
     <div class="contact-section">
-        <h2>Liên Hệ Với HoagART</h2>
-        <p>
+        <h2 class="text-center mb-4">Liên Hệ Với HoagART</h2>
+        <p class="text-center mb-5">
             Hãy liên hệ với chúng tôi để đặt lịch hoặc giải đáp thắc mắc. Đội
             ngũ HoagART luôn sẵn sàng hỗ trợ bạn!
         </p>
 
-        <!-- Form liên hệ -->
-        <div class="contact-form">
-            <form
-                id="contact-form"
-                method="POST"
-                action="{{ url_for('main.contact') }}"
-            >
-                <div class="form-group">
-                    <label for="name">Họ và Tên *</label>
-                    <input type="text" id="name" name="name" required />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="contact-form">
+                    <form
+                        id="contact-form"
+                        method="POST"
+                        action="{{ url_for('main.contact') }}"
+                    >
+                        {{ contact_form.hidden_tag() }}
+                        <div class="form-group mb-3">
+                            <label
+                                for="{{ contact_form.name.id }}"
+                                class="form-label"
+                                >Họ và Tên *</label
+                            >
+                            {{ contact_form.name(class="form-control",
+                            required=True, placeholder="Nhập họ và tên") }} {%
+                            if contact_form.name.errors %}
+                            <div class="text-danger">
+                                {% for error in contact_form.name.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label
+                                for="{{ contact_form.email.id }}"
+                                class="form-label"
+                                >Email *</label
+                            >
+                            {{ contact_form.email(class="form-control",
+                            required=True, placeholder="Nhập email") }} {% if
+                            contact_form.email.errors %}
+                            <div class="text-danger">
+                                {% for error in contact_form.email.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label
+                                for="{{ contact_form.phone.id }}"
+                                class="form-label"
+                                >Số Điện Thoại *</label
+                            >
+                            {{ contact_form.phone(class="form-control",
+                            required=True, placeholder="Nhập số điện thoại") }}
+                            {% if contact_form.phone.errors %}
+                            <div class="text-danger">
+                                {% for error in contact_form.phone.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label
+                                for="{{ contact_form.message.id }}"
+                                class="form-label"
+                                >Tin Nhắn *</label
+                            >
+                            {{ contact_form.message(class="form-control",
+                            rows=5, required=True, placeholder="Nhập tin nhắn
+                            của bạn") }} {% if contact_form.message.errors %}
+                            <div class="text-danger">
+                                {% for error in contact_form.message.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            Gửi Liên Hệ
+                        </button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email *</label>
-                    <input type="email" id="email" name="email" required />
+            </div>
+            <div class="col-md-6">
+                <div class="contact-info">
+                    <h3 class="mb-3">Thông Tin Liên Hệ</h3>
+                    {% if contact_info %}
+                    <p class="mb-2">
+                        <strong>Email:</strong>
+                        <a href="mailto:{{ contact_info.email }}"
+                            >{{ contact_info.email }}</a
+                        >
+                    </p>
+                    <p class="mb-2">
+                        <strong>Hotline:</strong>
+                        <a href="tel:{{ contact_info.hotline }}"
+                            >{{ contact_info.hotline }}</a
+                        >
+                    </p>
+                    <p class="mb-2">
+                        <strong>Fanpage:</strong>
+                        <a href="{{ contact_info.fanpage }}" target="_blank"
+                            >{{ contact_info.fanpage }}</a
+                        >
+                    </p>
+                    {% else %}
+                    <p class="mb-2">
+                        <strong>Email:</strong>
+                        <a href="mailto:hoag.art02@gmail.com"
+                            >hoag.art02@gmail.com</a
+                        >
+                    </p>
+                    <p class="mb-2">
+                        <strong>Hotline:</strong>
+                        <a href="tel:0346773388">0346 773 388</a>
+                    </p>
+                    <p class="mb-2">
+                        <strong>Fanpage:</strong>
+                        <a
+                            href="https://www.facebook.com/hoagart"
+                            target="_blank"
+                            >facebook.com/hoagart</a
+                        >
+                    </p>
+                    {% endif %}
                 </div>
-                <div class="form-group">
-                    <label for="phone">Số Điện Thoại *</label>
-                    <input type="tel" id="phone" name="phone" required />
-                </div>
-                <div class="form-group">
-                    <label for="message">Tin Nhắn *</label>
-                    <textarea id="message" name="message" required></textarea>
-                </div>
-                <button type="submit" class="btn">Gửi Liên Hệ</button>
-            </form>
+            </div>
         </div>
 
-        <!-- Thông tin liên hệ -->
-        <div class="contact-info">
-            <h3>Thông Tin Liên Hệ</h3>
-            <p>
-                <strong>Email:</strong>
-                <a href="mailto:hoag.art02@gmail.com">hoag.art02@gmail.com</a>
-            </p>
-            <p>
-                <strong>Hotline:</strong>
-                <a href="tel:0346773388">0346 773 388</a>
-            </p>
-            <p>
-                <strong>Fanpage:</strong>
-                <a href="https://www.facebook.com/hoagart" target="_blank"
-                    >facebook.com/hoagart</a
-                >
-            </p>
-        </div>
-
-        <!-- Bản đồ -->
-        <div class="locations">
-            <h3>Cơ Sở Của Chúng Tôi</h3>
-            <div class="location">
-                <h4>Cơ Sở 1 - Hà Nội</h4>
-                <p>Tầng 4, Circle K, 850 Đường Láng, Láng Thượng, Đống Đa</p>
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.835686565602!2d105.80871771473536!3d21.01825798599573!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab3f7a9d9d7d%3A0x4d2f7e8a9e1e0e!2zQ2lyY2xlIEsgTGFuZywgODUwIER1b25nIExh4buJbmcsIEzhuq1uZyBUaMawbmcgQOG7rXMgTMOgbmcgRG9uZywgSMOgIE7huqNpLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1716296644!5m2!1svi!2s"
-                    width="100%"
-                    height="400"
-                    style="border: 0"
-                    allowfullscreen=""
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-                <a href="https://goo.gl/maps/abc123" target="_blank" class="btn"
-                    >Xem Bản Đồ</a
-                >
-            </div>
-            <div class="location">
-                <h4>Cơ Sở 2 - Hà Nội</h4>
-                <p>
-                    Tầng 3, Sảnh Thương Mại, HH01, Meco Complex, 102 Trường
-                    Chinh, Phương Mai, Đống Đa
-                </p>
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.835686565602!2d105.83271771473536!3d21.00825798599573!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab3f7a9d9d7d%3A0x4d2f7e8a9e1e0e!2zTGVuZyBUaGFuZy1NZWNvIENvbXBsZXgsIDEwMiBUcsOqbmcgQ2hpbmgsIFBo4buRbmcgTWFpLCDhuq9uZyBEw7JhLCBIw6AgTuG7mWksIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1716296644!5m2!1svi!2s"
-                    width="100%"
-                    height="400"
-                    style="border: 0"
-                    allowfullscreen=""
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-                <a href="https://goo.gl/maps/def456" target="_blank" class="btn"
-                    >Xem Bản Đồ</a
-                >
-            </div>
-            <div class="location">
-                <h4>Cơ Sở 1 - TP. Hồ Chí Minh</h4>
-                <p>351/45 Lê Văn Sỹ, Phường 13, Quận 3</p>
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.1234567890123!2d106.685432!3d10.776543!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f2e9e1e0e0d%3A0x1234567890abcdef!2zMzUxLzQ1IExlIFbhuq1uIFPGoSwgUGjDuiAxMywgUXXhuq1uIDMsIFRQLiBI4buTIENow60gTWluaA!5e0!3m2!1svi!2s!4v1716296644!5m2!1svi!2s"
-                    width="100%"
-                    height="400"
-                    style="border: 0"
-                    allowfullscreen=""
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-                <a href="https://goo.gl/maps/ghi789" target="_blank" class="btn"
-                    >Xem Bản Đồ</a
-                >
-            </div>
-            <div class="location">
-                <h4>Cơ Sở 2 - TP. Hồ Chí Minh</h4>
-                <p>436A/71 Đường 3/2, Phường 12, Quận 10</p>
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.1234567890123!2d106.669432!3d10.765432!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f2e9e1e0e0d%3A0xabcdef1234567890!2zNDM2QS83MSDEkMOgIDMvMiwgUGjDuiAxMiwgUXXhuq1uIDEwLCBUUC4gSMOhIE5vaSwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1716296644!5m2!1svi!2s"
-                    width="100%"
-                    height="400"
-                    style="border: 0"
-                    allowfullscreen=""
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-                <a href="https://goo.gl/maps/jkl012" target="_blank" class="btn"
-                    >Xem Bản Đồ</a
-                >
+        <div class="locations mt-5">
+            <h3 class="mb-4">Cơ Sở Của Chúng Tôi</h3>
+            <div class="row">
+                {% for location in locations %}
+                <div class="col-md-6 mb-4">
+                    <div class="location card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title">{{ location.name }}</h4>
+                            <p class="card-text">{{ location.address }}</p>
+                            {% if location.google_maps_link %}
+                            <div class="map-container mb-3">
+                                <iframe
+                                    src="{{ location.google_maps_link }}"
+                                    width="100%"
+                                    height="300"
+                                    style="border: 0; border-radius: 6px"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                ></iframe>
+                            </div>
+                            {% else %}
+                            <p class="text-muted">Chưa có bản đồ.</p>
+                            {% endif %}
+                            <a
+                                href="{{ location.google_maps_link or '#' }}"
+                                target="_blank"
+                                class="btn btn-primary"
+                                >Xem Bản Đồ</a
+                            >
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .contact-section {
+        padding: 2rem 0;
+    }
+    .form-label {
+        font-weight: 500;
+        color: #333;
+    }
+    .form-control {
+        border-radius: 6px;
+    }
+    .btn-primary {
+        border-radius: 6px;
+    }
+    .card {
+        border: none;
+        border-radius: 8px;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .map-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+    }
+    .text-muted {
+        font-style: italic;
+    }
+</style>
 {% endblock %}
