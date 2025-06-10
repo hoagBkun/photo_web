@@ -1,86 +1,236 @@
 {% extends "admin/base.html" %} {% block title %}Bảng Điều Khiển - HoagART{%
 endblock %} {% block content %}
 <div class="container-fluid">
-    <h1 class="mb-4">Bảng Điều Khiển</h1>
+    <h1 class="mb-4">Bảng điều khiển</h1>
+    <h5 class="mb-3">Tổng quan</h5>
     <div class="row">
+        <!-- Trang chủ -->
         <div class="col-lg-3 col-md-6 mb-4">
             <div class="card text-white bg-primary">
-                <div class="card-body">
-                    <h5 class="card-title">Banner</h5>
-                    <p class="card-text">{{ banner_count }} banner</p>
-                    <a
-                        href="{{ url_for('admin.manage_banners') }}"
-                        class="btn btn-light"
-                        >Quản lý</a
-                    >
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-home fa-2x me-3"></i>
+                    <div>
+                        <h5 class="card-title">Trang chủ</h5>
+                        <p class="card-text">
+                            {{ home_content_count|default(0) }} mục
+                        </p>
+                        <a
+                            href="{{ url_for('admin.manage_home') }}"
+                            class="btn btn-light"
+                            >Quản lý</a
+                        >
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <h5 class="card-title">Bài viết</h5>
-                    <p class="card-text">{{ post_count }} bài viết</p>
-                    <a
-                        href="{{ url_for('admin.manage_posts') }}"
-                        class="btn btn-light"
-                        >Quản lý</a
-                    >
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <h5 class="card-title">Người dùng</h5>
-                    <p class="card-text">{{ user_count }} người dùng</p>
-                    <a
-                        href="{{ url_for('admin.manage_users') }}"
-                        class="btn btn-light"
-                        >Quản lý</a
-                    >
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <h5 class="card-title">Gói dịch vụ</h5>
-                    <p class="card-text">{{ pricing_count }} gói</p>
-                    <a
-                        href="{{ url_for('admin.manage_pricing') }}"
-                        class="btn btn-light"
-                        >Quản lý</a
-                    >
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card text-white bg-danger">
-                <div class="card-body">
-                    <h5 class="card-title">Thành viên đội ngũ</h5>
-                    <p class="card-text">{{ team_member_count }} thành viên</p>
-                    <a
-                        href="{{ url_for('admin.manage_introduce') }}"
-                        class="btn btn-light"
-                        >Quản lý</a
-                    >
-                </div>
-            </div>
-        </div>
+        <!-- Người dùng -->
         <div class="col-lg-3 col-md-6 mb-4">
             <div class="card text-white bg-secondary">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-user fa-2x me-3"></i>
+                    <div>
+                        <h5 class="card-title">Người dùng</h5>
+                        <p class="card-text">{{ user_count }} người dùng</p>
+                        <a
+                            href="{{ url_for('admin.manage_users') }}"
+                            class="btn btn-light"
+                            >Quản lý</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="mb-3">Nội dung trang</h5>
+    <div class="row">
+        <!-- Banner -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-info">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-image fa-2x me-3"></i>
+                    <div>
+                        <h5 class="card-title">Banner</h5>
+                        <p class="card-text">{{ banner_count }} banner</p>
+                        <a
+                            href="{{ url_for('admin.manage_banners') }}"
+                            class="btn btn-light"
+                            >Quản lý</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Blog -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-file-alt fa-2x me-3"></i>
+                    <div>
+                        <h5 class="card-title">Blog</h5>
+                        <p class="card-text">{{ post_count }} bài viết</p>
+                        <a
+                            href="{{ url_for('admin.manage_posts') }}"
+                            class="btn btn-light"
+                            >Quản lý</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bảng giá -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-warning">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-tags fa-2x me-3"></i>
+                    <div>
+                        <h5 class="card-title">Bảng giá</h5>
+                        <p class="card-text">{{ pricing_count }} gói</p>
+                        <a
+                            href="{{ url_for('admin.manage_pricing') }}"
+                            class="btn btn-light"
+                            >Quản lý</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Giới thiệu -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-danger">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-users fa-2x me-3"></i>
+                    <div>
+                        <h5 class="card-title">Giới thiệu</h5>
+                        <p class="card-text">
+                            {{ team_member_count }} thành viên
+                        </p>
+                        <a
+                            href="{{ url_for('admin.manage_introduce') }}"
+                            class="btn btn-light"
+                            >Quản lý</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="mb-3">Liên hệ</h5>
+    <div class="row">
+        <!-- Liên hệ (Cơ sở) -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-dark">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-map-marker-alt fa-2x me-3"></i>
+                    <div>
+                        <h5 class="card-title">Liên hệ</h5>
+                        <p class="card-text">{{ location_count }} cơ sở</p>
+                        <a
+                            href="{{ url_for('admin.manage_contact') }}"
+                            class="btn btn-light"
+                            >Quản lý</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Tin nhắn liên hệ -->
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-purple">
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-envelope fa-2x me-3"></i>
+                    <div>
+                        <h5 class="card-title">Tin nhắn liên hệ</h5>
+                        <p class="card-text">
+                            {{ contact_submission_count }} tin nhắn
+                        </p>
+                        <a
+                            href="{{ url_for('admin.manage_contact_submissions') }}"
+                            class="btn btn-light"
+                            >Quản lý</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thống kê bổ sung -->
+    <div class="row mt-5">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Bài viết mới nhất</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Cơ sở</h5>
-                    <p class="card-text">{{ location_count }} cơ sở</p>
-                    <a
-                        href="{{ url_for('admin.manage_contact') }}"
-                        class="btn btn-light"
-                        >Quản lý</a
-                    >
+                    {% if recent_posts %}
+                    <ul class="list-group list-group-flush">
+                        {% for post in recent_posts %}
+                        <li class="list-group-item">
+                            <a href="{{ url_for('admin.manage_posts') }}"
+                                >{{ post.title }}</a
+                            >
+                            <span class="text-muted float-end"
+                                >{{ post.created_at.strftime('%d/%m/%Y')
+                                }}</span
+                            >
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">Chưa có bài viết nào.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Người dùng mới</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_users %}
+                    <ul class="list-group list-group-flush">
+                        {% for user in recent_users %}
+                        <li class="list-group-item">
+                            <a href="{{ url_for('admin.manage_users') }}"
+                                >{{ user.username }}</a
+                            >
+                            <span class="text-muted float-end"
+                                >{{ user.created_at.strftime('%d/%m/%Y')
+                                }}</span
+                            >
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">Chưa có người dùng mới.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .card-body {
+        padding: 1.5rem;
+    }
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+    .card-title {
+        margin-bottom: 0.5rem;
+    }
+    .card-text {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
 {% endblock %}

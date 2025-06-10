@@ -1,52 +1,714 @@
-{% extends "admin/base.html" %} {% block title %}Quản lý Gói dịch vụ - HoagART{%
+<!DOCTYPE html>
+{% extends "admin/base.html" %} {% block title %}Quản lý Bảng Giá - HoagART{%
 endblock %} {% block content %}
+<!-- Kế thừa CSS từ style.css -->
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}"
+/>
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+
 <div class="container-fluid">
-    <h1 class="mb-4">Quản lý Gói dịch vụ</h1>
-    <div class="card">
-        <div class="card-body">
-            <h5>Danh sách Gói dịch vụ</h5>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên</th>
-                        <th>Giá</th>
-                        <th>Nổi bật</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pricing in pricings %}
-                    <tr>
-                        <td>{{ pricing.id }}</td>
-                        <td>{{ pricing.name }}</td>
-                        <td>{{ "{:,.0f}".format(pricing.price) }} VNĐ</td>
-                        <td>{{ 'Có' if pricing.featured else 'Không' }}</td>
-                        <td>
-                            <a
-                                href="{{ url_for('admin.edit_pricing', id=pricing.id) }}"
-                                class="btn btn-sm btn-warning"
-                                >Sửa</a
+    <h2 class="my-4">Quản lý Bảng Giá</h2>
+    <div class="preview-container">
+        <!-- Phần thông tin trang bảng giá -->
+        <div class="pricing-page-section" id="pricing-page-section">
+            <h3>Thông tin Trang Bảng Giá</h3>
+            <div class="pricing-section">
+                <h2 class="view-mode" id="pricingPageTitleView">
+                    {{ pricing_page.title if pricing_page else 'Bảng Giá Dịch
+                    Vụ' }}
+                </h2>
+                <p class="view-mode" id="pricingPageDescriptionView">
+                    {{ pricing_page.description if pricing_page else 'Khám phá
+                    các gói dịch vụ phù hợp với nhu cầu của bạn tại HoagART.' }}
+                </p>
+                <p class="view-mode" id="pricingPageShowBannerView">
+                    Hiển thị banner: {{ 'Có' if pricing_page.show_banner else
+                    'Không' }}
+                </p>
+            </div>
+            <div class="crud-buttons">
+                <button
+                    type="button"
+                    onclick="toggleEdit('pricing-page-section')"
+                    title="Sửa"
+                >
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+            <form
+                action="{{ url_for('admin.manage_pricing') }}"
+                method="POST"
+                class="edit-mode"
+            >
+                {{ pricing_page_form.hidden_tag() }}
+                <input type="hidden" name="form_name" value="pricing_page" />
+                {{ pricing_page_form.title(class="form-control editable-text",
+                id="pricingPageTitle") }} {{
+                pricing_page_form.description(class="form-control
+                editable-textarea", id="pricingPageDescription") }} {{
+                pricing_page_form.show_banner(id="pricingPageShowBanner") }}
+                <label for="pricingPageShowBanner">Hiển thị banner</label>
+                <div class="edit-buttons">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="cancelEdit('pricing-page-section')"
+                    >
+                        Hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Phần danh sách gói dịch vụ -->
+        <div class="pricing-page-section" id="previewPricings">
+            <h3>Danh sách Gói Dịch Vụ</h3>
+            <script>
+                console.log("Pricings: {{ pricings | length }}");
+            </script>
+            {% if pricings %}
+            <div class="pricing-grid">
+                {% for pricing in pricings %}
+                <div
+                    class="pricing-card{% if pricing.featured %} featured{% endif %}"
+                    id="pricing_{{ pricing.id }}"
+                >
+                    <div class="item-actions">
+                        <button
+                            type="button"
+                            onclick="toggleEdit('pricing_{{ pricing.id }}')"
+                            title="Sửa"
+                        >
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button
+                            type="button"
+                            onclick="deleteItem('pricing', {{ pricing.id }})"
+                            title="Xóa"
+                        >
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <h3 class="view-mode" id="pricingNameView_{{ pricing.id }}">
+                        {{ pricing.name }}
+                    </h3>
+                    <p
+                        class="price view-mode"
+                        id="pricingPriceView_{{ pricing.id }}"
+                    >
+                        {{ "{:,.0f}".format(pricing.price) }} VNĐ
+                    </p>
+                    {% if pricing.description %}
+                    <p
+                        class="view-mode"
+                        id="pricingDescriptionView_{{ pricing.id }}"
+                    >
+                        {{ pricing.description }}
+                    </p>
+                    {% endif %} {% if pricing.features %}
+                    <ul
+                        class="view-mode"
+                        id="pricingFeaturesView_{{ pricing.id }}"
+                    >
+                        {% for feature in pricing.features.split('\n') %} {% if
+                        feature.strip() %}
+                        <li>{{ feature.strip() }}</li>
+                        {% endif %} {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <a
+                        href="{{ url_for('main.contact') }}"
+                        class="btn btn-primary view-mode"
+                        >Đặt Ngay</a
+                    >
+
+                    <form
+                        action="{{ url_for('admin.update_pricing', model='pricing', id=pricing.id) }}"
+                        method="POST"
+                        class="edit-mode"
+                    >
+                        {{ pricing_form.hidden_tag() }}
+                        <input type="hidden" name="form_name" value="pricing" />
+                        <input
+                            type="text"
+                            class="form-control editable-text"
+                            id="pricingName_{{ pricing.id }}"
+                            name="name"
+                            value="{{ pricing.name }}"
+                        />
+                        <input
+                            type="number"
+                            class="form-control editable-text"
+                            id="pricingPrice_{{ pricing.id }}"
+                            name="price"
+                            value="{{ pricing.price }}"
+                            min="0"
+                            step="0.01"
+                        />
+                        <textarea
+                            class="form-control editable-textarea"
+                            id="pricingDescription_{{ pricing.id }}"
+                            name="description"
+                        >
+{{ pricing.description or '' }}</textarea
+                        >
+                        <textarea
+                            class="form-control editable-textarea"
+                            id="pricingFeatures_{{ pricing.id }}"
+                            name="features"
+                        >
+{{ pricing.features or '' }}</textarea
+                        >
+                        <input
+                            type="checkbox"
+                            id="pricingFeatured_{{ pricing.id }}"
+                            name="featured"
+                            {%
+                            if
+                            pricing.featured
+                            %}checked{%
+                            endif
+                            %}
+                        />
+                        <label for="pricingFeatured_{{ pricing.id }}"
+                            >Gói nổi bật</label
+                        >
+                        <div class="edit-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                Lưu
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                onclick="cancelEdit('pricing_{{ pricing.id }}')"
                             >
-                            <form
-                                action="{{ url_for('admin.delete_pricing', id=pricing.id) }}"
-                                method="POST"
-                                style="display: inline"
-                            >
-                                <button
-                                    type="submit"
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                >
-                                    Xóa
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                Hủy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">
+                Chưa có gói dịch vụ nào. Vui lòng thêm gói dịch vụ!
+            </p>
+            {% endif %}
+            <div class="crud-buttons">
+                <button
+                    type="button"
+                    onclick="toggleAdd('addPricingForm')"
+                    title="Thêm"
+                >
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Form thêm gói dịch vụ mới -->
+        <div class="add-form" id="addPricingForm" style="display: none">
+            <form action="{{ url_for('admin.manage_pricing') }}" method="POST">
+                {{ pricing_form.hidden_tag() }}
+                <input type="hidden" name="form_name" value="pricing" />
+                <div class="form-group">
+                    <label for="pricingName">Tên gói</label>
+                    {{ pricing_form.name(class="form-control", id="pricingName")
+                    }}
+                </div>
+                <div class="form-group">
+                    <label for="pricingPrice">Giá (VNĐ)</label>
+                    {{ pricing_form.price(class="form-control",
+                    id="pricingPrice", type="number", min="0", step="0.01") }}
+                </div>
+                <div class="form-group">
+                    <label for="pricingDescription">Mô tả</label>
+                    {{ pricing_form.description(class="form-control",
+                    id="pricingDescription") }}
+                </div>
+                <div class="form-group">
+                    <label for="pricingFeatures"
+                        >Tính năng (mỗi dòng 1 tính năng)</label
+                    >
+                    {{ pricing_form.features(class="form-control",
+                    id="pricingFeatures") }}
+                </div>
+                <div class="form-group">
+                    {{ pricing_form.featured(id="pricingFeatured") }}
+                    <label for="pricingFeatured">Gói nổi bật</label>
+                </div>
+                <div class="edit-buttons">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="toggleAdd('addPricingForm')"
+                    >
+                        Hủy
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<style>
+    .preview-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: "Roboto", sans-serif;
+    }
+    .pricing-page-section {
+        margin-bottom: 40px;
+    }
+    .crud-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .crud-buttons button {
+        border: none;
+        background: transparent;
+        color: var(--text-color, #333);
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.6rem;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+    .crud-buttons button:hover {
+        opacity: 1;
+    }
+    .pricing-card {
+        position: relative;
+        overflow: visible !important;
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .item-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex !important;
+        gap: 5px;
+        z-index: 10;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    .item-actions button {
+        border: none;
+        background: transparent;
+        color: var(--text-color, #333);
+        padding: 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.4rem;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+    .item-actions button:hover {
+        opacity: 1;
+    }
+    .edit-buttons {
+        margin-top: 10px;
+        display: none;
+        gap: 10px;
+        justify-content: center;
+    }
+    .editing .edit-buttons {
+        display: flex !important;
+    }
+    .add-form .edit-buttons {
+        display: flex !important;
+    }
+    .edit-mode {
+        display: none;
+    }
+    .editing .edit-mode {
+        display: block !important;
+    }
+    .editing .view-mode {
+        display: none;
+    }
+    .edit-mode input,
+    .edit-mode textarea,
+    .edit-mode [type="checkbox"] {
+        display: block !important;
+        visibility: visible !important;
+    }
+    .editable-text,
+    .editable-textarea,
+    .form-control {
+        border: 1px solid #ddd;
+        padding: 8px;
+        border-radius: 5px;
+        width: 100%;
+        background: #fff;
+        font-family: "Roboto", sans-serif;
+        color: var(--text-color, #333);
+    }
+    .editable-text:focus,
+    .editable-textarea:focus,
+    .form-control:focus {
+        border-color: var(--primary-color, #00c4cc);
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 196, 204, 0.3);
+    }
+    .add-form {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: #f9f9f9;
+    }
+    .no-data {
+        color: #666;
+        font-style: italic;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    .form-group label {
+        color: var(--dark-bg, #333);
+        font-weight: 500;
+        margin-bottom: 5px;
+        display: block;
+    }
+    .price {
+        color: var(--primary-color, #00c4cc);
+        font-size: 2em;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    console.log("JavaScript loaded");
+
+    function toggleEdit(sectionId) {
+        console.log("toggleEdit called for section:", sectionId);
+        const section = document.getElementById(sectionId);
+        if (section) {
+            if (section.classList.contains("editing")) {
+                cancelEdit(sectionId);
+            } else {
+                section.classList.add("editing");
+                if (sectionId === "pricing-page-section") {
+                    const titleView = document
+                        .getElementById("pricingPageTitleView")
+                        .textContent.trim();
+                    const descriptionView = document
+                        .getElementById("pricingPageDescriptionView")
+                        .textContent.trim();
+                    const showBannerView = document
+                        .getElementById("pricingPageShowBannerView")
+                        .textContent.includes("Có");
+                    document.getElementById("pricingPageTitle").value =
+                        titleView || "Bảng Giá Dịch Vụ";
+                    document.getElementById("pricingPageDescription").value =
+                        descriptionView ||
+                        "Khám phá các gói dịch vụ phù hợp với nhu cầu của bạn tại HoagART.";
+                    document.getElementById("pricingPageShowBanner").checked =
+                        showBannerView;
+                } else if (sectionId.startsWith("pricing_")) {
+                    const id = sectionId.split("_")[1];
+                    document.getElementById(`pricingName_${id}`).value =
+                        document
+                            .getElementById(`pricingNameView_${id}`)
+                            .textContent.trim();
+                    const priceValue =
+                        parseFloat(
+                            document
+                                .getElementById(`pricingPriceView_${id}`)
+                                .textContent.replace(/[^\d.]/g, "")
+                        ) || 0;
+                    document.getElementById(`pricingPrice_${id}`).value =
+                        priceValue.toFixed(2);
+                    document.getElementById(`pricingDescription_${id}`).value =
+                        document
+                            .getElementById(`pricingDescriptionView_${id}`)
+                            ?.textContent.trim() || "";
+                    document.getElementById(`pricingFeatures_${id}`).value =
+                        Array.from(
+                            document.querySelectorAll(
+                                `#pricingFeaturesView_${id} li`
+                            ) || []
+                        )
+                            .map((li) => li.textContent.trim())
+                            .join("\n");
+                    document.getElementById(`pricingFeatured_${id}`).checked =
+                        section.classList.contains("featured");
+                }
+            }
+        } else {
+            console.error("Section not found:", sectionId);
+        }
+    }
+
+    function cancelEdit(sectionId) {
+        console.log("cancelEdit called for", sectionId);
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.classList.remove("editing");
+            const form = section.querySelector("form");
+            if (form) form.reset();
+        } else {
+            console.error("Section not found for sectionId:", sectionId);
+        }
+    }
+
+    function toggleAdd(formId) {
+        console.log("toggleAdd called for", formId);
+        const form = document.getElementById(formId);
+        if (form) {
+            form.style.display =
+                form.style.display === "none" ? "block" : "none";
+            if (form.style.display === "none") {
+                form.reset();
+            }
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM loaded");
+
+        // Kiểm tra định dạng giá
+        document
+            .querySelectorAll('input[id*="pricingPrice"]')
+            .forEach((input) => {
+                input.addEventListener("input", (e) => {
+                    e.target.value = e.target.value.replace(/[^\d.]/g, "");
+                });
+            });
+
+        // Xử lý submit form
+        document.querySelectorAll("form").forEach((form) => {
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                console.log("Form submitted", form.id, "Action:", form.action);
+
+                // Kiểm tra input
+                const inputs = form.querySelectorAll("input, textarea");
+                inputs.forEach((input) => {
+                    console.log(
+                        `Input: ${input.name} = ${input.value}, Disabled: ${input.disabled}`
+                    );
+                });
+
+                // Validate
+                const titleInput = form.querySelector("input[name=title]");
+                const nameInput = form.querySelector("input[name=name]");
+                const priceInput = form.querySelector("input[name=price]");
+                if (titleInput && !titleInput.value.trim()) {
+                    alert("Tiêu đề trang bảng giá không được để trống!");
+                    return;
+                }
+                if (nameInput && !nameInput.value.trim()) {
+                    alert("Tên gói dịch vụ không được để trống!");
+                    return;
+                }
+                if (priceInput) {
+                    const priceValue = parseFloat(priceInput.value);
+                    if (isNaN(priceValue) || priceValue < 0) {
+                        alert("Giá phải là một số hợp lệ và không âm!");
+                        return;
+                    }
+                    priceInput.value = priceValue.toFixed(2);
+                }
+
+                const formData = new FormData(form);
+                console.log("FormData entries:");
+                for (let [key, value] of formData.entries()) {
+                    console.log(`  ${key} = ${value}`);
+                }
+                const csrfToken = form.querySelector("input[name=csrf_token]");
+                if (!csrfToken || !csrfToken.value) {
+                    alert("CSRF token không tồn tại!");
+                    return;
+                }
+
+                const submitBtn = form.querySelector("button[type=submit]");
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Đang lưu...";
+
+                fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRF-Token": csrfToken.value,
+                    },
+                })
+                    .then((response) => {
+                        console.log("Response status:", response.status);
+                        if (!response.ok) {
+                            throw new Error(
+                                `HTTP error! Status: ${response.status}`
+                            );
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log("AJAX response:", data);
+                        if (data.success) {
+                            alert(data.message || "Lưu thành công!");
+                            const sectionId = form.closest(
+                                ".pricing-page-section, .pricing-card"
+                            )?.id;
+                            if (form.id === "addPricingForm") {
+                                location.reload();
+                                toggleAdd(form.id);
+                                return;
+                            }
+                            if (sectionId === "pricing-page-section") {
+                                document.getElementById(
+                                    "pricingPageTitleView"
+                                ).textContent =
+                                    document.getElementById(
+                                        "pricingPageTitle"
+                                    ).value;
+                                document.getElementById(
+                                    "pricingPageDescriptionView"
+                                ).textContent = document.getElementById(
+                                    "pricingPageDescription"
+                                ).value;
+                                document.getElementById(
+                                    "pricingPageShowBannerView"
+                                ).textContent = document.getElementById(
+                                    "pricingPageShowBanner"
+                                ).checked
+                                    ? "Hiển thị banner: Có"
+                                    : "Hiển thị banner: Không";
+                                cancelEdit(sectionId);
+                            } else if (
+                                sectionId &&
+                                sectionId.startsWith("pricing_")
+                            ) {
+                                const id = sectionId.split("_")[1];
+                                const section =
+                                    document.getElementById(sectionId);
+                                document.getElementById(
+                                    `pricingNameView_${id}`
+                                ).textContent = document.getElementById(
+                                    `pricingName_${id}`
+                                ).value;
+                                const priceValue = parseFloat(
+                                    document.getElementById(
+                                        `pricingPrice_${id}`
+                                    ).value
+                                );
+                                document.getElementById(
+                                    `pricingPriceView_${id}`
+                                ).textContent =
+                                    new Intl.NumberFormat("vi-VN").format(
+                                        priceValue
+                                    ) + " VNĐ";
+                                document.getElementById(
+                                    `pricingDescriptionView_${id}`
+                                ).textContent =
+                                    document.getElementById(
+                                        `pricingDescription_${id}`
+                                    ).value || "";
+                                const features = document
+                                    .getElementById(`pricingFeatures_${id}`)
+                                    .value.split("\n")
+                                    .filter((f) => f.trim());
+                                const ul = document.getElementById(
+                                    `pricingFeaturesView_${id}`
+                                );
+                                ul.innerHTML = features
+                                    .map((f) => `<li>${f.trim()}</li>`)
+                                    .join("");
+                                if (
+                                    document.getElementById(
+                                        `pricingFeatured_${id}`
+                                    ).checked
+                                ) {
+                                    section.classList.add("featured");
+                                } else {
+                                    section.classList.remove("featured");
+                                }
+                                cancelEdit(sectionId);
+                            }
+                        } else {
+                            console.error(
+                                "Form error:",
+                                data.error,
+                                "Details:",
+                                data.details
+                            );
+                            alert(
+                                data.error ||
+                                    "Dữ liệu không hợp lệ: " +
+                                        JSON.stringify(data.details || {})
+                            );
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("AJAX error:", error);
+                        alert("Lỗi khi gửi dữ liệu: " + error.message);
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Lưu";
+                    });
+            });
+        });
+    });
+
+    function deleteItem(model, id) {
+        console.log("Deleting item:", model, id);
+        if (confirm("Bạn có chắc chắn muốn xóa gói dịch vụ này?")) {
+            const formData = new FormData();
+            const csrfToken = document.querySelector(
+                "input[name=csrf_token]"
+            ).value;
+            if (!csrfToken) {
+                alert("CSRF token không tồn tại!");
+                return;
+            }
+            formData.append("csrf_token", csrfToken);
+            fetch(`/admin/pricing/${model}/delete/${id}`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRF-Token": csrfToken,
+                },
+            })
+                .then((response) => {
+                    console.log("Delete response status:", response.status);
+                    if (!response.ok) {
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Delete response:", data);
+                    if (data.success) {
+                        const item = document.getElementById(`${model}_${id}`);
+                        if (item) item.remove();
+                        alert(data.message || "Xóa thành công!");
+                    } else {
+                        console.error("Delete error:", data.error);
+                        alert(data.error || "Lỗi khi xóa mục!");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Delete error:", error);
+                    alert("Lỗi khi xóa: " + error.message);
+                });
+        }
+    }
+</script>
 {% endblock %}

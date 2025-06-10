@@ -6,47 +6,47 @@ from wtforms.validators import DataRequired, Email, Optional, Length, URL
 from app.models.post import Post
 
 class BannerForm(FlaskForm):
-    image = FileField('Hình ảnh Banner', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    image = FileField('Hình ảnh Banner', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'Chỉ cho phép ảnh!'])])
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
-    description = TextAreaField('Mô tả', validators=[Optional()])
+    description = TextAreaField('Mô tả', validators=[Optional(), Length(max=500)])
     submit = SubmitField('Lưu')
 
 class EditBannerForm(FlaskForm):
-    image = FileField('Hình ảnh Banner', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
+    image = FileField('Hình ảnh Banner', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ Chỉ cho phép!')])
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
-    description = TextAreaField('Mô tả', validators=[Optional()])
+    description = TextAreaField('Mô tả', validators=[Optional(), Length(max=500)])
     submit = SubmitField('Lưu')
 
 class PostForm(FlaskForm):
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=200)])
-    content = TextAreaField('Nội dung', validators=[DataRequired()])
+    content = TextAreaField('Nội dung', validators=[DataRequired(), Length(max=10000)])
     image = FileField('Ảnh bìa', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     submit = SubmitField('Lưu')
 
 class UserForm(FlaskForm):
-    username = StringField('Tên người dùng', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    is_admin = BooleanField('Quyền quản trị')
+    username = StringField('Tên người dùng', validators=[DataRequired(), Length(max=50)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=255)])
+    is_admin = BooleanField('Quyền quản trị', default=False)
     submit = SubmitField('Lưu')
 
 class PricingForm(FlaskForm):
-    name = StringField('Tên gói', validators=[DataRequired(), Length(max=100)])
-    price = FloatField('Giá', validators=[DataRequired()])
-    description = TextAreaField('Mô tả', validators=[Optional()])
-    features = TextAreaField('Tính năng (mỗi dòng 1 tính năng)', validators=[Optional()])
+    name = StringField('Tên gói dịch vụ', validators=[DataRequired(), Length(max=100)])
+    price = FloatField('Giá tiền (VNĐ)', validators=[DataRequired()])
+    description = TextAreaField('Mô tả', validators=[Optional(), Length(max=500)])
+    features = TextAreaField('Tính năng (mỗi dòng một tính năng)', validators=[Optional(), Length(max=1000)])
     featured = BooleanField('Gói nổi bật', default=False)
     submit = SubmitField('Lưu')
 
 class PricingPageForm(FlaskForm):
-    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=200)])
-    description = TextAreaField('Mô tả', validators=[DataRequired()])
-    show_banner = BooleanField('Hiển thị Banner', default=True)
+    title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=50)])
+    description = TextAreaField('Mô tả', validators=[Optional(), Length(max=1000)])
+    show_banner = BooleanField('Hiển thị banner', default=False)
     submit = SubmitField('Lưu')
 
 class IntroSectionForm(FlaskForm):
     text = TextAreaField('Văn bản', validators=[DataRequired(), Length(max=500)])
     cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
-    cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
+    cta_url = StringField('Link CTA', validators=[DataRequired(), URL(), Length(max=255)])
     image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     submit = SubmitField('Lưu')
 
@@ -60,7 +60,7 @@ class ServiceCardForm(FlaskForm):
     description = TextAreaField('Mô tả', validators=[DataRequired(), Length(max=500)])
     image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
-    cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
+    cta_url = StringField('Link CTA', validators=[DataRequired(), URL(), Length(max=255)])
     submit = SubmitField('Lưu')
 
 class TestimonialForm(FlaskForm):
@@ -79,14 +79,14 @@ class FeaturedPostForm(FlaskForm):
 class IntroduceSectionForm(FlaskForm):
     text = TextAreaField('Văn bản', validators=[DataRequired(), Length(max=1000)])
     cta_text = StringField('Nút CTA', validators=[DataRequired(), Length(max=50)])
-    cta_url = StringField('Link CTA', validators=[DataRequired(), URL()])
+    cta_url = StringField('Link CTA', validators=[DataRequired(), URL(), Length(max=255)])
     image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     submit = SubmitField('Lưu')
 
 class TeamMemberForm(FlaskForm):
     name = StringField('Tên', validators=[DataRequired(), Length(max=100)])
     role = StringField('Vai trò', validators=[DataRequired(), Length(max=100)])
-    description = TextAreaField('Mô tả', validators=[DataRequired(), Length(max=500)])
+    description = TextAreaField('Mô tả', validators=[Optional(), Length(max=500)])
     image = FileField('Hình ảnh', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     submit = SubmitField('Lưu')
 
@@ -98,17 +98,18 @@ class MissionSectionForm(FlaskForm):
 class ContactInfoForm(FlaskForm):
     email = StringField('Email', validators=[Optional(), Email(), Length(max=255)])
     hotline = StringField('Hotline', validators=[Optional(), Length(max=20)])
-    fanpage = StringField('Fanpage URL', validators=[Optional(), Length(max=255)])
-    submit = SubmitField('Submit')
+    fanpage = StringField('Fanpage URL', validators=[Optional(), URL(), Length(max=255)])
+    submit = SubmitField('Lưu')
 
 class LocationForm(FlaskForm):
-    name = StringField('Tên cơ sở', validators=[DataRequired(), Length(min=1, max=100)])
-    address = TextAreaField('Địa chỉ', validators=[DataRequired(), Length(min=1, max=255)])
-    google_maps_link = StringField('Google Maps Link', validators=[Optional(), Length(max=1000)])
-    submit = SubmitField('Submit')
+    name = StringField('Tên cơ sở', validators=[DataRequired(), Length(max=100)])
+    address = TextAreaField('Địa chỉ', validators=[DataRequired(), Length(max=255)])
+    google_maps_link = StringField('Google Maps Link', validators=[Optional(), URL(), Length(max=1000)])
+    submit = SubmitField('Lưu')
 
 class ContactForm(FlaskForm):
-    name = StringField('Họ và Tên', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    phone = StringField('Số Điện Thoại', validators=[DataRequired()])
-    message = TextAreaField('Tin Nhắn', validators=[DataRequired()])
+    name = StringField('Họ và Tên', validators=[DataRequired(), Length(max=100)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=255)])
+    phone = StringField('Số Điện Thoại', validators=[DataRequired(), Length(max=20)])
+    message = TextAreaField('Tin Nhắn', validators=[DataRequired(), Length(max=1000)])
+    submit = SubmitField('Gửi')

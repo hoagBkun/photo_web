@@ -6,11 +6,16 @@ from flask_migrate import Migrate
 from config import Config
 import re
 
+# Bỏ CSRFProtect
+# from flask_wtf.csrf import CSRFProtect
+# csrf = CSRFProtect()
+
 def extract_iframe_src(iframe):
     if iframe and isinstance(iframe, str) and iframe.startswith('<iframe'):
         match = re.search(r'src="([^"]+)"', iframe)
         return match.group(1) if match else iframe
     return iframe
+
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
@@ -55,7 +60,6 @@ def create_app():
 
     # In danh sách route để debug
     print(app.url_map)
-
 
     @login_manager.user_loader
     def load_user(user_id):

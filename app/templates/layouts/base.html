@@ -57,9 +57,9 @@
             </div>
         </div>
 
-        {% if request.endpoint != 'main.profile' and not
-        request.path.startswith('/blog') %} {% if banners and banners|length > 0
-        %}
+        {% if request.endpoint not in ['auth.login', 'auth.register',
+        'main.profile'] and not request.path.startswith('/blog') %} {% if
+        banners and banners|length > 0 %}
         <div class="slider-container">
             <div class="main-slider">
                 {% for banner in banners %}
@@ -322,7 +322,7 @@
             </div>
         </div>
 
-        <div class="chat-icon">
+        <div style="display: none !important" class="chat-icon">
             <a href="{{ url_for('main.contact') }}"
                 ><img
                     src="https://images.unsplash.com/photo-1524504388940-b79287b459bf"
