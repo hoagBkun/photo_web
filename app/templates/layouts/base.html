@@ -12,250 +12,144 @@
             rel="stylesheet"
             href="{{ url_for('static', filename='css/style.css') }}"
         />
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID"
+        ></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", "YOUR_GA_ID");
+        </script>
     </head>
     <body>
         <div class="navbar">
-            <div class="logo">HoagART</div>
-            <div class="nav-links">
-                <a href="{{ url_for('main.home') }}">Trang Chủ</a>
-                <a href="{{ url_for('main.introduce') }}">Giới Thiệu</a>
-                <a href="{{ url_for('blog.index') }}">Blog</a>
-                <a href="{{ url_for('main.pricing') }}">Bảng Giá</a>
-                <a href="{{ url_for('main.contact') }}">Liên Hệ</a>
-                {% if current_user.is_authenticated %} {% if
-                current_user.is_admin %}
-                <a href="{{ url_for('admin.dashboard') }}">Quản Trị</a>
-                {% endif %}
-                <div class="notification-icon">
-                    <img
-                        src="https://cdn-icons-png.flaticon.com/512/1828/1828765.png"
-                        alt="Notifications"
-                    />
-                    <span class="badge">3</span>
+            <div class="navbar-container">
+                <div class="logo">HoagART</div>
+                <div class="nav-links" id="navLinks">
+                    <a href="{{ url_for('main.home') }}">Trang Chủ</a>
+                    <a href="{{ url_for('main.introduce') }}">Giới Thiệu</a>
+                    <a href="{{ url_for('blog.index') }}">Blog</a>
+                    <a href="{{ url_for('main.pricing') }}">Bảng Giá</a>
+                    <a href="{{ url_for('main.contact') }}">Liên Hệ</a>
+                    {% if current_user.is_authenticated %} {% if
+                    current_user.is_admin %}
+                    <a href="{{ url_for('admin.dashboard') }}">Quản Trị</a>
+                    {% endif %} {% else %}
+                    <a href="{{ url_for('auth.login') }}">Đăng Nhập</a>
+                    <a href="{{ url_for('auth.register') }}">Đăng Ký</a>
+                    {% endif %}
                 </div>
-                <div class="user-menu">
-                    <div class="user-dropdown">
+                <div class="nav-controls">
+                    {% if current_user.is_authenticated %}
+                    <div class="notification-icon">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/1828/1828765.png"
+                            alt="Notifications"
+                        />
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-menu">
                         <img
                             src="{{ url_for('static', filename='avatars/' + (current_user.avatar if current_user.avatar and current_user.avatar != 'None' else 'default_avatar.png')) }}"
                             alt="User Avatar"
                             class="user-avatar"
                             id="navbar-avatar"
                         />
-                        <div class="dropdown-content">
+                        <div class="dropdown-content" id="userMenu">
                             <a href="{{ url_for('main.profile') }}"
                                 >Thông tin cá nhân</a
                             >
                             <a href="#">Đổi mật khẩu</a>
+                            <a href="#" class="dark-mode-option"
+                                >Chuyển chế độ tối</a
+                            >
                             <a href="{{ url_for('auth.logout') }}">Đăng Xuất</a>
                         </div>
                     </div>
+                    {% endif %}
+                    <button
+                        class="dark-mode-toggle"
+                        aria-label="Chuyển đổi chế độ tối"
+                    >
+                        🌙
+                    </button>
+                    <button
+                        class="hamburger"
+                        id="hamburger"
+                        aria-label="Toggle menu"
+                    >
+                        ☰
+                    </button>
                 </div>
-                {% else %}
-                <a href="{{ url_for('auth.login') }}">Đăng Nhập</a>
-                <a href="{{ url_for('auth.register') }}">Đăng Ký</a>
-                {% endif %}
             </div>
         </div>
 
+        <!-- Banner -->
         {% if request.endpoint not in ['auth.login', 'auth.register',
         'main.profile'] and not request.path.startswith('/blog') %} {% if
         banners and banners|length > 0 %}
         <div class="slider-container">
             <div class="main-slider">
                 {% for banner in banners %}
-                <div
-                    class="slider-slide {% if loop.index0 == 0 %}active{% endif %}"
-                >
+                <div class="slider-slide {% if loop.first %}active{% endif %}">
                     <img
                         src="{{ banner.image_url }}"
                         alt="{{ banner.title }}"
                         class="slider-image"
+                        loading="lazy"
                     />
                     <div class="slider-caption">
-                        <h1 class="display-4">{{ banner.title }}</h1>
-                        <p class="lead">{{ banner.description }}</p>
-                        {% if request.endpoint not in ['auth.login',
-                        'auth.register', 'main.profile'] %}
+                        <h1>{{ banner.title }}</h1>
+                        <p>{{ banner.description }}</p>
                         <div class="banner-buttons mt-3">
-                            {% if request.endpoint == 'main.home' %}
                             <a
                                 href="{{ url_for('main.contact') }}"
-                                class="btn btn-primary btn-lg me-3"
+                                class="btn btn-primary"
                                 >Đặt Lịch Ngay</a
                             >
                             <a
                                 href="{{ url_for('main.pricing') }}"
-                                class="btn btn-outline-light btn-lg"
+                                class="btn btn-outline-light"
                                 >Xem Bảng Giá</a
                             >
-                            {% elif request.endpoint == 'main.introduce' %}
-                            <a
-                                href="{{ url_for('main.contact') }}"
-                                class="btn btn-primary btn-lg me-3"
-                                >Liên Hệ Ngay</a
-                            >
-                            <a
-                                href="{{ url_for('main.pricing') }}"
-                                class="btn btn-outline-light btn-lg"
-                                >Khám Phá Dịch Vụ</a
-                            >
-                            {% elif request.endpoint == 'main.pricing' %}
-                            <a
-                                href="{{ url_for('main.contact') }}"
-                                class="btn btn-primary btn-lg me-3"
-                                >Đặt Lịch Ngay</a
-                            >
-                            <a
-                                href="{{ url_for('main.introduce') }}"
-                                class="btn btn-outline-light btn-lg"
-                                >Tìm Hiểu Thêm</a
-                            >
-                            {% elif request.endpoint == 'main.contact' %}
-                            <a
-                                href="{{ url_for('main.contact') }}"
-                                class="btn btn-primary btn-lg me-3"
-                                >Gửi Yêu Cầu</a
-                            >
-                            <a
-                                href="{{ url_for('main.pricing') }}"
-                                class="btn btn-outline-light btn-lg"
-                                >Xem Bảng Giá</a
-                            >
-                            {% else %}
-                            <a
-                                href="{{ url_for('main.contact') }}"
-                                class="btn btn-primary btn-lg me-3"
-                                >Đặt Lịch Ngay</a
-                            >
-                            <a
-                                href="{{ url_for('main.pricing') }}"
-                                class="btn btn-outline-light btn-lg"
-                                >Xem Bảng Giá</a
-                            >
-                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
             </div>
+            <button class="nav-arrow prev" aria-label="Previous slide">
+                <
+            </button>
+            <button class="nav-arrow next" aria-label="Next slide">></button>
             <div class="thumbnail-nav">
-                <button class="nav-arrow prev" onclick="moveThumbnails(-1)">
-                    ❮
-                </button>
                 <div class="thumbnail-nav-container">
                     <div class="thumbnail-nav-inner">
                         {% for banner in banners %}
                         <div
-                            class="thumbnail-slide {% if loop.index0 == 0 %}active{% endif %}"
-                            data-index="{{ loop.index0 }}"
-                            onclick="showSlide({{ loop.index0 }})"
+                            class="thumbnail-slide {% if loop.first %}active{% endif %}"
                         >
                             <img
                                 src="{{ banner.image_url }}"
-                                alt="{{ banner.title }}"
+                                alt="{{ banner.title }} thumbnail"
                                 class="thumbnail-image"
+                                loading="lazy"
                             />
                         </div>
                         {% endfor %}
                     </div>
                 </div>
-                <button class="nav-arrow next" onclick="moveThumbnails(1)">
-                    ❯
-                </button>
             </div>
         </div>
-        <script>
-            let currentSlide = 0;
-            let currentThumbnailGroup = 0;
-            const slides = document.querySelectorAll(".slider-slide");
-            const thumbnails = document.querySelectorAll(".thumbnail-slide");
-            const thumbnailNavInner = document.querySelector(
-                ".thumbnail-nav-inner"
-            );
-            const totalSlides = slides.length;
-            const thumbnailsPerGroup = 6;
-            const totalThumbnailGroups = Math.ceil(
-                totalSlides / thumbnailsPerGroup
-            );
-            const thumbnailGroupWidth =
-                parseFloat(
-                    getComputedStyle(document.documentElement)
-                        .getPropertyValue("--thumbnail-group-width")
-                        .trim()
-                ) || 630;
-
-            function showSlide(index) {
-                if (index >= totalSlides) currentSlide = 0;
-                else if (index < 0) currentSlide = totalSlides - 1;
-                else currentSlide = index;
-
-                slides.forEach((slide, i) => {
-                    slide.classList.remove("active");
-                    slide.style.display = "none";
-                    if (i === currentSlide) {
-                        slide.classList.add("active");
-                        slide.style.display = "block";
-                    }
-                });
-
-                thumbnails.forEach((thumb, i) => {
-                    thumb.classList.remove("active");
-                    if (i === currentSlide) thumb.classList.add("active");
-                });
-
-                const thumbnailIndex = Math.floor(
-                    currentSlide / thumbnailsPerGroup
-                );
-                if (thumbnailIndex !== currentThumbnailGroup) {
-                    moveThumbnails(thumbnailIndex - currentThumbnailGroup);
-                }
-            }
-
-            function moveThumbnails(direction) {
-                currentThumbnailGroup += direction;
-
-                if (currentThumbnailGroup < 0) currentThumbnailGroup = 0;
-                else if (currentThumbnailGroup >= totalThumbnailGroups)
-                    currentThumbnailGroup = totalThumbnailGroups - 1;
-
-                const translateX = -currentThumbnailGroup * thumbnailGroupWidth;
-                thumbnailNavInner.style.transform = `translateX(${translateX}px)`;
-
-                document.querySelector(".nav-arrow.prev").style.display =
-                    currentThumbnailGroup > 0 ? "block" : "none";
-                document.querySelector(".nav-arrow.next").style.display =
-                    currentThumbnailGroup < totalThumbnailGroups - 1
-                        ? "block"
-                        : "none";
-            }
-
-            let autoSlide = setInterval(() => {
-                showSlide(currentSlide + 1);
-            }, 3000);
-
-            const sliderContainer = document.querySelector(".slider-container");
-            if (sliderContainer) {
-                sliderContainer.addEventListener("mouseenter", () =>
-                    clearInterval(autoSlide)
-                );
-                sliderContainer.addEventListener("mouseleave", () => {
-                    autoSlide = setInterval(() => {
-                        showSlide(currentSlide + 1);
-                    }, 3000);
-                });
-            }
-
-            showSlide(currentSlide);
-            moveThumbnails(0);
-        </script>
         {% else %}
         <div class="banner">
             <div class="banner-content">
                 <h1>HoagART</h1>
                 <p>Khoảnh khắc đẹp - Nghệ thuật sống</p>
-                {% if request.endpoint not in ['auth.login', 'auth.register',
-                'main.profile'] %}
                 <div class="banner-buttons">
                     <a href="{{ url_for('main.contact') }}" class="btn"
                         >Đặt Lịch Ngay</a
@@ -266,37 +160,62 @@
                         >Xem Bảng Giá</a
                     >
                 </div>
-                {% endif %}
             </div>
         </div>
         {% endif %} {% endif %}
 
         <div class="container">
             {% with messages = get_flashed_messages(with_categories=true) %} {%
-            if messages %} {% for category, message in messages %}
-            <div class="toast {{ category }}">
-                {{ message }}<span class="close-btn">×</span>
+            if messages %}
+            <div class="toast-container">
+                {% for category, message in messages %}
+                <div
+                    class="toast {{ category }}"
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                >
+                    <div class="toast-header">
+                        <strong class="me-auto"
+                            >{{ 'Thành công' if category == 'success' else 'Lỗi'
+                            }}</strong
+                        >
+                        <button
+                            type="button"
+                            class="close-btn"
+                            aria-label="Close"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                    <div class="toast-body">{{ message }}</div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %} {% endif %} {% endwith %} {% block content %}{%
-            endblock %}
+            {% endif %} {% endwith %} {% block content %}{% endblock %}
         </div>
+
         <div class="footer">
             <div class="footer-images">
                 <img
                     src="https://i.pinimg.com/474x/71/90/fe/7190fe5cf33dcc576b8516869fddfaa9.jpg"
                     alt="Hình ảnh chân trang 1"
+                    loading="lazy"
                 />
                 <img
                     src="https://i.pinimg.com/474x/71/90/fe/7190fe5cf33dcc576b8516869fddfaa9.jpg"
                     alt="Hình ảnh chân trang 2"
+                    loading="lazy"
                 />
                 <img
                     src="https://i.pinimg.com/474x/71/90/fe/7190fe5cf33dcc576b8516869fddfaa9.jpg"
                     alt="Hình ảnh chân trang 3"
+                    loading="lazy"
                 />
                 <img
                     src="https://i.pinimg.com/474x/71/90/fe/7190fe5cf33dcc576b8516869fddfaa9.jpg"
                     alt="Hình ảnh chân trang 4"
+                    loading="lazy"
                 />
             </div>
             <div class="footer-links">
@@ -322,28 +241,6 @@
             </div>
         </div>
 
-        <div style="display: none !important" class="chat-icon">
-            <a href="{{ url_for('main.contact') }}"
-                ><img
-                    src="https://images.unsplash.com/photo-1524504388940-b79287b459bf"
-                    alt="Chat"
-            /></a>
-        </div>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const toasts = document.querySelectorAll(".toast");
-                toasts.forEach((toast) => {
-                    setTimeout(() => toast.classList.add("show"), 100);
-                    setTimeout(() => toast.classList.remove("show"), 2600);
-                    const closeBtn = toast.querySelector(".close-btn");
-                    if (closeBtn) {
-                        closeBtn.addEventListener("click", () => {
-                            toast.classList.remove("show");
-                        });
-                    }
-                });
-            });
-        </script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     </body>
 </html>

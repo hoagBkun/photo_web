@@ -17,7 +17,11 @@ endblock %} {% block content %}
                 >
             </div>
             <div class="intro-image">
-                <img src="{{ introduce.image_url }}" alt="Giới thiệu HoagART" />
+                <img
+                    src="{{ introduce.image_url }}"
+                    alt="Giới thiệu HoagART"
+                    loading="lazy"
+                />
             </div>
         </div>
     </div>
@@ -40,7 +44,11 @@ endblock %} {% block content %}
             {% for member in team_members %}
             <div class="team-member">
                 <div class="team-image">
-                    <img src="{{ member.image_url }}" alt="{{ member.name }}" />
+                    <img
+                        src="{{ member.image_url }}"
+                        alt="{{ member.name }}"
+                        loading="lazy"
+                    />
                 </div>
                 <h3>{{ member.name }}</h3>
                 <p class="role">{{ member.role }}</p>
@@ -61,7 +69,11 @@ endblock %} {% block content %}
             {% for paragraph in mission.text.split('\n') if paragraph.strip() %}
             <p>{{ paragraph }}</p>
             {% endfor %}
-            <img src="{{ mission.image_url }}" alt="Sứ mệnh HoagART" />
+            <img
+                src="{{ mission.image_url }}"
+                alt="Sứ mệnh HoagART"
+                loading="lazy"
+            />
         </div>
     </div>
     {% else %}
