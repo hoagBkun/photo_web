@@ -172,11 +172,12 @@ def delete_banner(id):
                 os.remove(file_path)
         db.session.delete(banner)
         db.session.commit()
-        flash('Xóa banner thành công!', 'success')
+        return jsonify({'success': True, 'message': 'Xóa banner thành công!'})
     except Exception as e:
-        flash(f'Lỗi khi xóa banner: {str(e)}', 'error')
-    return redirect(url_for('admin.manage_banners'))
-
+        db.session.rollback()
+        logging.error(f"Error deleting banner ID {id}: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi xóa banner: {str(e)}'}), 500
+    
 # Phần 2.6: Route quản lý bài viết
 @admin_bp.route('/posts', methods=['GET'])
 @login_required

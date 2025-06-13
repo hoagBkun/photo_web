@@ -3,12 +3,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect
 from config import Config
 import re
-
-# Bỏ CSRFProtect
-# from flask_wtf.csrf import CSRFProtect
-# csrf = CSRFProtect()
 
 def extract_iframe_src(iframe):
     if iframe and isinstance(iframe, str) and iframe.startswith('<iframe'):
@@ -19,6 +16,7 @@ def extract_iframe_src(iframe):
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
+csrf = CSRFProtect()
 
 def create_app():
     app = Flask(__name__)
@@ -34,6 +32,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
+    csrf.init_app(app)
 
     login_manager.login_view = 'auth.login'
 
@@ -64,5 +63,13 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(User, int(user_id))
+
+    # Đảm bảo csrf_token có sẵn trong template
+    @app.context_processor
+    def utility_processor():
+        def csrf_token():
+            from flask_wtf.csrf import generate_csrf
+            return generate_csrf()
+        return dict(csrf_token=csrf_token)
 
     return app

@@ -563,19 +563,33 @@ endblock %} {% block content %}
             fetch(`/admin/introduce/${model}/delete/${id}`, {
                 method: "POST",
                 headers: {
-                    "X-CSRF-Token": "{{ introduce_form.csrf_token._value() }}",
+                    "X-CSRF-Token": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
                 },
             })
                 .then((response) => response.json())
                 .then((data) => {
+                    const toast = document.createElement("div");
+                    toast.className = `toast ${
+                        data.success ? "success" : "error"
+                    } show`;
+                    toast.innerHTML = `${
+                        data.message || data.error
+                    }<span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
+                    document.body.appendChild(toast);
                     if (data.success) {
                         document.getElementById(`${model}_${id}`).remove();
-                        alert(data.message);
-                    } else {
-                        alert(data.error);
+                        setTimeout(() => toast.remove(), 3000);
                     }
                 })
-                .catch((error) => alert("Lỗi khi xóa mục: " + error));
+                .catch((error) => {
+                    const toast = document.createElement("div");
+                    toast.className = "toast error show";
+                    toast.innerHTML = `Lỗi khi xóa mục: ${error}<span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                });
         }
     }
 

@@ -2,71 +2,124 @@
 endblock %} {% block content %}
 <div class="container-fluid">
     <h1 class="mb-4">Quản lý Banner</h1>
-    <div class="card mb-4">
+    <div class="card">
         <div class="card-body">
             <h5>Thêm Banner Mới</h5>
             <form method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
                 <div class="mb-3">
                     {{ form.image.label(class="form-label") }} {{
-                    form.image(class="form-control") }}
+                    form.image(class="form-control") }} {% if form.image.errors
+                    %}
+                    <div class="text-danger">{{ form.image.errors[0] }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     {{ form.title.label(class="form-label") }} {{
-                    form.title(class="form-control") }}
+                    form.title(class="form-control") }} {% if form.title.errors
+                    %}
+                    <div class="text-danger">{{ form.title.errors[0] }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     {{ form.description.label(class="form-label") }} {{
-                    form.description(class="form-control") }}
+                    form.description(class="form-control") }} {% if
+                    form.description.errors %}
+                    <div class="text-danger">
+                        {{ form.description.errors[0] }}
+                    </div>
+                    {% endif %}
                 </div>
                 {{ form.submit(class="btn btn-primary") }}
             </form>
         </div>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h5>Danh sách Banner</h5>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tiêu đề</th>
-                        <th>Hình ảnh</th>
-                        <th>Mô tả</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for banner in banners %}
-                    <tr>
-                        <td>{{ banner.id }}</td>
-                        <td>{{ banner.title }}</td>
-                        <td>
-                            <img
-                                src="{{ banner.image_url }}"
-                                alt="{{ banner.title }}"
-                                width="100"
-                            />
-                        </td>
-                        <td>{{ banner.description }}</td>
-                        <td>
-                            <a
-                                href="{{ url_for('admin.edit_banner', id=banner.id) }}"
-                                class="btn btn-sm btn-warning"
-                                >Sửa</a
-                            >
-                            <a
-                                href="{{ url_for('admin.delete_banner', id=banner.id) }}"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                >Xóa</a
-                            >
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <h5 class="mt-5">Danh sách Banner</h5>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Hình ảnh</th>
+                <th>Tiêu đề</th>
+                <th>Mô tả</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for banner in banners %}
+            <tr id="banner_{{ banner.id }}">
+                <td>
+                    <img
+                        src="{{ banner.image_url }}"
+                        alt="{{ banner.title }}"
+                        width="100"
+                    />
+                </td>
+                <td>{{ banner.title }}</td>
+                <td>{{ banner.description }}</td>
+                <td>
+                    <a
+                        href="{{ url_for('admin.edit_banner', id=banner.id) }}"
+                        class="btn btn-sm btn-warning"
+                        ><i class="fas fa-edit"></i> Sửa</a
+                    >
+                    <form
+                        action="{{ url_for('admin.delete_banner', id=banner.id) }}"
+                        method="POST"
+                        class="d-inline"
+                        onsubmit="return deleteBanner(event, {{ banner.id }})"
+                    >
+                        {{ form.csrf_token }}
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Xóa
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
+
+<script>
+    function deleteBanner(event, id) {
+        event.preventDefault();
+        if (!confirm("Bạn có chắc muốn xóa banner này?")) return false;
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRF-Token": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                const toast = document.createElement("div");
+                toast.className = `toast ${
+                    data.success ? "success" : "error"
+                } show`;
+                toast.innerHTML = `${
+                    data.message || data.error
+                }<span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
+                document.body.appendChild(toast);
+                if (data.success) {
+                    document.getElementById(`banner_${id}`).remove();
+                    setTimeout(() => toast.remove(), 3000);
+                }
+            })
+            .catch((error) => {
+                const toast = document.createElement("div");
+                toast.className = "toast error show";
+                toast.innerHTML = `Lỗi khi xóa banner: ${error}<span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            });
+        return false;
+    }
+</script>
 {% endblock %}
