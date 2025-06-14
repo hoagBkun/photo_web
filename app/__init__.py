@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, url_for
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -22,7 +22,7 @@ logging.basicConfig(
 logging.debug(f"Logging to file: {log_file}")
 logging.debug("Starting application initialization")
 
-# Load biến môi trường (không cần vì đã hardcode)
+# Load biến môi trường
 env_file = os.path.join(os.path.dirname(__file__), '../.env')
 if os.path.exists(env_file):
     logging.debug(f"Loading .env file: {env_file}")
@@ -47,8 +47,8 @@ def create_app():
     app = Flask(__name__)
     try:
         app.config.from_object(Config)
-        logging.debug(f"Config loaded: GOOGLE_CLIENT_ID={app.config.get('GOOGLE_CLIENT_ID')}")
-        logging.debug(f"Config loaded: GOOGLE_CLIENT_SECRET={app.config.get('GOOGLE_CLIENT_SECRET')}")
+        logging.debug("Config loaded successfully")
+        logging.debug(f"Config loaded with GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET masked")
     except Exception as e:
         logging.error(f"Error loading config: {str(e)}")
         raise
@@ -73,7 +73,7 @@ def create_app():
 
     # Kiểm tra biến môi trường
     if not app.config.get('GOOGLE_CLIENT_ID') or not app.config.get('GOOGLE_CLIENT_SECRET'):
-        logging.error(f"Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET: GOOGLE_CLIENT_ID={app.config.get('GOOGLE_CLIENT_ID')}, GOOGLE_CLIENT_SECRET={app.config.get('GOOGLE_CLIENT_SECRET')}")
+        logging.error("Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET")
         raise ValueError("Missing Google OAuth credentials")
 
     # Đăng ký Google OAuth
@@ -92,7 +92,6 @@ def create_app():
         )
         logging.debug("Google OAuth registered successfully")
         logging.debug(f"OAuth google client exists: {hasattr(oauth, 'google')}")
-        # Loại bỏ dòng url_for để tránh lỗi context
     except Exception as e:
         logging.error(f"Failed to register Google OAuth: {str(e)}")
         raise

@@ -11031,3 +11031,155 @@ with app.app_context(). See the documentation for more information.
 2025-06-14 11:54:04,652 - INFO - 127.0.0.1 - - [14/Jun/2025 11:54:04] "[36mGET /static/uploads/banners/resized_Beige_Brown_Clean_Aesthetic_Fashion_Collection_Medium_Banner.png HTTP/1.1[0m" 304 -
 2025-06-14 11:54:04,652 - INFO - 127.0.0.1 - - [14/Jun/2025 11:54:04] "[36mGET /static/uploads/banners/resized_Ban-sao-cua-Ngu-Hanh-Chi-Sac-Final-2-e1734149509142-1536x860.png HTTP/1.1[0m" 304 -
 2025-06-14 11:54:04,653 - INFO - 127.0.0.1 - - [14/Jun/2025 11:54:04] "[36mGET /static/uploads/banners/resized_Blue_Simple_photo_studio_Banner_Landscape.png HTTP/1.1[0m" 304 -
+2025-06-14 11:59:21,479 - INFO -  * Detected change in '/Users/nguyenhoang/Workspaces/photo_web/app/__init__.py', reloading
+2025-06-14 11:59:21,702 - INFO -  * Restarting with stat
+2025-06-14 11:59:21,746 - DEBUG - Starting run.py
+2025-06-14 12:00:25,783 - DEBUG - Starting run.py
+2025-06-14 12:00:26,480 - DEBUG - Logging to file: /Users/nguyenhoang/Workspaces/photo_web/app/../flask.log
+2025-06-14 12:00:26,480 - DEBUG - Starting application initialization
+2025-06-14 12:00:26,481 - DEBUG - Loading .env file: /Users/nguyenhoang/Workspaces/photo_web/app/../.env
+2025-06-14 12:00:26,482 - DEBUG - Creating Flask app
+2025-06-14 12:00:26,483 - DEBUG - Config loaded successfully
+2025-06-14 12:00:26,483 - DEBUG - Config loaded with GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET masked
+2025-06-14 12:00:26,483 - DEBUG - Initializing extensions
+2025-06-14 12:00:26,495 - DEBUG - OAuth initialized with app
+2025-06-14 12:00:26,495 - DEBUG - Registering Google OAuth
+2025-06-14 12:00:26,495 - DEBUG - Google OAuth registered successfully
+2025-06-14 12:00:26,495 - DEBUG - OAuth google client exists: True
+2025-06-14 12:00:26,495 - DEBUG - Importing models
+2025-06-14 12:00:26,514 - DEBUG - Models imported successfully
+2025-06-14 12:00:26,514 - DEBUG - Registering blueprints
+2025-06-14 12:00:26,554 - DEBUG - Blueprints registered successfully
+2025-06-14 12:00:26,555 - DEBUG - URL Map: Map([<Rule '/static/<filename>' (OPTIONS, HEAD, GET) -> static>,
+ <Rule '/' (OPTIONS, HEAD, GET) -> main.home>,
+ <Rule '/introduce' (OPTIONS, HEAD, GET) -> main.introduce>,
+ <Rule '/pricing' (OPTIONS, HEAD, GET) -> main.pricing>,
+ <Rule '/contact' (HEAD, OPTIONS, POST, GET) -> main.contact>,
+ <Rule '/profile' (OPTIONS, HEAD, GET) -> main.profile>,
+ <Rule '/update_profile' (OPTIONS, POST) -> main.update_profile>,
+ <Rule '/auth/login' (HEAD, OPTIONS, POST, GET) -> auth.login>,
+ <Rule '/auth/register' (HEAD, OPTIONS, POST, GET) -> auth.register>,
+ <Rule '/auth/logout' (OPTIONS, HEAD, GET) -> auth.logout>,
+ <Rule '/auth/forgot_password' (HEAD, OPTIONS, POST, GET) -> auth.forgot_password>,
+ <Rule '/auth/reset_password/<token>' (HEAD, OPTIONS, POST, GET) -> auth.reset_password>,
+ <Rule '/auth/login/google' (OPTIONS, HEAD, GET) -> auth.login_google>,
+ <Rule '/auth/authorize/google' (OPTIONS, HEAD, GET) -> auth.authorize_google>,
+ <Rule '/admin/dashboard' (OPTIONS, HEAD, GET) -> admin.dashboard>,
+ <Rule '/admin/banners' (HEAD, OPTIONS, POST, GET) -> admin.manage_banners>,
+ <Rule '/admin/banners/edit/<id>' (HEAD, OPTIONS, POST, GET) -> admin.edit_banner>,
+ <Rule '/admin/banners/delete/<id>' (OPTIONS, POST) -> admin.delete_banner>,
+ <Rule '/admin/posts' (OPTIONS, HEAD, GET) -> admin.manage_posts>,
+ <Rule '/admin/posts/add' (HEAD, OPTIONS, POST, GET) -> admin.add_post>,
+ <Rule '/admin/posts/edit/<id>' (HEAD, OPTIONS, POST, GET) -> admin.edit_post>,
+ <Rule '/admin/posts/delete/<id>' (OPTIONS, POST) -> admin.delete_post>,
+ <Rule '/admin/upload_image' (OPTIONS, POST) -> admin.upload_image>,
+ <Rule '/admin/pricing' (HEAD, OPTIONS, POST, GET) -> admin.manage_pricing>,
+ <Rule '/admin/pricing/<model>/<id>' (OPTIONS, POST) -> admin.update_pricing>,
+ <Rule '/admin/pricing/<model>/delete/<id>' (OPTIONS, POST) -> admin.delete_pricing>,
+ <Rule '/admin/contact' (HEAD, OPTIONS, POST, GET) -> admin.manage_contact>,
+ <Rule '/admin/contact/location/edit/<id>' (OPTIONS, POST) -> admin.edit_location>,
+ <Rule '/admin/contact/submissions' (OPTIONS, HEAD, GET) -> admin.manage_contact_submissions>,
+ <Rule '/admin/contact/submissions/delete/<id>' (OPTIONS, POST) -> admin.delete_contact_submission>,
+ <Rule '/admin/users' (OPTIONS, HEAD, GET) -> admin.manage_users>,
+ <Rule '/admin/users/edit/<id>' (HEAD, OPTIONS, POST, GET) -> admin.edit_user>,
+ <Rule '/admin/users/delete/<id>' (OPTIONS, POST) -> admin.delete_user>,
+ <Rule '/admin/home' (HEAD, OPTIONS, POST, GET) -> admin.manage_home>,
+ <Rule '/admin/home/<model>/<id>' (OPTIONS, POST) -> admin.edit_home_item>,
+ <Rule '/admin/home/<model>/delete/<id>' (OPTIONS, POST) -> admin.delete_home_item>,
+ <Rule '/admin/introduce' (HEAD, OPTIONS, POST, GET) -> admin.manage_introduce>,
+ <Rule '/admin/introduce/<model>/<id>' (OPTIONS, POST) -> admin.edit_introduce_item>,
+ <Rule '/admin/introduce/<model>/<id>' (OPTIONS, DELETE) -> admin.delete_introduce_item>,
+ <Rule '/blog/' (OPTIONS, HEAD, GET) -> blog.index>,
+ <Rule '/blog/<id>' (OPTIONS, HEAD, GET) -> blog.blog_detail>])
+2025-06-14 12:00:26,555 - DEBUG - Flask app created successfully
+2025-06-14 12:00:26,555 - DEBUG - App created successfully
+2025-06-14 12:00:26,555 - DEBUG - Running Flask app with debug=True
+2025-06-14 12:00:26,590 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-14 12:00:26,590 - INFO - [33mPress CTRL+C to quit[0m
+2025-06-14 12:00:26,591 - INFO -  * Restarting with stat
+2025-06-14 12:00:26,622 - DEBUG - Starting run.py
+2025-06-14 12:00:27,211 - DEBUG - Logging to file: /Users/nguyenhoang/Workspaces/photo_web/app/../flask.log
+2025-06-14 12:00:27,211 - DEBUG - Starting application initialization
+2025-06-14 12:00:27,211 - DEBUG - Loading .env file: /Users/nguyenhoang/Workspaces/photo_web/app/../.env
+2025-06-14 12:00:27,212 - DEBUG - Creating Flask app
+2025-06-14 12:00:27,213 - DEBUG - Config loaded successfully
+2025-06-14 12:00:27,213 - DEBUG - Config loaded with GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET masked
+2025-06-14 12:00:27,213 - DEBUG - Initializing extensions
+2025-06-14 12:00:27,221 - DEBUG - OAuth initialized with app
+2025-06-14 12:00:27,221 - DEBUG - Registering Google OAuth
+2025-06-14 12:00:27,221 - DEBUG - Google OAuth registered successfully
+2025-06-14 12:00:27,221 - DEBUG - OAuth google client exists: True
+2025-06-14 12:00:27,221 - DEBUG - Importing models
+2025-06-14 12:00:27,239 - DEBUG - Models imported successfully
+2025-06-14 12:00:27,239 - DEBUG - Registering blueprints
+2025-06-14 12:00:27,268 - DEBUG - Blueprints registered successfully
+2025-06-14 12:00:27,269 - DEBUG - URL Map: Map([<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>,
+ <Rule '/' (HEAD, OPTIONS, GET) -> main.home>,
+ <Rule '/introduce' (HEAD, OPTIONS, GET) -> main.introduce>,
+ <Rule '/pricing' (HEAD, OPTIONS, GET) -> main.pricing>,
+ <Rule '/contact' (POST, HEAD, OPTIONS, GET) -> main.contact>,
+ <Rule '/profile' (HEAD, OPTIONS, GET) -> main.profile>,
+ <Rule '/update_profile' (POST, OPTIONS) -> main.update_profile>,
+ <Rule '/auth/login' (POST, HEAD, OPTIONS, GET) -> auth.login>,
+ <Rule '/auth/register' (POST, HEAD, OPTIONS, GET) -> auth.register>,
+ <Rule '/auth/logout' (HEAD, OPTIONS, GET) -> auth.logout>,
+ <Rule '/auth/forgot_password' (POST, HEAD, OPTIONS, GET) -> auth.forgot_password>,
+ <Rule '/auth/reset_password/<token>' (POST, HEAD, OPTIONS, GET) -> auth.reset_password>,
+ <Rule '/auth/login/google' (HEAD, OPTIONS, GET) -> auth.login_google>,
+ <Rule '/auth/authorize/google' (HEAD, OPTIONS, GET) -> auth.authorize_google>,
+ <Rule '/admin/dashboard' (HEAD, OPTIONS, GET) -> admin.dashboard>,
+ <Rule '/admin/banners' (POST, HEAD, OPTIONS, GET) -> admin.manage_banners>,
+ <Rule '/admin/banners/edit/<id>' (POST, HEAD, OPTIONS, GET) -> admin.edit_banner>,
+ <Rule '/admin/banners/delete/<id>' (POST, OPTIONS) -> admin.delete_banner>,
+ <Rule '/admin/posts' (HEAD, OPTIONS, GET) -> admin.manage_posts>,
+ <Rule '/admin/posts/add' (POST, HEAD, OPTIONS, GET) -> admin.add_post>,
+ <Rule '/admin/posts/edit/<id>' (POST, HEAD, OPTIONS, GET) -> admin.edit_post>,
+ <Rule '/admin/posts/delete/<id>' (POST, OPTIONS) -> admin.delete_post>,
+ <Rule '/admin/upload_image' (POST, OPTIONS) -> admin.upload_image>,
+ <Rule '/admin/pricing' (POST, HEAD, OPTIONS, GET) -> admin.manage_pricing>,
+ <Rule '/admin/pricing/<model>/<id>' (POST, OPTIONS) -> admin.update_pricing>,
+ <Rule '/admin/pricing/<model>/delete/<id>' (POST, OPTIONS) -> admin.delete_pricing>,
+ <Rule '/admin/contact' (POST, HEAD, OPTIONS, GET) -> admin.manage_contact>,
+ <Rule '/admin/contact/location/edit/<id>' (POST, OPTIONS) -> admin.edit_location>,
+ <Rule '/admin/contact/submissions' (HEAD, OPTIONS, GET) -> admin.manage_contact_submissions>,
+ <Rule '/admin/contact/submissions/delete/<id>' (POST, OPTIONS) -> admin.delete_contact_submission>,
+ <Rule '/admin/users' (HEAD, OPTIONS, GET) -> admin.manage_users>,
+ <Rule '/admin/users/edit/<id>' (POST, HEAD, OPTIONS, GET) -> admin.edit_user>,
+ <Rule '/admin/users/delete/<id>' (POST, OPTIONS) -> admin.delete_user>,
+ <Rule '/admin/home' (POST, HEAD, OPTIONS, GET) -> admin.manage_home>,
+ <Rule '/admin/home/<model>/<id>' (POST, OPTIONS) -> admin.edit_home_item>,
+ <Rule '/admin/home/<model>/delete/<id>' (POST, OPTIONS) -> admin.delete_home_item>,
+ <Rule '/admin/introduce' (POST, HEAD, OPTIONS, GET) -> admin.manage_introduce>,
+ <Rule '/admin/introduce/<model>/<id>' (POST, OPTIONS) -> admin.edit_introduce_item>,
+ <Rule '/admin/introduce/<model>/<id>' (DELETE, OPTIONS) -> admin.delete_introduce_item>,
+ <Rule '/blog/' (HEAD, OPTIONS, GET) -> blog.index>,
+ <Rule '/blog/<id>' (HEAD, OPTIONS, GET) -> blog.blog_detail>])
+2025-06-14 12:00:27,269 - DEBUG - Flask app created successfully
+2025-06-14 12:00:27,269 - DEBUG - App created successfully
+2025-06-14 12:00:27,269 - DEBUG - Running Flask app with debug=True
+2025-06-14 12:00:27,287 - WARNING -  * Debugger is active!
+2025-06-14 12:00:27,295 - INFO -  * Debugger PIN: 806-783-075
+2025-06-14 12:01:20,285 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "GET / HTTP/1.1" 200 -
+2025-06-14 12:01:20,322 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,322 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "GET /static/uploads/banners/resized_Ban-sao-cua-Ngu-Hanh-Chi-Sac-Final-2-e1734149509142-1536x860.png HTTP/1.1" 200 -
+2025-06-14 12:01:20,322 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/banners/resized_Black_And_White_Modern_Fashion_Sale_Banner_Landscape.png HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,378 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "GET /static/uploads/banners/resized_Beige_Brown_Clean_Aesthetic_Fashion_Collection_Medium_Banner.png HTTP/1.1" 200 -
+2025-06-14 12:01:20,397 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/banners/resized_Blue_Simple_photo_studio_Banner_Landscape.png HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,403 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,407 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_309347387_192758536548280_7676428032838442728_n.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,420 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_66134771d9bf44d9a2bdf669416c8d16.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,424 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_068077706bcd6536e6f0d58ecc92e4cd.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,428 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_526618ce92fb325d097e459afe042354.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,431 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_43591b42decaeb18b28bcde13e69b8ba.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,438 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_303d40cab53da723d3244edfb936918e.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,440 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_68c9f5706aed254ccc488196fbd97f60.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,444 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_f8a5a035ceb454cf1b9e266699f3d4ac.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,447 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/home/resized_f251de7125d10d76c192ffe6cf3d5a20.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,459 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/posts/resized_341488668_6146073228769239_9100659927960184943_n.jpg HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,462 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[36mGET /static/uploads/posts/resized_12-1.png HTTP/1.1[0m" 304 -
+2025-06-14 12:01:20,464 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[33mGET /static/images/icon_chat.png HTTP/1.1[0m" 404 -
+2025-06-14 12:01:20,699 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-14 12:01:22,123 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:22] "GET /auth/login HTTP/1.1" 200 -
+2025-06-14 12:01:22,142 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:22] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-06-14 12:01:22,143 - INFO - 127.0.0.1 - - [14/Jun/2025 12:01:22] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
