@@ -91,7 +91,8 @@
         </div>
 
         <!-- Banner -->
-        {% if request.endpoint not in ['auth.login', 'auth.register',
+        {% if request.endpoint not in ['auth.login',
+        'auth.register','auth.reset_password','auth.forgot_password'
         'main.profile'] and not request.path.startswith('/blog') %} {% if
         banners and banners|length > 0 %}
         <div class="slider-container">
