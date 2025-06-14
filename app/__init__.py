@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask
+from flask import Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -76,9 +76,10 @@ def create_app():
         logging.error("Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET")
         raise ValueError("Missing Google OAuth credentials")
 
-    # Đăng ký Google OAuth
+    # Đăng ký Google OAuth với redirect URI động
     try:
         logging.debug("Registering Google OAuth")
+        redirect_uri = os.getenv('OAUTH_REDIRECT_URI', 'http://localhost:5000/auth/authorize/google')
         oauth.register(
             name='google',
             client_id=app.config['GOOGLE_CLIENT_ID'],
@@ -87,10 +88,10 @@ def create_app():
             token_uri='https://oauth2.googleapis.com/token',
             client_kwargs={
                 'scope': 'openid email profile',
-                'redirect_uri': 'http://localhost:5000/auth/authorize/google'
+                'redirect_uri': redirect_uri
             },
         )
-        logging.debug("Google OAuth registered successfully")
+        logging.debug(f"Google OAuth registered successfully with redirect URI: {redirect_uri}")
         logging.debug(f"OAuth google client exists: {hasattr(oauth, 'google')}")
     except Exception as e:
         logging.error(f"Failed to register Google OAuth: {str(e)}")
@@ -141,7 +142,7 @@ def create_app():
         def csrf_token():
             from flask_wtf.csrf import generate_csrf
             return generate_csrf()
-        return dict(csrf_token=csrf_token)
+        return dict(csrf_token=csrf_token, static_url=url_for('static', filename=''))
 
     logging.debug("Flask app created successfully")
     return app

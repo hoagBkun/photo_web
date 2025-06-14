@@ -135,6 +135,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 /* User Menu */
 .user-menu {
     position: relative;
+    
 }
 
 .user-avatar {
@@ -144,7 +145,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     cursor: pointer;
     border: 2px solid var(--light-text);
     transition: var(--transition);
-    object-fit: cover; /* Đảm bảo ảnh avatar khớp thẻ cha */
+    object-fit: cover;
     display: block;
 }
 
@@ -167,6 +168,17 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 
 .user-menu:hover .dropdown-content, .user-menu:focus-within .dropdown-content {
     display: block;
+}
+
+.user-menu:hover::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    right: -10px;
+    bottom: -20px;
+    height: 20px;
+    display: block;
+    background-color: transparent;
 }
 
 .dropdown-content a {
@@ -192,7 +204,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .notification-icon img {
     width: 35px;
     height: 35px;
-    object-fit: contain; /* Đảm bảo icon thông báo khớp thẻ cha */
+    object-fit: contain;
     display: block;
 }
 
@@ -254,7 +266,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .slider-image {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Đảm bảo ảnh slider lấp đầy thẻ cha */
+    object-fit: cover;
     object-position: center;
     display: block;
     loading: lazy;
@@ -352,7 +364,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .thumbnail-image {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Đảm bảo ảnh thumbnail lấp đầy thẻ cha */
+    object-fit: cover;
     display: block;
     loading: lazy;
 }
@@ -481,13 +493,13 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .intro-image {
     width: 100%;
     max-height: 350px;
-    overflow: hidden; /* Ngăn ảnh vượt ra ngoài */
+    overflow: hidden;
 }
 
 .intro-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+    object-fit: cover;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
     display: block;
@@ -505,7 +517,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .team-image {
     width: 100%;
     height: 200px;
-    overflow: hidden; /* Ngăn ảnh vượt ra ngoài */
+    overflow: hidden;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
 }
@@ -513,7 +525,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .team-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+    object-fit: cover;
     border-radius: var(--border-radius);
     display: block;
     loading: lazy;
@@ -528,7 +540,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     width: 100%;
     height: auto;
     max-height: 300px;
-    object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+    object-fit: cover;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
     display: block;
@@ -547,16 +559,16 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 
 .portfolio-item {
     min-width: 280px;
-    height: 280px; /* Đặt chiều cao cố định */
+    height: 280px;
     position: relative;
     border-radius: var(--border-radius);
-    overflow: hidden; /* Ngăn ảnh vượt ra ngoài */
+    overflow: hidden;
 }
 
 .portfolio-item img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+    object-fit: cover;
     display: block;
     loading: lazy;
 }
@@ -606,7 +618,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .service-card img {
     width: 100%;
     height: 180px;
-    object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+    object-fit: cover;
     border-radius: var(--border-radius);
     display: block;
     loading: lazy;
@@ -657,7 +669,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .blog-card img {
     width: 100%;
     height: 180px;
-    object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+    object-fit: cover;
     display: block;
     loading: lazy;
 }
@@ -683,12 +695,13 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 
 /* Auth Pages */
 .auth-container {
-    min-height: calc(100vh - 300px);
+    min-height: 100vh;
     background: url('https://images.unsplash.com/photo-1519741497674-411a16c18303') no-repeat center center/cover;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
 }
 
 .auth-container::before {
@@ -698,22 +711,155 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .auth-card {
-    background: #fff;
-    padding: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-dark);
-    max-width: 400px;
+    max-width: 480px;
     width: 100%;
     text-align: center;
     position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
 :root.dark-mode .auth-card {
-    background: #2a2a2a;
+    background: rgba(30, 39, 46, 0.95);
+}
+
+.auth-card .auth-header .auth-logo {
+    width: 120px;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+.auth-card .auth-header .auth-logo:hover {
+    transform: rotate(10deg);
+}
+
+.auth-card .auth-title {
+    font-size: 2.2em;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.auth-card .auth-subtitle {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.auth-card .form-group {
+    margin-bottom: 25px;
+}
+
+.auth-card .form-label {
+    text-align: left;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.auth-card .form-control {
+    border: 2px solid #ddd;
+    border-radius: var(--border-radius);
+    padding: 12px 15px;
+    font-size: 1em;
+    width: 100%;
+    transition: var(--transition);
+    background: #fff;
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(0, 196, 204, 0.2);
+    outline: none;
+}
+
+.auth-card .btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #0099a3);
+    border: none;
+    padding: 12px;
+    font-size: 1.2em;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: var(--transition);
+}
+
+.auth-card .btn-primary:hover {
+    background: linear-gradient(135deg, #0099a3, #00796b);
+    transform: translateY(-2px);
+}
+
+.auth-card .btn-outline-danger {
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.auth-card .btn-outline-danger:hover {
+    background: var(--secondary-color);
+    color: var(--light-text);
+    transform: translateY(-2px);
+}
+
+.auth-card .auth-options a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.auth-card .auth-options a:hover {
+    color: #0099a3;
+    text-decoration: underline;
+}
+
+.auth-card .alert-container .alert {
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-bottom: 15px;
+    text-align: left;
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.auth-card .alert-dismissible .btn-close {
+    padding: 0.5rem 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    color: #fff;
+    opacity: 0.7;
+}
+
+.auth-card .alert-dismissible .btn-close:hover {
+    opacity: 1;
 }
 
 /* Contact Form and Info */
@@ -762,7 +908,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .footer-images img {
     width: 100px;
     height: 100px;
-    object-fit: cover; /* Đảm bảo ảnh footer lấp đầy thẻ cha */
+    object-fit: cover;
     border-radius: 10px;
     display: block;
     loading: lazy;
@@ -828,7 +974,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    object-fit: cover; /* Đảm bảo ảnh avatar profile lấp đầy thẻ cha */
+    object-fit: cover;
     border: 4px solid var(--primary-color);
     transition: var(--transition);
     display: block;
@@ -862,8 +1008,8 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 .blog-detail .content.blog-content img {
     width: 100%;
     height: auto;
-    max-height: 400px; /* Giới hạn chiều cao tối đa */
-    object-fit: contain; /* Giữ tỷ lệ ảnh trong blog */
+    max-height: 400px;
+    object-fit: contain;
     border-radius: var(--border-radius);
     margin: 10px 0;
     display: block;
@@ -972,7 +1118,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     .intro-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .team-image {
@@ -982,14 +1128,14 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     .team-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .mission-content img {
         max-height: 250px;
         width: 100%;
         height: auto;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 }
 
@@ -1006,7 +1152,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     .user-avatar {
         width: 40px;
         height: 40px;
-        object-fit: cover; /* Đảm bảo avatar khớp thẻ cha */
+        object-fit: cover;
     }
 
     .slider-caption h1 { font-size: 1.6rem; }
@@ -1025,25 +1171,25 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     }
 
     .portfolio-item {
-        height: 250px; /* Giảm chiều cao cho mobile */
+        height: 250px;
     }
 
     .portfolio-item img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .service-card img {
-        height: 160px; /* Giảm chiều cao cho mobile */
+        height: 160px;
         width: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .blog-card img {
-        height: 160px; /* Giảm chiều cao cho mobile */
+        height: 160px;
         width: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 }
 
@@ -1052,7 +1198,21 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     .slider-caption p { font-size: 0.6rem; }
 
     .auth-card {
-        padding: 15px;
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    .auth-card .auth-title {
+        font-size: 1.8em;
+    }
+
+    .auth-card .form-control {
+        padding: 10px;
+    }
+
+    .auth-card .btn-primary, .auth-card .btn-outline-danger {
+        font-size: 1em;
+        padding: 10px;
     }
 
     .crud-btn {
@@ -1064,7 +1224,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     .footer-images img {
         width: 80px;
         height: 80px;
-        object-fit: cover; /* Đảm bảo ảnh footer lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .intro-image {
@@ -1074,7 +1234,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     .intro-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .team-image {
@@ -1084,35 +1244,35 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     .team-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .mission-content img {
         max-height: 200px;
         width: 100%;
         height: auto;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .portfolio-item {
-        height: 220px; /* Giảm chiều cao cho mobile nhỏ */
+        height: 220px;
     }
 
     .portfolio-item img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .service-card img {
-        height: 140px; /* Giảm chiều cao cho mobile nhỏ */
+        height: 140px;
         width: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 
     .blog-card img {
-        height: 140px; /* Giảm chiều cao cho mobile nhỏ */
+        height: 140px;
         width: 100%;
-        object-fit: cover; /* Đảm bảo ảnh lấp đầy thẻ cha */
+        object-fit: cover;
     }
 }
