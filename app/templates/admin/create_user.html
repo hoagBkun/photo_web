@@ -3,14 +3,32 @@
 <div class="container">
     <h1>Tạo Người Dùng Mới</h1>
     <form method="POST">
-        <label for="username">Tên người dùng:</label>
-        <input type="text" id="username" name="username" required />
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required />
-        <label for="password">Mật khẩu:</label>
-        <input type="password" id="password" name="password" required />
-        <label for="is_admin">Admin:</label>
-        <input type="checkbox" id="is_admin" name="is_admin" />
+        {{ form.hidden_tag() }}
+        <div>
+            <label for="username">Tên người dùng:</label>
+            {{ form.username(id="username", required=True) }} {% if
+            form.username.errors %}
+            <span class="error">{{ form.username.errors[0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            {{ form.email(id="email", required=True) }} {% if form.email.errors
+            %}
+            <span class="error">{{ form.email.errors[0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="password">Mật khẩu (bắt buộc):</label>
+            {{ form.password(id="password", required=True) }} {% if
+            form.password.errors %}
+            <span class="error">{{ form.password.errors[0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="is_admin">Admin:</label>
+            {{ form.is_admin(id="is_admin") }}
+        </div>
         <button type="submit">Tạo</button>
     </form>
 </div>

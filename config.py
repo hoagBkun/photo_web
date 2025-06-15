@@ -9,7 +9,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = os.environ.get('WTF_CSRF_ENABLED', 'True') == 'True'
     GOOGLE_CLIENT_ID = '367337356677-kknumqnlopv88d4kbj8j07bvftdb750a.apps.googleusercontent.com'
-    GOOGLE_CLIENT_SECRET = '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'  # Cập nhật secret mới
+    GOOGLE_CLIENT_SECRET = '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'
+    OAUTH_REDIRECT_URI = os.environ.get('OAUTH_REDIRECT_URI', 'http://localhost:5000/auth/authorize/google')
     OAUTHLIB_INSECURE_TRANSPORT = os.environ.get('FLASK_ENV') == 'development'
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587

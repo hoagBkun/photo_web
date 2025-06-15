@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import secrets
 import logging
-from wtforms.validators import Email
+import re
 
 # Cấu hình logging chi tiết
 logging.basicConfig(
@@ -17,6 +17,11 @@ logging.basicConfig(
 )
 
 auth = Blueprint('auth', __name__)
+
+# Hàm kiểm tra email đơn giản
+def is_valid_email(email):
+    email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(email_pattern, email) is not None
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -57,7 +62,7 @@ def register():
         if password != confirm_password:
             flash('Mật khẩu và xác nhận mật khẩu không khớp.', 'error')
             return redirect(url_for('auth.register'))
-        if not Email()(None, email):
+        if not is_valid_email(email):
             flash('Email không hợp lệ.', 'error')
             return redirect(url_for('auth.register'))
         if db.session.execute(db.select(User).where(User.username == username)).scalar_one_or_none():
@@ -118,9 +123,9 @@ def forgot_password():
         else:
             logging.error(f"Password reset failed: Email {email} not found")
             current_app.logger.error(f"Password reset failed: Email {email} not found")
-            flash('Email không tồn tại.', 'error')
+            flash('Email not found.', 'error')
         return redirect(url_for('auth.login'))
-    return render_template('auth/forgot_password.html')
+    return render_template('login.html')
 
 @auth.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
@@ -133,44 +138,46 @@ def reset_password(token):
     if not reset:
         logging.error(f"Password reset failed: Invalid or expired token {token}")
         current_app.logger.error(f"Password reset failed: Invalid or expired token {token}")
-        flash('Token không hợp lệ hoặc đã hết hạn.', 'error')
+        flash('Invalid or expired token.', 'error')
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
         new_password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-        logging.debug(f"Password reset attempt for token: {token}")
+        logging.debug(f"Attempting password reset for token: {token}")
         if not new_password or not confirm_password:
-            flash('Vui lòng nhập đầy đủ thông tin.', 'error')
+            flash('Please fill in all fields.', 'error')
             return redirect(url_for('auth.reset_password', token=token))
         if new_password != confirm_password:
-            flash('Mật khẩu và xác nhận mật khẩu không khớp.', 'error')
+            flash('Passwords do not match.', 'error')
             return redirect(url_for('auth.reset_password', token=token))
         user = db.session.execute(db.select(User).where(User.email == reset.email)).scalar_one_or_none()
         if user:
             user.password = generate_password_hash(new_password, method='pbkdf2:sha256')
             db.session.delete(reset)
             db.session.commit()
-            flash('Mật khẩu đã được đặt lại thành công!', 'success')
-        return redirect(url_for('auth.login'))
-
-    return render_template('auth/reset_password.html', token=token)
+            flash('Password reset successfully!', 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('User not found.', 'error')
+            return redirect(url_for('auth.login'))
+    return render_template('reset_password.html', token=token)
 
 @auth.route('/login/google')
 def login_google():
     if not hasattr(current_app, 'oauth') or not current_app.oauth.google:
         logging.error("Google OAuth not registered")
         current_app.logger.error("Google OAuth not registered")
-        flash('Cấu hình Google OAuth không hợp lệ.', 'error')
+        flash('Invalid Google OAuth configuration.', 'error')
         return redirect(url_for('auth.login'))
     redirect_uri = url_for('auth.authorize_google', _external=True)
     logging.debug(f"Google OAuth redirect URI: {redirect_uri}")
     try:
         return current_app.oauth.google.authorize_redirect(redirect_uri)
     except Exception as e:
-        logging.error(f"Google OAuth redirect error: {str(e)}")
+        logging.error(f"Google OAuth redirect error: {str(e)}", exc_info=True)
         current_app.logger.error(f"Google OAuth redirect error: {str(e)}")
-        flash('Lỗi khi đăng nhập bằng Google. Vui lòng thử lại.', 'error')
+        flash('Error during Google login. Please try again.', 'error')
         return redirect(url_for('auth.login'))
 
 @auth.route('/authorize/google')
@@ -178,7 +185,7 @@ def authorize_google():
     if not hasattr(current_app, 'oauth') or not current_app.oauth.google:
         logging.error("Google OAuth not registered")
         current_app.logger.error("Google OAuth not registered")
-        flash('Cấu hình Google OAuth không hợp lệ.', 'error')
+        flash('Invalid Google OAuth configuration.', 'error')
         return redirect(url_for('auth.login'))
     try:
         logging.debug("Attempting to get Google OAuth access token")
@@ -190,7 +197,7 @@ def authorize_google():
         if 'email' not in user_info:
             logging.error(f"Google OAuth error: No email in user_info: {user_info}")
             current_app.logger.error(f"Google OAuth error: No email in user_info: {user_info}")
-            flash('Không thể lấy thông tin email từ Google.', 'error')
+            flash('Could not retrieve email from Google.', 'error')
             return redirect(url_for('auth.login'))
         user = db.session.execute(db.select(User).where(User.email == user_info['email'])).scalar_one_or_none()
         if not user:
@@ -204,10 +211,10 @@ def authorize_google():
             db.session.add(user)
             db.session.commit()
         login_user(user)
-        flash('Đăng nhập bằng Google thành công!', 'success')
+        flash('Google login successful!', 'success')
         return redirect(url_for('main.home'))
     except Exception as e:
-        logging.error(f"Google OAuth authorize error: {str(e)}")
+        logging.error(f"Google OAuth authorize error: {str(e)}", exc_info=True)
         current_app.logger.error(f"Google OAuth authorize error: {str(e)}")
-        flash('Lỗi khi đăng nhập bằng Google. Vui lòng thử lại.', 'error')
+        flash('Error during Google login. Please try again.', 'error')
         return redirect(url_for('auth.login'))

@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, url_for
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -76,25 +76,21 @@ def create_app():
         logging.error("Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET")
         raise ValueError("Missing Google OAuth credentials")
 
-    # Đăng ký Google OAuth với redirect URI động
+    # Đăng ký Google OAuth
     try:
         logging.debug("Registering Google OAuth")
-        redirect_uri = os.getenv('OAUTH_REDIRECT_URI', 'http://localhost:5000/auth/authorize/google')
+        redirect_uri = app.config.get('OAUTH_REDIRECT_URI', 'http://localhost:5000/auth/authorize/google')
         oauth.register(
             name='google',
             client_id=app.config['GOOGLE_CLIENT_ID'],
             client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-            auth_uri='https://accounts.google.com/o/oauth2/auth',
-            token_uri='https://oauth2.googleapis.com/token',
-            client_kwargs={
-                'scope': 'openid email profile',
-                'redirect_uri': redirect_uri
-            },
+            server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+            client_kwargs={'scope': 'openid email profile'}
         )
         logging.debug(f"Google OAuth registered successfully with redirect URI: {redirect_uri}")
         logging.debug(f"OAuth google client exists: {hasattr(oauth, 'google')}")
     except Exception as e:
-        logging.error(f"Failed to register Google OAuth: {str(e)}")
+        logging.error(f"Failed to register Google OAuth: {str(e)}", exc_info=True)
         raise
 
     login_manager.login_view = 'auth.login'
@@ -139,10 +135,8 @@ def create_app():
 
     @app.context_processor
     def utility_processor():
-        def csrf_token():
-            from flask_wtf.csrf import generate_csrf
-            return generate_csrf()
-        return dict(csrf_token=csrf_token, static_url=url_for('static', filename=''))
+        from flask_wtf.csrf import generate_csrf
+        return dict(csrf_token=generate_csrf)
 
     logging.debug("Flask app created successfully")
     return app

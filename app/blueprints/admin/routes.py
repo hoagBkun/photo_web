@@ -18,6 +18,7 @@ from app.blueprints.admin.forms import (
 )
 from functools import wraps
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
 import os
 import logging
 from PIL import Image
@@ -557,7 +558,39 @@ def manage_users():
     users = User.query.all()
     return render_template('admin/users.html', users=users)
 
-@admin_bp.route('/users/edit/<id>', methods=['GET', 'POST'])
+@admin_bp.route('/users/create', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def create_user():
+    form = UserForm()
+    if form.validate_on_submit():
+        try:
+            if User.query.filter_by(username=form.username.data).first():
+                flash('Tên người dùng đã tồn tại.', 'error')
+                return render_template('admin/create_user.html', form=form)
+            if User.query.filter_by(email=form.email.data).first():
+                flash('Email đã tồn tại.', 'error')
+                return render_template('admin/create_user.html', form=form)
+            if not form.password.data:
+                flash('Mật khẩu là bắt buộc khi tạo người dùng mới.', 'error')
+                return render_template('admin/create_user.html', form=form)
+            new_user = User(
+                username=form.username.data,
+                email=form.email.data,
+                password=generate_password_hash(form.password.data),
+                is_admin=form.is_admin.data
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Tạo người dùng thành công!', 'success')
+            return redirect(url_for('admin.manage_users'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Lỗi khi tạo người dùng: {str(e)}', 'error')
+            logging.error(f"Error creating user: {str(e)}")
+    return render_template('admin/create_user.html', form=form)
+
+@admin_bp.route('/users/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_user(id):
@@ -565,15 +598,17 @@ def edit_user(id):
     form = UserForm(obj=user)
     if form.validate_on_submit():
         try:
-            if User.query.filter_by(username=form.username.data).first() and form.username.data != user.username:
+            if User.query.filter_by(username=form.username.data).filter(User.id != id).first():
                 flash('Tên người dùng đã tồn tại.', 'error')
-                return redirect(url_for('admin.edit_user', id=id))
-            if User.query.filter_by(email=form.email.data).first() and form.email.data != user.email:
+                return render_template('admin/edit_user.html', form=form, user=user)
+            if User.query.filter_by(email=form.email.data).filter(User.id != id).first():
                 flash('Email đã tồn tại.', 'error')
-                return redirect(url_for('admin.edit_user', id=id))
+                return render_template('admin/edit_user.html', form=form, user=user)
             user.username = form.username.data
             user.email = form.email.data
             user.is_admin = form.is_admin.data
+            if form.password.data:
+                user.password = generate_password_hash(form.password.data)
             db.session.commit()
             flash('Cập nhật người dùng thành công!', 'success')
             return redirect(url_for('admin.manage_users'))
@@ -583,7 +618,7 @@ def edit_user(id):
             logging.error(f"Error editing user ID {id}: {str(e)}")
     return render_template('admin/edit_user.html', form=form, user=user)
 
-@admin_bp.route('/users/delete/<id>', methods=['POST'])
+@admin_bp.route('/users/delete/<int:id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_user(id):

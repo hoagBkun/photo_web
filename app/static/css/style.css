@@ -135,7 +135,6 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 /* User Menu */
 .user-menu {
     position: relative;
-    
 }
 
 .user-avatar {
@@ -430,7 +429,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 }
 
 /* Buttons */
-.btn {
+button.btn, a.btn {
     background-color: var(--primary-color);
     color: var(--light-text);
     padding: 10px 20px;
@@ -439,19 +438,93 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     transition: var(--transition);
     font-weight: 500;
     display: inline-block;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    line-height: normal;
 }
 
-.btn:hover, .btn:focus {
+button.btn:hover, a.btn:hover, button.btn:focus, a.btn:focus {
     background-color: #0099a3;
     outline: none;
 }
 
-.btn.danger {
-    background-color: #dc3545;
+button.btn-primary, a.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #0099a3) !important;
+    border: none !important;
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    color: var(--light-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: var(--transition);
 }
 
-.btn.danger:hover, .btn.danger:focus {
-    background-color: #c82333;
+button.btn-primary:hover, a.btn-primary:hover, button.btn-primary:focus, a.btn-primary:focus {
+    background: linear-gradient(135deg, #0099a3, #00796b) !important;
+    transform: translateY(-2px);
+    outline: none;
+}
+
+button.btn-secondary, a.btn-secondary {
+    background-color: #6c757d !important;
+    border: none !important;
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    color: var(--light-text);
+    transition: var(--transition);
+}
+
+button.btn-secondary:hover, a.btn-secondary:hover, button.btn-secondary:focus, a.btn-secondary:focus {
+    background-color: #5a6268 !important;
+    transform: translateY(-2px);
+    outline: none;
+}
+
+button.btn.danger, a.btn.danger {
+    background-color: #dc3545 !important;
+    border: none !important;
+}
+
+button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.danger:focus {
+    background-color: #c82333 !important;
+}
+
+/* Custom Button Classes */
+.save-btn {
+    background: linear-gradient(135deg, var(--primary-color), #0099a3);
+    border: none;
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    color: var(--light-text);
+}
+
+.save-btn:hover, .save-btn:focus {
+    background: linear-gradient(135deg, #0099a3, #00796b);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    color: var(--light-text);
+}
+
+.cancel-btn:hover, .cancel-btn:focus {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    outline: none;
 }
 
 /* CRUD Buttons */

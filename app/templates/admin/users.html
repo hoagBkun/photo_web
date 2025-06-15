@@ -27,12 +27,24 @@ endblock %} {% block content %}
                                 class="btn btn-sm btn-warning"
                                 >Sửa</a
                             >
-                            <a
-                                href="{{ url_for('admin.delete_user', id=user.id) }}"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                >Xóa</a
+                            <form
+                                action="{{ url_for('admin.delete_user', id=user.id) }}"
+                                method="POST"
+                                style="display: inline"
                             >
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                />
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Bạn có chắc muốn xóa?')"
+                                >
+                                    Xóa
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}

@@ -1,18 +1,17 @@
-
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, TextAreaField, BooleanField, SubmitField, FloatField, SelectField
+from wtforms import StringField, TextAreaField, BooleanField, SubmitField, FloatField, SelectField, PasswordField
 from wtforms.validators import DataRequired, Email, Optional, Length, URL
 from app.models.post import Post
 
 class BannerForm(FlaskForm):
-    image = FileField('Hình ảnh Banner', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'Chỉ cho phép ảnh!'])])
+    image = FileField('Hình ảnh Banner', validators=[DataRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('Mô tả', validators=[Optional(), Length(max=500)])
     submit = SubmitField('Lưu')
 
 class EditBannerForm(FlaskForm):
-    image = FileField('Hình ảnh Banner', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ Chỉ cho phép!')])
+    image = FileField('Hình ảnh Banner', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Chỉ cho phép ảnh!')])
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('Mô tả', validators=[Optional(), Length(max=500)])
     submit = SubmitField('Lưu')
@@ -24,8 +23,9 @@ class PostForm(FlaskForm):
     submit = SubmitField('Lưu')
 
 class UserForm(FlaskForm):
-    username = StringField('Tên người dùng', validators=[DataRequired(), Length(max=50)])
+    username = StringField('Tên người dùng', validators=[DataRequired(), Length(min=3, max=50)])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(max=255)])
+    password = PasswordField('Mật khẩu', validators=[Optional(), Length(min=6, max=128)])
     is_admin = BooleanField('Quyền quản trị', default=False)
     submit = SubmitField('Lưu')
 
