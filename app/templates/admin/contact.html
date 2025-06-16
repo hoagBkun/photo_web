@@ -471,15 +471,15 @@
                 } này?`
             )
         ) {
+            const csrfToken = document.querySelector(
+                'input[name="csrf_token"]'
+            ).value;
             fetch(`/admin/contact/${type}/delete/${id}`, {
                 method: "POST",
                 headers: {
-                    "X-CSRF-Token": document.querySelector(
-                        'input[name="csrf_token"]'
-                    ).value,
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded",
                 },
-                body: JSON.stringify({}),
+                body: `csrf_token=${encodeURIComponent(csrfToken)}`,
             })
                 .then((response) => {
                     console.log("Delete response status:", response.status);

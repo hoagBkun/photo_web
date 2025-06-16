@@ -528,6 +528,23 @@ def edit_location(id):
         logging.error(f"Error editing location: {str(e)}")
         return jsonify({'success': False, 'error': f'Lỗi khi cập nhật cơ sở: {str(e)}'}), 500
 
+
+@admin_bp.route('/contact/location/delete/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_location(id):
+    logging.debug(f"CSRF token received: {request.form.get('csrf_token')}")
+    try:
+        location = Location.query.get_or_404(id)
+        db.session.delete(location)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Xóa cơ sở thành công!'})
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting location ID {id}: {str(e)}")
+        return jsonify({'success': False, 'error': f'Lỗi khi xóa cơ sở: {str(e)}'}), 500
+
+
 @admin_bp.route('/contact/submissions', methods=['GET'])
 @login_required
 @admin_required
@@ -988,30 +1005,72 @@ def manage_introduce():
                             os.remove(old_file)
                     introduce.image_url = f'/static/uploads/introduce/{resized_filename}'
                 db.session.commit()
-                return jsonify({'success': True, 'message': 'Cập nhật phần giới thiệu thành công!'})
+                return jsonify({
+                    'success': True,
+                    'message': 'Cập nhật phần giới thiệu thành công!',
+                    'data': {
+                        'text': introduce.text,
+                        'cta_text': introduce.cta_text,
+                        'cta_url': introduce.cta_url,
+                        'image_url': introduce.image_url
+                    }
+                })
 
-            elif form_name == 'team_member' and team_form.validate_on_submit():
-                logging.debug("Processing team member form")
-                team_member = TeamMember(
-                    name=team_form.name.data,
-                    role=team_form.role.data,
-                    description=team_form.description.data
-                )
-                if team_form.image.data:
-                    file = team_form.image.data
-                    if not allowed_file(file.filename):
-                        return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'})
-                    filename = secure_filename(file.filename)
-                    original_path = os.path.join(upload_folder, filename)
-                    file.save(original_path)
-                    resized_filename = f"resized_{filename}"
-                    resized_path = os.path.join(upload_folder, resized_filename)
-                    resize_image(original_path, resized_path, max_size=(200, 200))
-                    os.remove(original_path)
-                    team_member.image_url = f'/static/uploads/introduce/{resized_filename}'
-                db.session.add(team_member)
-                db.session.commit()
-                return jsonify({'success': True, 'message': 'Thêm thành viên đội nhóm thành công!'})
+            # Trong route manage_introduce
+            elif form_name == 'team' and team_form.validate_on_submit():
+                try:
+                    logging.debug("Processing team member form")
+                    member_id = request.form.get('id')  # Lấy ID nếu là chỉnh sửa
+                    upload_folder = 'app/static/uploads/introduce'  # Định nghĩa upload_folder
+                    os.makedirs(upload_folder, exist_ok=True)  # Tạo thư mục nếu chưa có
+
+                    if member_id:  # Chỉnh sửa thành viên
+                        team_member = TeamMember.query.get_or_404(member_id)
+                        team_member.name = team_form.name.data
+                        team_member.role = team_form.role.data
+                        team_member.description = team_form.description.data
+                    else:  # Thêm thành viên mới
+                        team_member = TeamMember(
+                            name=team_form.name.data,
+                            role=team_form.role.data,
+                            description=team_form.description.data,
+                            image_url=None  # Không sử dụng default_image.jpg
+                        )
+                        db.session.add(team_member)
+                    
+                    if team_form.image.data:
+                        file = team_form.image.data
+                        if not allowed_file(file.filename):
+                            return jsonify({'success': False, 'error': 'Vui lòng chọn file ảnh hợp lệ!'}), 400
+                        filename = secure_filename(file.filename)
+                        original_path = os.path.join(upload_folder, filename)
+                        file.save(original_path)
+                        resized_filename = f"resized_{filename}"
+                        resized_path = os.path.join(upload_folder, resized_filename)
+                        resize_image(original_path, resized_path, max_size=(200, 200))
+                        os.remove(original_path)
+                        if team_member.image_url and team_member.image_url != '/static/images/default_image.jpg':
+                            old_file = os.path.join('app', team_member.image_url.lstrip('/'))
+                            if os.path.exists(old_file):
+                                os.remove(old_file)
+                        team_member.image_url = f'/static/uploads/introduce/{resized_filename}'
+                    
+                    db.session.commit()
+                    return jsonify({
+                        'success': True,
+                        'message': 'Cập nhật thành viên đội ngũ thành công!' if member_id else 'Thêm thành viên đội ngũ thành công!',
+                        'data': {
+                            'id': team_member.id,
+                            'name': team_member.name,
+                            'role': team_member.role,
+                            'description': team_member.description,
+                            'image_url': team_member.image_url or '/static/images/placeholder.jpg'
+                        }
+                    })
+                except Exception as e:
+                    db.session.rollback()
+                    logging.error(f"Error processing team form: {str(e)}")
+                    return jsonify({'success': False, 'error': f'Lỗi server: {str(e)}'}), 500
 
             elif form_name == 'mission' and mission_form.validate_on_submit():
                 logging.debug("Processing mission form")
@@ -1042,6 +1101,10 @@ def manage_introduce():
             else:
                 errors = {}
                 for form in [introduce_form, team_form, mission_form]:
+                    if form_name == 'team' and form == team_form:
+                        logging.debug(f"Team form data: {form.data}")
+                        logging.debug(f"Team form validate: {form.validate()}")
+                        logging.debug(f"Team form errors: {form.errors}")
                     if form.errors:
                         for field, errs in form.errors.items():
                             errors[field] = errs
@@ -1126,24 +1189,23 @@ def edit_introduce_item(model, id):
         logging.error(f"Error editing {model} ID {id}: {str(e)}")
         return jsonify({'success': False, 'error': f'Lỗi khi chỉnh sửa mục: {str(e)}'}), 500
 
-@admin_bp.route('/introduce/<model>/<int:id>', methods=['DELETE'])
+@admin_bp.route('/introduce/<model>/<int:id>', methods=['POST', 'DELETE'])
 @login_required
 @admin_required
 def delete_introduce_item(model, id):
+    logging.debug(f"CSRF token received: {request.form.get('csrf_token')}")
     try:
         if model == 'team_member':
             item = TeamMember.query.get_or_404(id)
-            if item.image_url and item.image_url != '/static/images/':
+            if item.image_url and item.image_url != '/static/images/default_image.jpg':
                 file_path = os.path.join('app', item.image_url.lstrip('/'))
                 if os.path.exists(file_path):
                     os.remove(file_path)
             db.session.delete(item)
             db.session.commit()
             return jsonify({'success': True, 'message': 'Xóa thành viên đội ngũ thành công!'})
-
         else:
             return jsonify({'success': False, 'error': 'Mục không hợp lệ!'}), 400
-
     except Exception as e:
         db.session.rollback()
         logging.error(f"Error deleting {model} ID {id}: {str(e)}")

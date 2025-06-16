@@ -120,7 +120,7 @@ def update_profile():
 
         if 'avatar' in request.files:
             file = request.files['avatar']
-            if file and allowed_file(file.filename):
+            if file and file.filename != '' and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 os.makedirs('app/static/avatars', exist_ok=True)
                 file_path = os.path.join('app/static/avatars', filename)

@@ -23,3 +23,4 @@ except Exception as e:
 if __name__ == '__main__':
     logging.debug("Running Flask app with debug=True")
     app.run(debug=True)
+    

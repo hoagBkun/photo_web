@@ -15,6 +15,10 @@
     --thumbnail-group-width: calc(var(--thumbnail-width) * 6 + 30px);
     --border-radius: 8px;
     --transition: all 0.3s ease;
+    --button-padding: 12px 20px;
+    --font-size-base: 1em;
+    --font-size-large: 1.2em;
+    --font-size-small: 0.875rem;
 }
 
 /* Dark Mode Variables */
@@ -24,6 +28,8 @@
     --text-color: #e0e0e0;
     --light-text: #fff;
     --shadow-light: 0 4px 10px rgba(255, 255, 255, 0.1);
+    --primary-color: #00a3a3;
+    --secondary-color: #ff6666;
 }
 
 /* Reset CSS */
@@ -33,12 +39,20 @@
     box-sizing: border-box;
 }
 
+/* Base Styles */
 body {
     font-family: 'Roboto', Arial, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--light-bg);
     overflow-x: hidden;
+    transition: var(--transition);
+}
+
+/* Apply dark mode to body */
+:root.dark-mode body {
+    background-color: var(--dark-bg);
+    color: var(--text-color);
 }
 
 /* Typography */
@@ -59,6 +73,12 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     color: #ccc;
 }
 
+/* Common Classes */
+.rounded { border-radius: var(--border-radius); }
+.shadow-light { box-shadow: var(--shadow-light); }
+.shadow-dark { box-shadow: var(--shadow-dark); }
+.transition { transition: var(--transition); }
+
 /* Navbar */
 .navbar {
     background-color: var(--dark-bg);
@@ -66,7 +86,6 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     padding: 15px 20px;
     display: flex;
     align-items: center;
-    box-shadow: var(--shadow-light);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -205,6 +224,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
     height: 35px;
     object-fit: contain;
     display: block;
+    loading: lazy;
 }
 
 .notification-icon .badge {
@@ -290,7 +310,7 @@ p { font-size: 1.1em; color: #666; margin-bottom: 20px; }
 }
 
 .slider-caption p {
-    font-size: 0.875rem;
+    font-size: var(--font-size-small);
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -434,14 +454,13 @@ button.btn, a.btn {
     color: var(--light-text);
     padding: 10px 20px;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     transition: var(--transition);
     font-weight: 500;
     display: inline-block;
     border: none;
     cursor: pointer;
     text-align: center;
-    line-height: normal;
 }
 
 button.btn:hover, a.btn:hover, button.btn:focus, a.btn:focus {
@@ -450,10 +469,9 @@ button.btn:hover, a.btn:hover, button.btn:focus, a.btn:focus {
 }
 
 button.btn-primary, a.btn-primary {
-    background: linear-gradient(135deg, var(--primary-color), #0099a3) !important;
-    border: none !important;
-    padding: 12px 20px;
-    font-size: 1em;
+    background: linear-gradient(135deg, var(--primary-color), #0099a3);
+    padding: var(--button-padding);
+    font-size: var(--font-size-base);
     font-weight: 600;
     border-radius: var(--border-radius);
     color: var(--light-text);
@@ -463,16 +481,15 @@ button.btn-primary, a.btn-primary {
 }
 
 button.btn-primary:hover, a.btn-primary:hover, button.btn-primary:focus, a.btn-primary:focus {
-    background: linear-gradient(135deg, #0099a3, #00796b) !important;
+    background: linear-gradient(135deg, #0099a3, #00796b);
     transform: translateY(-2px);
     outline: none;
 }
 
 button.btn-secondary, a.btn-secondary {
-    background-color: #6c757d !important;
-    border: none !important;
-    padding: 12px 20px;
-    font-size: 1em;
+    background-color: #6c757d;
+    padding: var(--button-padding);
+    font-size: var(--font-size-base);
     font-weight: 600;
     border-radius: var(--border-radius);
     color: var(--light-text);
@@ -480,29 +497,35 @@ button.btn-secondary, a.btn-secondary {
 }
 
 button.btn-secondary:hover, a.btn-secondary:hover, button.btn-secondary:focus, a.btn-secondary:focus {
-    background-color: #5a6268 !important;
+    background-color: #5a6268;
     transform: translateY(-2px);
     outline: none;
 }
 
 button.btn.danger, a.btn.danger {
-    background-color: #dc3545 !important;
-    border: none !important;
+    background-color: #dc3545;
+    padding: var(--button-padding);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    color: var(--light-text);
+    transition: var(--transition);
 }
 
 button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.danger:focus {
-    background-color: #c82333 !important;
+    background-color: #c82333;
+    outline: none;
 }
 
 /* Custom Button Classes */
 .save-btn {
     background: linear-gradient(135deg, var(--primary-color), #0099a3);
-    border: none;
-    padding: 12px 20px;
-    font-size: 1em;
+    padding: var(--button-padding);
+    font-size: var(--font-size-base);
     font-weight: 600;
     border-radius: var(--border-radius);
     color: var(--light-text);
+    transition: var(--transition);
 }
 
 .save-btn:hover, .save-btn:focus {
@@ -513,12 +536,12 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 
 .cancel-btn {
     background-color: #6c757d;
-    border: none;
-    padding: 12px 20px;
-    font-size: 1em;
+    padding: var(--button-padding);
+    font-size: var(--font-size-base);
     font-weight: 600;
     border-radius: var(--border-radius);
     color: var(--light-text);
+    transition: var(--transition);
 }
 
 .cancel-btn:hover, .cancel-btn:focus {
@@ -565,7 +588,7 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 
 .intro-image {
     width: 100%;
-    max-height: 350px;
+    max-height: 100%;
     overflow: hidden;
 }
 
@@ -599,7 +622,6 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: var(--border-radius);
     display: block;
     loading: lazy;
 }
@@ -673,28 +695,42 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 }
 
 .service-card {
-    background: #fff;
+    background: var(--light-bg);
     padding: 15px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
 }
 
 :root.dark-mode .service-card {
-    background: #2a2a2a;
+    background: var(--dark-bg);
 }
 
 .service-card:hover {
     transform: translateY(-5px);
+    box-shadow: var(--shadow-dark);
 }
 
 .service-card img {
     width: 100%;
-    height: 180px;
+    height: 200px;
     object-fit: cover;
     border-radius: var(--border-radius);
     display: block;
     loading: lazy;
+}
+
+.service-card .content {
+    flex-grow: 1;
+    padding: 10px 0;
+}
+
+.service-card .btn {
+    margin-top: auto;
+    align-self: center;
 }
 
 /* Testimonial Slider */
@@ -708,12 +744,16 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 }
 
 .testimonial-item {
-    background: #fff;
+    background: var(--light-bg);
     padding: 15px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
     min-width: 280px;
     text-align: center;
+}
+
+:root.dark-mode .testimonial-item {
+    background: var(--dark-bg);
 }
 
 /* Blog Grid */
@@ -724,27 +764,40 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 }
 
 .blog-card {
-    background: #fff;
+    background: var(--light-bg);
     border-radius: var(--border-radius);
-    overflow: hidden;
     box-shadow: var(--shadow-light);
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
 }
 
 :root.dark-mode .blog-card {
-    background: #2a2a2a;
+    background: var(--dark-bg);
 }
 
 .blog-card:hover {
     transform: translateY(-10px);
+    box-shadow: var(--shadow-dark);
 }
 
 .blog-card img {
     width: 100%;
-    height: 180px;
+    height: 200px;
     object-fit: cover;
     display: block;
     loading: lazy;
+}
+
+.blog-card .content {
+    flex-grow: 1;
+    padding: 15px;
+}
+
+.blog-card .btn {
+    margin-top: auto;
+    align-self: center;
 }
 
 /* Pricing Grid */
@@ -755,15 +808,27 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 }
 
 .pricing-card {
-    background: #fff;
+    background: var(--light-bg);
     padding: 15px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
 }
 
 :root.dark-mode .pricing-card {
-    background: #2a2a2a;
+    background: var(--dark-bg);
+}
+
+.pricing-card .content {
+    flex-grow: 1;
+    padding: 10px 0;
+}
+
+.pricing-card .btn {
+    margin-top: auto;
 }
 
 /* Auth Pages */
@@ -819,6 +884,7 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
     width: 120px;
     height: auto;
     transition: transform 0.3s ease;
+    loading: lazy;
 }
 
 .auth-card .auth-header .auth-logo:hover {
@@ -865,11 +931,16 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
     outline: none;
 }
 
+:root.dark-mode .auth-card .form-control {
+    background: #333;
+    border-color: #555;
+    color: var(--text-color);
+}
+
 .auth-card .btn-primary {
     background: linear-gradient(135deg, var(--primary-color), #0099a3);
-    border: none;
-    padding: 12px;
-    font-size: 1.2em;
+    padding: var(--button-padding);
+    font-size: var(--font-size-large);
     font-weight: 600;
     border-radius: var(--border-radius);
     text-transform: uppercase;
@@ -937,7 +1008,7 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 
 /* Contact Form and Info */
 .contact-form, .contact-info {
-    background: #fff;
+    background: var(--light-bg);
     padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
@@ -945,7 +1016,7 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 }
 
 :root.dark-mode .contact-form, :root.dark-mode .contact-info {
-    background: #2a2a2a;
+    background: var(--dark-bg);
 }
 
 .form-group input, .form-group textarea {
@@ -1034,13 +1105,13 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
     max-width: 600px;
     margin: 2rem auto;
     padding: 1.5rem;
-    background-color: #fff;
+    background-color: var(--light-bg);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
 }
 
 :root.dark-mode .profile-container {
-    background: #2a2a2a;
+    background: var(--dark-bg);
 }
 
 .avatar-img {
@@ -1051,11 +1122,12 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
     border: 4px solid var(--primary-color);
     transition: var(--transition);
     display: block;
+    loading: lazy;
 }
 
 /* Blog Detail Page */
 .blog-detail {
-    background: #fff;
+    background: var(--light-bg);
     padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-light);
@@ -1063,7 +1135,7 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
 }
 
 :root.dark-mode .blog-detail {
-    background: #2a2a2a;
+    background: var(--dark-bg);
 }
 
 .blog-detail h1 {
@@ -1185,7 +1257,8 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
     }
 
     .intro-image {
-        max-height: 300px;
+      
+        max-height: 100%;
     }
 
     .intro-image img {
@@ -1210,6 +1283,14 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
         height: auto;
         object-fit: cover;
     }
+
+    .service-card, .blog-card, .pricing-card {
+        min-height: 360px;
+    }
+
+    .service-card img, .blog-card img {
+        height: 180px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1225,7 +1306,6 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
     .user-avatar {
         width: 40px;
         height: 40px;
-        object-fit: cover;
     }
 
     .slider-caption h1 { font-size: 1.6rem; }
@@ -1253,16 +1333,14 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
         object-fit: cover;
     }
 
-    .service-card img {
+    .service-card img, .blog-card img {
         height: 160px;
         width: 100%;
         object-fit: cover;
     }
 
-    .blog-card img {
-        height: 160px;
-        width: 100%;
-        object-fit: cover;
+    .service-card, .blog-card, .pricing-card {
+        min-height: 340px;
     }
 }
 
@@ -1297,11 +1375,10 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
     .footer-images img {
         width: 80px;
         height: 80px;
-        object-fit: cover;
     }
 
     .intro-image {
-        max-height: 250px;
+        max-height: 100%;
     }
 
     .intro-image img {
@@ -1337,15 +1414,13 @@ button.btn.danger:hover, a.btn.danger:hover, button.btn.danger:focus, a.btn.dang
         object-fit: cover;
     }
 
-    .service-card img {
+    .service-card img, .blog-card img {
         height: 140px;
         width: 100%;
         object-fit: cover;
     }
 
-    .blog-card img {
-        height: 140px;
-        width: 100%;
-        object-fit: cover;
+    .service-card, .blog-card, .pricing-card {
+        min-height: 320px;
     }
 }

@@ -47,6 +47,7 @@ def create_app():
     app = Flask(__name__)
     try:
         app.config.from_object(Config)
+        app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')  # Thêm cấu hình
         logging.debug("Config loaded successfully")
         logging.debug(f"Config loaded with GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET masked")
     except Exception as e:

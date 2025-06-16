@@ -162,6 +162,13 @@
                                 value="{{ intro.cta_url }}"
                                 placeholder="CTA URL"
                             />
+                            <input
+                                type="file"
+                                class="editable-image"
+                                id="introImage"
+                                name="image"
+                                accept="image/*"
+                            />
                         </div>
                     </div>
                     <div class="intro-image">
@@ -176,13 +183,6 @@
                                 id="previewIntroImageEdit"
                                 src="{{ intro.image_url }}"
                                 alt="Giới thiệu HoagART"
-                            />
-                            <input
-                                type="file"
-                                class="editable-image"
-                                id="introImage"
-                                name="image"
-                                accept="image/*"
                             />
                         </div>
                     </div>
@@ -1073,11 +1073,17 @@
     function deleteItem(model, id) {
         console.log("deleteItem called for", model, id);
         if (confirm("Bạn có chắc muốn xóa?")) {
+            const form = document.getElementById(`${model}Form_${id}`); // Lấy form tương ứng
             const formData = new FormData();
-            formData.append(
-                "{{ intro_form.csrf_token.name }}",
-                "{{ intro_form.csrf_token.data }}"
-            );
+            const csrfToken = form
+                ? form.querySelector('input[name="csrf_token"]')?.value
+                : null;
+            if (!csrfToken) {
+                console.error("CSRF token not found");
+                alert("Lỗi: Không tìm thấy CSRF token!");
+                return;
+            }
+            formData.append("csrf_token", csrfToken); // Thêm CSRF token vào FormData
             fetch(`/admin/home/${model}/delete/${id}`, {
                 method: "POST",
                 body: formData,
@@ -1094,9 +1100,7 @@
                 .then((data) => {
                     console.log("Delete response", data);
                     if (data.success) {
-                        const item =
-                            document.getElementById(`${model}_${id}`) ||
-                            document.getElementById(`featuredPost_${id}`);
+                        const item = document.getElementById(`${model}_${id}`);
                         if (item) item.remove();
                         alert(data.message || "Xóa thành công!");
                     } else {

@@ -123,10 +123,9 @@ def forgot_password():
         else:
             logging.error(f"Password reset failed: Email {email} not found")
             current_app.logger.error(f"Password reset failed: Email {email} not found")
-            flash('Email not found.', 'error')
+            flash('Email không được tìm thấy.', 'error')
         return redirect(url_for('auth.login'))
-    return render_template('login.html')
-
+    return render_template('auth/forgot_password.html')  # Sửa từ login.html thành auth/forgot_password.html
 @auth.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
@@ -161,8 +160,7 @@ def reset_password(token):
         else:
             flash('User not found.', 'error')
             return redirect(url_for('auth.login'))
-    return render_template('reset_password.html', token=token)
-
+    return render_template('auth/reset_password.html', token=token)  # Sửa từ reset_password.html thành auth/reset_password.html
 @auth.route('/login/google')
 def login_google():
     if not hasattr(current_app, 'oauth') or not current_app.oauth.google:
@@ -218,3 +216,37 @@ def authorize_google():
         current_app.logger.error(f"Google OAuth authorize error: {str(e)}")
         flash('Error during Google login. Please try again.', 'error')
         return redirect(url_for('auth.login'))
+    
+@auth.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        logging.debug(f"Password change attempt for user: {current_user.username}")
+
+        if not current_password or not new_password or not confirm_password:
+            flash('Vui lòng nhập đầy đủ thông tin.', 'error')
+            return redirect(url_for('auth.change_password'))
+
+        if not check_password_hash(current_user.password, current_password):
+            logging.error(f"Password change failed: Incorrect current password for user {current_user.username}")
+            flash('Mật khẩu hiện tại không đúng.', 'error')
+            return redirect(url_for('auth.change_password'))
+
+        if new_password != confirm_password:
+            flash('Mật khẩu mới và xác nhận mật khẩu không khớp.', 'error')
+            return redirect(url_for('auth.change_password'))
+
+        # Kiểm tra độ mạnh mật khẩu (tùy chọn)
+        if len(new_password) < 8 or not any(c.isupper() for c in new_password) or not any(c.isdigit() for c in new_password):
+            flash('Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa và số.', 'error')
+            return redirect(url_for('auth.change_password'))
+
+        current_user.password = generate_password_hash(new_password, method='pbkdf2:sha256')
+        db.session.commit()
+        flash('Đổi mật khẩu thành công!', 'success')
+        return redirect(url_for('main.profile'))
+
+    return render_template('auth/change_password.html')   

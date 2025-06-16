@@ -99,6 +99,17 @@ endblock %} {% block content %}
         border-radius: 4px;
         background: #f9f9f9;
     }
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    .team-member img {
+        max-height: 200px;
+        width: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
 </style>
 
 <div class="container">
@@ -159,13 +170,13 @@ endblock %} {% block content %}
                         <img
                             class="view-mode"
                             id="previewIntroduceImageView"
-                            src="{{ introduce.image_url }}"
+                            src="{{ introduce.image_url or url_for('static', filename='images/placeholder.jpg') }}"
                             alt="Giới thiệu HoagART"
                         />
                         <div class="edit-mode">
                             <img
                                 id="previewIntroduceImageEdit"
-                                src="{{ introduce.image_url }}"
+                                src="{{ introduce.image_url or url_for('static', filename='images/placeholder.jpg') }}"
                                 alt="Giới thiệu HoagART"
                             />
                             <input
@@ -249,78 +260,21 @@ endblock %} {% block content %}
             <div class="team-grid">
                 {% for member in team_members %}
                 <div class="team-member" id="team_{{ member.id }}">
-                    <form
-                        id="teamForm_{{ member.id }}"
-                        method="POST"
-                        enctype="multipart/form-data"
-                        action="{{ url_for('admin.edit_introduce_item', model='team', id=member.id) }}"
-                    >
-                        <input type="hidden" name="form_name" value="team" />
-                        {{ team_form.hidden_tag() }}
-                        <div class="team-image">
-                            <img
-                                class="view-mode"
-                                id="teamImageView_{{ member.id }}"
-                                src="{{ member.image_url }}"
-                                alt="{{ member.name }}"
-                            />
-                            <div class="edit-mode">
-                                <img
-                                    id="teamImageEdit_{{ member.id }}"
-                                    src="{{ member.image_url }}"
-                                    alt="{{ member.name }}"
-                                />
-                                <input
-                                    type="file"
-                                    class="editable-image"
-                                    id="teamImageInput_{{ member.id }}"
-                                    name="image"
-                                    accept="image/*"
-                                />
-                            </div>
-                        </div>
-                        <h3 class="view-mode" id="teamNameView_{{ member.id }}">
+                    <div class="view-mode">
+                        <img
+                            id="teamImageView_{{ member.id }}"
+                            src="{{ member.image_url or url_for('static', filename='images/placeholder.jpg') }}"
+                            alt="{{ member.name }}"
+                        />
+                        <h3 id="teamNameView_{{ member.id }}">
                             {{ member.name }}
                         </h3>
-                        <div class="edit-mode">
-                            <input
-                                type="text"
-                                class="editable-text"
-                                id="teamName_{{ member.id }}"
-                                name="name"
-                                value="{{ member.name }}"
-                            />
-                        </div>
-                        <p
-                            class="role view-mode"
-                            id="teamRoleView_{{ member.id }}"
-                        >
+                        <p id="teamRoleView_{{ member.id }}">
                             {{ member.role }}
                         </p>
-                        <div class="edit-mode">
-                            <input
-                                type="text"
-                                class="editable-text"
-                                id="teamRole_{{ member.id }}"
-                                name="role"
-                                value="{{ member.role }}"
-                            />
-                        </div>
-                        <p
-                            class="view-mode"
-                            id="teamDescriptionView_{{ member.id }}"
-                        >
-                            {{ member.description }}
+                        <p id="teamDescriptionView_{{ member.id }}">
+                            {{ member.description or '' }}
                         </p>
-                        <div class="edit-mode">
-                            <textarea
-                                class="editable-textarea"
-                                id="teamDescription_{{ member.id }}"
-                                name="description"
-                            >
-{{ member.description }}</textarea
-                            >
-                        </div>
                         <div class="item-actions">
                             <button
                                 type="button"
@@ -331,25 +285,77 @@ endblock %} {% block content %}
                             </button>
                             <button
                                 type="button"
-                                onclick="deleteItem('team', {{ member.id }})"
+                                onclick="deleteItem('team_member', {{ member.id }})"
                                 title="Xóa"
                             >
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
-                        <div class="edit-buttons">
-                            <button type="submit" class="btn btn-primary">
+                    </div>
+                    <div class="edit-mode">
+                        <form
+                            id="teamForm_{{ member.id }}"
+                            method="POST"
+                            enctype="multipart/form-data"
+                            action="{{ url_for('admin.manage_introduce') }}"
+                        >
+                            <input
+                                type="hidden"
+                                name="form_name"
+                                value="team"
+                            />
+                            <input
+                                type="hidden"
+                                name="id"
+                                value="{{ member.id }}"
+                            />
+                            {{ team_form.hidden_tag() }}
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="name"
+                                value="{{ member.name }}"
+                                placeholder="Tên thành viên"
+                                required
+                            />
+                            <input
+                                type="text"
+                                class="form-control mt-2"
+                                name="role"
+                                value="{{ member.role }}"
+                                placeholder="Vai trò"
+                                required
+                            />
+                            <textarea
+                                class="form-control mt-2"
+                                name="description"
+                                placeholder="Mô tả"
+                            >
+{{ member.description or '' }}</textarea
+                            >
+                            <img
+                                id="teamImageEdit_{{ member.id }}"
+                                src="{{ member.image_url or url_for('static', filename='images/placeholder.jpg') }}"
+                                alt="{{ member.name }}"
+                            />
+                            <input
+                                type="file"
+                                class="editable-image mt-2"
+                                name="image"
+                                accept="image/*"
+                            />
+                            <button type="submit" class="btn btn-primary mt-2">
                                 Lưu
                             </button>
                             <button
                                 type="button"
-                                class="btn btn-secondary"
+                                class="btn btn-secondary mt-2"
                                 onclick="cancelEdit('team_{{ member.id }}')"
                             >
                                 Hủy
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -391,7 +397,6 @@ endblock %} {% block content %}
                         class="form-control mt-2"
                         name="description"
                         placeholder="Mô tả"
-                        required
                     ></textarea>
                     <input
                         type="file"
@@ -441,13 +446,13 @@ endblock %} {% block content %}
                     <img
                         class="view-mode"
                         id="missionImageView"
-                        src="{{ mission.image_url }}"
+                        src="{{ mission.image_url or url_for('static', filename='images/placeholder.jpg') }}"
                         alt="Sứ mệnh HoagART"
                     />
                     <div class="edit-mode">
                         <img
                             id="previewMissionImageEdit"
-                            src="{{ mission.image_url }}"
+                            src="{{ mission.image_url or url_for('static', filename='images/placeholder.jpg') }}"
                             alt="Sứ mệnh HoagART"
                         />
                         <input
@@ -529,14 +534,19 @@ endblock %} {% block content %}
                     document.getElementById("previewIntroduceImageView").src;
             } else if (sectionId.startsWith("team_")) {
                 const id = sectionId.split("_")[1];
-                document.getElementById(`teamName_${id}`).value =
+                document
+                    .getElementById(`teamForm_${id}`)
+                    .querySelector("[name='name']").value =
                     document.getElementById(`teamNameView_${id}`).textContent;
-                document.getElementById(`teamRole_${id}`).value =
+                document
+                    .getElementById(`teamForm_${id}`)
+                    .querySelector("[name='role']").value =
                     document.getElementById(`teamRoleView_${id}`).textContent;
-                document.getElementById(`teamDescription_${id}`).value =
-                    document.getElementById(
-                        `teamDescriptionView_${id}`
-                    ).textContent;
+                document
+                    .getElementById(`teamForm_${id}`)
+                    .querySelector("[name='description']").value =
+                    document.getElementById(`teamDescriptionView_${id}`)
+                        .textContent || "";
                 document.getElementById(`teamImageEdit_${id}`).src =
                     document.getElementById(`teamImageView_${id}`).src;
             } else if (sectionId === "previewMission") {
@@ -560,15 +570,26 @@ endblock %} {% block content %}
 
     function deleteItem(model, id) {
         if (confirm("Bạn có chắc chắn muốn xóa?")) {
-            fetch(`/admin/introduce/${model}/delete/${id}`, {
-                method: "POST",
+            const form =
+                document.getElementById(`teamForm_${id}`) ||
+                document.querySelector("form");
+            const csrfToken = form.querySelector(
+                'input[name="csrf_token"]'
+            ).value;
+            fetch(`/admin/introduce/${model}/${id}`, {
+                method: "DELETE",
                 headers: {
-                    "X-CSRF-Token": document.querySelector(
-                        'meta[name="csrf-token"]'
-                    ).content,
+                    "Content-Type": "application/x-www-form-urlencoded",
                 },
+                body: `csrf_token=${encodeURIComponent(csrfToken)}`,
             })
-                .then((response) => response.json())
+                .then((response) => {
+                    if (!response.ok)
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    return response.json();
+                })
                 .then((data) => {
                     const toast = document.createElement("div");
                     toast.className = `toast ${
@@ -579,11 +600,12 @@ endblock %} {% block content %}
                     }<span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
                     document.body.appendChild(toast);
                     if (data.success) {
-                        document.getElementById(`${model}_${id}`).remove();
+                        document.getElementById(`team_${id}`).remove();
                         setTimeout(() => toast.remove(), 3000);
                     }
                 })
                 .catch((error) => {
+                    console.error("Delete error:", error);
                     const toast = document.createElement("div");
                     toast.className = "toast error show";
                     toast.innerHTML = `Lỗi khi xóa mục: ${error}<span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
@@ -601,21 +623,26 @@ endblock %} {% block content %}
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        const imgId = input.id
-                            .replace("ImageInput", "ImageEdit")
+                        let imgId = input.id
                             .replace(
                                 "introduceImage",
                                 "previewIntroduceImageEdit"
                             )
                             .replace("missionImage", "previewMissionImageEdit");
+                        if (input.closest(".team-member")) {
+                            const teamId = input
+                                .closest(".team-member")
+                                .id.split("_")[1];
+                            imgId = `teamImageEdit_${teamId}`;
+                        }
                         const imgElement = document.getElementById(imgId);
-                        imgElement.src = e.target.result;
-                        // Set preview dimensions
-                        if (imgId.includes("teamImageEdit")) {
-                            imgElement.style.maxHeight = "200px";
-                            imgElement.style.width = "100%";
-                        } else {
-                            imgElement.style.maxHeight = "400px";
+                        if (imgElement) {
+                            imgElement.src = e.target.result;
+                            imgElement.style.maxHeight = imgId.includes(
+                                "teamImageEdit"
+                            )
+                                ? "200px"
+                                : "400px";
                             imgElement.style.width = "100%";
                         }
                     };
@@ -629,21 +656,41 @@ endblock %} {% block content %}
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
                 const formData = new FormData(form);
-                fetch(form.action, {
-                    method: "POST",
-                    body: formData,
-                })
-                    .then((response) => response.json())
+                fetch(form.action, { method: "POST", body: formData })
+                    .then((response) => {
+                        if (!response.ok)
+                            throw new Error(
+                                `HTTP error! Status: ${response.status}`
+                            );
+                        return response.json();
+                    })
                     .then((data) => {
+                        const toast = document.createElement("div");
+                        toast.className = `toast ${
+                            data.success ? "success" : "error"
+                        } show`;
+                        toast.innerHTML = `${data.message || data.error}${
+                            data.details
+                                ? ": " + JSON.stringify(data.details)
+                                : ""
+                        }<span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3000);
+
                         if (data.success) {
-                            alert(data.message);
-                            if (form.id.startsWith("add")) {
+                            if (
+                                form.querySelector('input[name="form_name"]')
+                                    .value === "team"
+                            ) {
                                 location.reload();
                             } else {
                                 const sectionId = form.closest(
                                     ".introduce-section, .team-member, .mission-section"
                                 ).id;
-                                if (sectionId === "previewIntroduce") {
+                                if (
+                                    sectionId === "previewIntroduce" &&
+                                    data.data
+                                ) {
                                     document.getElementById(
                                         "introduceTextView"
                                     ).textContent = data.data.text;
@@ -655,8 +702,14 @@ endblock %} {% block content %}
                                     ).href = data.data.cta_url;
                                     document.getElementById(
                                         "previewIntroduceImageView"
-                                    ).src = data.data.image_url;
-                                } else if (sectionId.startsWith("team_")) {
+                                    ).src =
+                                        data.data.image_url ||
+                                        "{{ url_for('static', filename='images/placeholder.jpg') }}";
+                                    cancelEdit(sectionId);
+                                } else if (
+                                    sectionId.startsWith("team_") &&
+                                    data.data
+                                ) {
                                     const id = sectionId.split("_")[1];
                                     document.getElementById(
                                         `teamNameView_${id}`
@@ -666,25 +719,38 @@ endblock %} {% block content %}
                                     ).textContent = data.data.role;
                                     document.getElementById(
                                         `teamDescriptionView_${id}`
-                                    ).textContent = data.data.description;
+                                    ).textContent = data.data.description || "";
                                     document.getElementById(
                                         `teamImageView_${id}`
-                                    ).src = data.data.image_url;
-                                } else if (sectionId === "previewMission") {
+                                    ).src =
+                                        data.data.image_url ||
+                                        "{{ url_for('static', filename='images/placeholder.jpg') }}";
+                                    cancelEdit(sectionId);
+                                } else if (
+                                    sectionId === "previewMission" &&
+                                    data.data
+                                ) {
                                     document.getElementById(
                                         "missionTextView"
                                     ).textContent = data.data.text;
                                     document.getElementById(
                                         "missionImageView"
-                                    ).src = data.data.image_url;
+                                    ).src =
+                                        data.data.image_url ||
+                                        "{{ url_for('static', filename='images/placeholder.jpg') }}";
+                                    cancelEdit(sectionId);
                                 }
-                                cancelEdit(sectionId);
                             }
-                        } else {
-                            alert(data.error);
                         }
                     })
-                    .catch((error) => alert("Lỗi khi gửi dữ liệu: " + error));
+                    .catch((error) => {
+                        console.error("Form submit error:", error);
+                        const toast = document.createElement("div");
+                        toast.className = "toast error show";
+                        toast.innerHTML = `Lỗi khi gửi dữ liệu: ${error}<span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3000);
+                    });
             });
         });
     });
